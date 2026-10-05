@@ -5,8 +5,10 @@ import { ScrollArea } from "@/components/_ui/scroll-area";
 import SidebarNavItem from "./sidebar-nav-item";
 import SidebarSection from "./sidebar-section";
 import { PLANS, TRIAL_DAYS_LEFT } from "@/data/workspace";
+import { isOpenStage } from "@/lib/deals";
 import { ROUTES } from "@/lib/routes";
 import { useCompaniesStore } from "@/stores/companies-store";
+import { useDealsStore } from "@/stores/deals-store";
 import Logo from "@/public/assets/images/_common/logo.svg";
 import BuildingIcon from "@/public/assets/images/companies/sidebar/building.svg";
 import ClipboardIcon from "@/public/assets/images/companies/sidebar/clipboard.svg";
@@ -30,6 +32,9 @@ const BASE_COMPANY_COUNT = 223;
 
 export default function SidebarContent() {
   const companyCount = useCompaniesStore((state) => state.companies.length);
+  const dealCount = useDealsStore(
+    (state) => state.deals.filter((deal) => isOpenStage(deal.stage)).length,
+  );
   const setAppDialog = useCompaniesStore((state) => state.setAppDialog);
   const planId = useCompaniesStore((state) => state.planId);
   const plan = PLANS.find((item) => item.id === planId);
@@ -61,6 +66,7 @@ export default function SidebarContent() {
               icon={ClipboardIcon}
               label="Deals Board"
               href={ROUTES.deals.path}
+              count={dealCount}
             />
             <SidebarNavItem
               icon={BarChartIcon}
