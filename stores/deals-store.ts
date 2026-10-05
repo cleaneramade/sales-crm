@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { DEALS, type Deal, type DealStage } from "@/data/deals";
+import type { ForecastCategory } from "@/data/forecast";
 import { DEFAULT_DEAL_FILTERS, type DealFilters } from "@/lib/deals";
 
 type DealsState = DealFilters & {
@@ -17,6 +18,7 @@ type DealsState = DealFilters & {
   setNewDealOpen: (open: boolean) => void;
   moveDeal: (id: string, stage: DealStage) => void;
   addDeal: (deal: Deal) => void;
+  setCategory: (id: string, category: ForecastCategory) => void;
 };
 
 export const useDealsStore = create<DealsState>((set) => ({
@@ -43,5 +45,11 @@ export const useDealsStore = create<DealsState>((set) => ({
     set((state) => ({
       deals: [deal, ...state.deals],
       newDealOpen: false,
+    })),
+  setCategory: (id, category) =>
+    set((state) => ({
+      deals: state.deals.map((deal) =>
+        deal.id === id ? { ...deal, category } : deal,
+      ),
     })),
 }));

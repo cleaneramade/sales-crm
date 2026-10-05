@@ -5,7 +5,9 @@ import { ScrollArea } from "@/components/_ui/scroll-area";
 import SidebarNavItem from "./sidebar-nav-item";
 import SidebarSection from "./sidebar-section";
 import { PLANS, TRIAL_DAYS_LEFT } from "@/data/workspace";
+import { CURRENT_QUARTER_ID } from "@/data/forecast";
 import { isOpenStage } from "@/lib/deals";
+import { openDealsInQuarter } from "@/lib/forecast";
 import { ROUTES } from "@/lib/routes";
 import { useCompaniesStore } from "@/stores/companies-store";
 import { useDealsStore } from "@/stores/deals-store";
@@ -34,6 +36,9 @@ export default function SidebarContent() {
   const companyCount = useCompaniesStore((state) => state.companies.length);
   const dealCount = useDealsStore(
     (state) => state.deals.filter((deal) => isOpenStage(deal.stage)).length,
+  );
+  const forecastCount = useDealsStore(
+    (state) => openDealsInQuarter(state.deals, CURRENT_QUARTER_ID).length,
   );
   const setAppDialog = useCompaniesStore((state) => state.setAppDialog);
   const planId = useCompaniesStore((state) => state.planId);
@@ -72,7 +77,7 @@ export default function SidebarContent() {
               icon={BarChartIcon}
               label="Forecast"
               href={ROUTES.forecast.path}
-              count={9}
+              count={forecastCount}
             />
             <SidebarNavItem
               icon={ListIcon}
