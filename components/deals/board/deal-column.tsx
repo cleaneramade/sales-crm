@@ -54,7 +54,7 @@ export default function DealColumn({
         </span>
       </header>
 
-      <ScrollArea className="min-h-0 flex-1">
+      <ScrollArea fade className="min-h-0 flex-1">
         <div className="flex flex-col gap-2 p-2 pt-1">
           {deals.map((deal) => (
             <DealCard

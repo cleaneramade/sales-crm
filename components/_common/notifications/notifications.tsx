@@ -102,7 +102,7 @@ export default function Notifications() {
         </Tabs>
 
         {visible.length > 0 ? (
-          <ScrollArea viewportClassName="max-h-[min(420px,60dvh)]">
+          <ScrollArea fade viewportClassName="max-h-[min(420px,60dvh)]">
             <ul className="flex flex-col gap-0.5 p-1.5">
               {visible.map((notification) => (
                 <NotificationItem

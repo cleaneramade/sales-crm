@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname, useRouter } from "next/navigation";
 import Avatar from "@/components/_ui/avatar";
 import Button from "@/components/_ui/button";
 import { ScrollArea } from "@/components/_ui/scroll-area";
@@ -23,6 +24,8 @@ import MailIcon from "@/public/assets/images/companies/detail/mail-04.svg";
 import PhoneIcon from "@/public/assets/images/companies/detail/phone.svg";
 
 export default function Profile() {
+  const router = useRouter();
+  const pathname = usePathname();
   const profileName = useCompaniesStore((state) => state.profileName);
   const profileOpen = useCompaniesStore((state) => state.profileOpen);
   const companies = useCompaniesStore((state) => state.companies);
@@ -38,7 +41,10 @@ export default function Profile() {
         .sort((a, b) => b.pipelineValue - a.pipelineValue)
     : [];
 
-  const openDeals = accounts.reduce((sum, company) => sum + company.openDeals, 0);
+  const openDeals = accounts.reduce(
+    (sum, company) => sum + company.openDeals,
+    0,
+  );
   const pipeline = accounts.reduce(
     (sum, company) => sum + company.pipelineValue,
     0,
@@ -60,6 +66,7 @@ export default function Profile() {
   function showAccounts() {
     setOwner(isCurrentUser || !person ? ALL_OWNERS : person.name);
     closeProfile();
+    if (pathname !== "/") router.push("/");
   }
 
   return (
@@ -71,7 +78,9 @@ export default function Profile() {
         <SheetHeader>
           <div className="flex items-center gap-2">
             <UsersIcon aria-hidden className="text-icon size-3.5" />
-            <SheetTitle>{isCurrentUser ? "My Profile" : "Owner Profile"}</SheetTitle>
+            <SheetTitle>
+              {isCurrentUser ? "My Profile" : "Owner Profile"}
+            </SheetTitle>
           </div>
           <SheetDescription className="sr-only">
             Contact details, pipeline summary and assigned accounts

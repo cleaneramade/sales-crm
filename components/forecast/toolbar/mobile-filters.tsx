@@ -95,7 +95,7 @@ export default function MobileFilters({ className }: MobileFiltersProps) {
           </SheetClose>
         </SheetHeader>
 
-        <ScrollArea viewportClassName="max-h-[calc(85dvh-118px)]">
+        <ScrollArea fade viewportClassName="max-h-[calc(85dvh-118px)]">
           <div className="flex flex-col gap-4 p-4">
             <Field label="Period" htmlFor="mobile-forecast-period">
               <Select value={period} onValueChange={setPeriod}>

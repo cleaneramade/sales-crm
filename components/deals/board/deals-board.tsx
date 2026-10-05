@@ -59,6 +59,7 @@ export default function DealsBoard() {
   return (
     <div className="border-border flex min-h-0 flex-1 flex-col border-t">
       <ScrollArea
+        fade
         orientation="horizontal"
         className="min-h-0 flex-1"
         viewportClassName="[&>div]:h-full"

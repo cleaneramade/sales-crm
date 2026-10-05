@@ -57,7 +57,13 @@ export default function CompaniesTable() {
       <ScrollArea orientation="both" className="min-h-0 flex-1">
         <Table role="table" className={cn(TABLE_GRID_CLASS, "w-full")}>
           <TableHeader role="rowgroup" className="contents">
-            <TableRow role="row" className={TABLE_ROW_CLASS}>
+            <TableRow
+              role="row"
+              className={cn(
+                TABLE_ROW_CLASS,
+                "bg-background sticky top-0 z-10",
+              )}
+            >
               {TABLE_COLUMNS.map((column) => (
                 <TableHead
                   key={column.key}

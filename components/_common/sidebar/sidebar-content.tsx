@@ -58,7 +58,7 @@ export default function SidebarContent() {
         </div>
       </div>
 
-      <ScrollArea className="min-h-0 flex-1">
+      <ScrollArea fade className="min-h-0 flex-1">
         <nav aria-label="Primary">
           <SidebarSection className="border-sidebar-border border-b">
             <SidebarNavItem

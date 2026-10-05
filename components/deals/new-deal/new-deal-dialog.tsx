@@ -55,15 +55,16 @@ export default function NewDealDialog() {
   const companies = useCompaniesStore((state) => state.companies);
   const [form, setForm] = useState<FormState | null>(null);
   const [nameError, setNameError] = useState<string | null>(null);
+  const [companyError, setCompanyError] = useState<string | null>(null);
   const nameRef = useRef<HTMLInputElement>(null);
+  const companyRef = useRef<HTMLButtonElement>(null);
 
-  const fallback = companies[0];
   const current: FormState = form ?? {
-    companyId: fallback?.id ?? "",
+    companyId: "",
     name: "",
     value: "",
     stage: OPEN_STAGES[0],
-    owner: fallback?.owner ?? OWNERS[0].name,
+    owner: OWNERS[0].name,
     closeDate: TODAY,
     motion: STAGES[0],
     winProbability: 25,
@@ -80,13 +81,19 @@ export default function NewDealDialog() {
       companyId,
       owner: company?.owner ?? current.owner,
     });
+    setCompanyError(null);
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const name = current.name.trim();
+    if (!current.companyId) setCompanyError("Choose a company.");
+    if (!name) setNameError("Enter a deal name.");
+    if (!current.companyId) {
+      companyRef.current?.focus();
+      return;
+    }
     if (!name) {
-      setNameError("Enter a deal name.");
       nameRef.current?.focus();
       return;
     }
@@ -115,6 +122,7 @@ export default function NewDealDialog() {
         onCloseAutoFocus={() => {
           setForm(null);
           setNameError(null);
+          setCompanyError(null);
         }}
       >
         <form onSubmit={handleSubmit} noValidate className="flex flex-col">
@@ -126,10 +134,23 @@ export default function NewDealDialog() {
           </DialogHeader>
 
           <FormSection title="Deal">
-            <Field label="Company" htmlFor="deal-company">
+            <Field
+              label="Company"
+              htmlFor="deal-company"
+              required
+              error={companyError ?? undefined}
+            >
               <Select value={current.companyId} onValueChange={selectCompany}>
-                <SelectTrigger id="deal-company">
-                  <SelectValue />
+                <SelectTrigger
+                  ref={companyRef}
+                  id="deal-company"
+                  aria-invalid={companyError ? true : undefined}
+                  aria-describedby={
+                    companyError ? "deal-company-error" : undefined
+                  }
+                  className="aria-invalid:border-danger"
+                >
+                  <SelectValue placeholder="Choose a company" />
                 </SelectTrigger>
                 <SelectContent>
                   {companies.map((company) => (

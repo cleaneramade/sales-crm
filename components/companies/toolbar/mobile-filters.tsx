@@ -102,7 +102,7 @@ export default function MobileFilters({ className }: MobileFiltersProps) {
           </SheetClose>
         </SheetHeader>
 
-        <ScrollArea viewportClassName="max-h-[calc(85dvh-118px)]">
+        <ScrollArea fade viewportClassName="max-h-[calc(85dvh-118px)]">
           <div className="flex flex-col gap-4 p-4">
             <Field label="Sort by" htmlFor="mobile-sort">
               <Select
