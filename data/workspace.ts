@@ -82,6 +82,11 @@ export const HELP_SECTIONS: { title: string; topics: HelpTopic[] }[] = [
           "A pushed close date takes off 10%, an unanswered email 5% and the main contact leaving 20%. Two weeks with no activity takes off 15% and marks the deal Stale.",
       },
       {
+        question: "Does logging the same thing again keep raising it?",
+        answer:
+          "No. Each kind of activity counts twice at most in a stage, so a third reply is recorded but doesn't move the number.",
+      },
+      {
         question: "Why did a number change on its own?",
         answer:
           "Something was logged on the deal, or two weeks passed with no activity. Open the deal and read Why this number to see each reason.",

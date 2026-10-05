@@ -294,10 +294,14 @@ export default function DealDetail() {
                     <span
                       className={cn(
                         "tabular-nums",
-                        item.delta > 0 ? "text-success" : "text-warning",
+                        item.delta > 0
+                          ? "text-success"
+                          : item.delta < 0
+                            ? "text-warning"
+                            : "text-subtle",
                       )}
                     >
-                      {item.delta > 0 ? "+" : "−"}
+                      {item.delta > 0 ? "+" : item.delta < 0 ? "−" : ""}
                       {Math.abs(item.delta)}
                     </span>
                   </li>

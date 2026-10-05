@@ -32,6 +32,8 @@ export const ACTIVITY_EFFECTS: Record<
 };
 
 export const STALE_PENALTY = -15;
+
+export const MAX_COUNTED_PER_TYPE = 2;
 export const MIN_OPEN_WIN = 1;
 export const MAX_OPEN_WIN = 99;
 export const OVERRIDE_STEP = 5;
@@ -115,15 +117,23 @@ export function dealWinBreakdown(deal: Deal): WinBreakdown {
     return { base, adjustments: [], computed: base, manual: false, win: base };
   }
 
+  const counted = new Map<DealActivityType, number>();
   const adjustments: WinAdjustment[] = deal.activity
     .filter((event) => event.date >= deal.stageChangedAt)
     .sort((a, b) => a.date.localeCompare(b.date))
-    .map((event) => ({
-      key: event.id,
-      label: ACTIVITY_EFFECTS[event.type].label,
-      delta: ACTIVITY_EFFECTS[event.type].delta,
-      date: event.date,
-    }));
+    .map((event) => {
+      const seen = counted.get(event.type) ?? 0;
+      counted.set(event.type, seen + 1);
+      const capped = seen >= MAX_COUNTED_PER_TYPE;
+      return {
+        key: event.id,
+        label: capped
+          ? `${ACTIVITY_EFFECTS[event.type].label} (already counted twice)`
+          : ACTIVITY_EFFECTS[event.type].label,
+        delta: capped ? 0 : ACTIVITY_EFFECTS[event.type].delta,
+        date: event.date,
+      };
+    });
 
   if (isStale(deal)) {
     adjustments.push({
