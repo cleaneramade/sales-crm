@@ -85,6 +85,17 @@ export const PIPELINE_TABS = [
   { href: ROUTES.forecast.path, label: "Forecast" },
 ];
 
+export const TEAM_TABS = [
+  { href: ROUTES.strategicAes.path, label: "Strategic AEs" },
+  { href: ROUTES.midMarket.path, label: "Mid Market" },
+  { href: ROUTES.sdrTeam.path, label: "SDR Team" },
+];
+
+export const REPORT_TABS = [
+  { href: ROUTES.q1Forecast.path, label: "Q1 Forecast" },
+  { href: ROUTES.slippingDeals.path, label: "Slipping Deals" },
+];
+
 export function routeByPath(path: string) {
   return Object.values(ROUTES).find((route) => route.path === path);
 }

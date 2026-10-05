@@ -25,7 +25,10 @@ export type Quarter = {
 export const QUARTERS: Quarter[] = [
   { id: "2026-q3", label: "Q3 2026", start: "2026-07-01", end: "2026-09-30" },
   { id: "2026-q4", label: "Q4 2026", start: "2026-10-01", end: "2026-12-31" },
+  { id: "2027-q1", label: "Q1 2027", start: "2027-01-01", end: "2027-03-31" },
 ];
+
+export const Q1_QUARTER_ID = "2027-q1";
 
 export const CURRENT_QUARTER_ID = "2026-q3";
 
@@ -61,5 +64,24 @@ export const QUOTAS: Record<string, Record<string, number>> = {
     "Grace Miller": 200000,
     "Hannah Mills": 175000,
     "Emma Green": 150000,
+    "Sarah Nguyen": 600000,
+    "Ricky Brown": 250000,
+    "Alex Santos": 250000,
+  },
+  "2027-q1": {
+    "Sarah Nguyen": 500000,
+    "Mark Darnalds": 450000,
+    "James Taylor": 400000,
+    "Noah Lee": 300000,
+    "Ricky Brown": 250000,
+    "Ava Brooks": 300000,
+    "Maria Keller": 250000,
+    "Alex Santos": 225000,
+    "Nia Jameson": 300000,
+    "Kate Chen": 300000,
+    "Emma Green": 150000,
+    "Grace Miller": 200000,
+    "Drew Nash": 175000,
+    "Hannah Mills": 175000,
   },
 };

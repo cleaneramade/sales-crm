@@ -126,7 +126,11 @@ function sumCategory(deals: Deal[], category: ForecastCategory) {
     .reduce((sum, deal) => sum + deal.value, 0);
 }
 
-function buildRollup(owner: string, quota: number, deals: Deal[]): Rollup {
+export function buildRollup(
+  owner: string,
+  quota: number,
+  deals: Deal[],
+): Rollup {
   const closed = sumCategory(deals, "Closed");
   const commit = sumCategory(deals, "Commit");
   const bestCase = sumCategory(deals, "Best Case");

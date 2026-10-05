@@ -16,15 +16,19 @@ import {
 import DetailSection from "../detail/detail-section";
 import ProfileAccount from "./profile-account";
 import { CURRENT_USER, profileByName } from "@/data/companies";
+import { CURRENT_QUARTER_ID } from "@/data/forecast";
+import { MEETINGS_TARGET } from "@/data/team";
 import {
   ALL_OWNERS,
   averageWin,
   formatMoney,
   summaryFor,
 } from "@/lib/companies";
+import { quarterById } from "@/lib/forecast";
+import { formatAttainment, isSdrTeam, teamMembers } from "@/lib/team";
 import { useHandoff } from "@/lib/use-handoff";
 import { useCompaniesStore } from "@/stores/companies-store";
-import { useCompanySummaries } from "@/stores/deals-store";
+import { useCompanySummaries, useDealsStore } from "@/stores/deals-store";
 import UsersIcon from "@/public/assets/images/companies/sidebar/users.svg";
 import XIcon from "@/public/assets/images/companies/detail/x.svg";
 import MailIcon from "@/public/assets/images/companies/detail/mail-04.svg";
@@ -40,6 +44,7 @@ export default function Profile() {
   const closeProfile = useCompaniesStore((state) => state.closeProfile);
   const openDetail = useCompaniesStore((state) => state.openDetail);
   const setOwner = useCompaniesStore((state) => state.setOwner);
+  const deals = useDealsStore((state) => state.deals);
   const handoff = useHandoff();
 
   const person = profileName ? profileByName(profileName) : null;
@@ -70,6 +75,39 @@ export default function Profile() {
     { label: "Pipeline", value: `$${formatMoney(pipeline)}` },
     { label: "Avg. win", value: avgWin === null ? "—" : `${avgWin}%` },
   ];
+
+  const sdr = person?.team ? isSdrTeam(person.team) : false;
+  const standing = person?.team
+    ? teamMembers(deals, person.team, CURRENT_QUARTER_ID).find(
+        (member) => member.owner.name === person.name,
+      )
+    : undefined;
+  const quarterStats = standing
+    ? sdr
+      ? [
+          {
+            label: "Meetings",
+            value: `${standing.meetings} / ${MEETINGS_TARGET}`,
+          },
+          {
+            label: "Attainment",
+            value: formatAttainment(standing.meetingAttainment),
+          },
+        ]
+      : [
+          {
+            label: "Quota",
+            value:
+              standing.rollup.quota > 0
+                ? `$${formatMoney(standing.rollup.quota)}`
+                : "—",
+          },
+          {
+            label: "Attainment",
+            value: formatAttainment(standing.attainment),
+          },
+        ]
+    : [];
 
   function showAccounts() {
     setOwner(isCurrentUser || !person ? ALL_OWNERS : person.name);
@@ -143,6 +181,28 @@ export default function Profile() {
                 </a>
               </div>
             </DetailSection>
+
+            {person.team && quarterStats.length > 0 && (
+              <DetailSection
+                title={`${person.team} · ${quarterById(CURRENT_QUARTER_ID).label}`}
+              >
+                <div className="grid grid-cols-2 gap-2">
+                  {quarterStats.map((stat) => (
+                    <div
+                      key={stat.label}
+                      className="border-line-strong flex flex-col gap-3 rounded-lg border p-[11px]"
+                    >
+                      <span className="caption-style text-soft block">
+                        {stat.label}
+                      </span>
+                      <span className="lead-style block tabular-nums">
+                        {stat.value}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </DetailSection>
+            )}
 
             <DetailSection title={isCurrentUser ? "Team pipeline" : "Pipeline"}>
               <div className="grid grid-cols-2 gap-2">

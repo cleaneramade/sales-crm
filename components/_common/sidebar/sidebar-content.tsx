@@ -9,7 +9,9 @@ import { CURRENT_QUARTER_ID } from "@/data/forecast";
 import { needsAttention } from "@/lib/activities";
 import { isOpenStage } from "@/lib/deals";
 import { openDealsInQuarter } from "@/lib/forecast";
+import { q1OpenDealCount } from "@/lib/q1-forecast";
 import { ROUTES } from "@/lib/routes";
+import { teamRoster } from "@/lib/team";
 import { useCompaniesStore } from "@/stores/companies-store";
 import { useContactsStore } from "@/stores/contacts-store";
 import { useDealsStore } from "@/stores/deals-store";
@@ -44,6 +46,7 @@ export default function SidebarContent() {
   const forecastCount = useDealsStore(
     (state) => openDealsInQuarter(state.deals, CURRENT_QUARTER_ID).length,
   );
+  const q1Count = useDealsStore((state) => q1OpenDealCount(state.deals));
   const attentionCount = useDealsStore(
     (state) => needsAttention(state.deals).length,
   );
@@ -115,16 +118,19 @@ export default function SidebarContent() {
               icon={TargetIcon}
               label="Strategic AEs"
               href={ROUTES.strategicAes.path}
+              count={teamRoster("Strategic AEs").length}
             />
             <SidebarNavItem
               icon={TargetAltIcon}
               label="Mid Market"
               href={ROUTES.midMarket.path}
+              count={teamRoster("Mid Market").length}
             />
             <SidebarNavItem
               icon={UsersIcon}
               label="SDR Team"
               href={ROUTES.sdrTeam.path}
+              count={teamRoster("SDR Team").length}
             />
           </SidebarSection>
 
@@ -136,6 +142,7 @@ export default function SidebarContent() {
               icon={BarChartAltIcon}
               label="Q1 Forecast"
               href={ROUTES.q1Forecast.path}
+              count={q1Count}
             />
             <SidebarNavItem
               icon={AlertTriangleIcon}

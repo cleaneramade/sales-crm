@@ -116,6 +116,11 @@ export const HELP_SECTIONS: { title: string; topics: HelpTopic[] }[] = [
         answer:
           "Deals in Procurement or at 70% and up count as Commit. Deals in Proposal or at 40% and up count as Best Case. The rest are Pipeline. You can change a deal's category on the Forecast page.",
       },
+      {
+        question: "What is the Q1 Forecast report?",
+        answer:
+          "It covers deals closing January to March 2027. Weighted is each deal's value times its win chance, added up. Coverage is open pipeline divided by quota, and 3x is healthy. The report also shows how much more pipeline reaches 3x.",
+      },
     ],
   },
   {
@@ -165,6 +170,16 @@ export const HELP_SECTIONS: { title: string; topics: HelpTopic[] }[] = [
         question: "Do sequences change win chance?",
         answer:
           "Only when you mark a reply or book a meeting. That logs the activity on the person's open deal, so a reply adds 5% and a meeting adds 10%. Enrolling, pausing and removing people never touch a deal.",
+      },
+      {
+        question: "How are team numbers worked out?",
+        answer:
+          "Closed is the value of won deals closing in the quarter. Commit and pipeline come from the Forecast categories on those deals, and quota comes from the plan. Open pipeline, open deals, win chance and stale deals count every open deal the rep owns, in any quarter. Coverage uses only the selected quarter.",
+      },
+      {
+        question: "What are SDRs measured on?",
+        answer:
+          "Meetings logged on their deals in the quarter, against a goal of 12 each. Their open pipeline is shown for context but is not part of the goal.",
       },
       {
         question: "What do open and reply rates mean?",

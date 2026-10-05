@@ -1,3 +1,5 @@
+import { DEFAULT_ROLE, TEAM_BY_NAME, TEAM_ROLE, type Team } from "@/data/team";
+
 export const SEGMENTS = [
   "Enterprise",
   "Mid-Market",
@@ -51,6 +53,7 @@ export type Owner = {
   email: string;
   phone: string;
   role: string;
+  team?: Team;
 };
 
 const AVATARS = Array.from(
@@ -84,7 +87,8 @@ export const OWNERS: Owner[] = OWNER_NAMES.map((name, i) => ({
   avatar: AVATARS[i % AVATARS.length],
   email: `${name.toLowerCase().replace(" ", ".")}@crm.com`,
   phone: `+1 (202) ${String(199 + i).padStart(3, "0")}-${String(5520 + i * 37).slice(-4)}`,
-  role: i % 3 === 0 ? "Senior Account Executive" : "Account Executive",
+  role: TEAM_BY_NAME[name] ? TEAM_ROLE[TEAM_BY_NAME[name]] : DEFAULT_ROLE,
+  team: TEAM_BY_NAME[name],
 }));
 
 export const CURRENT_USER: Owner = {
