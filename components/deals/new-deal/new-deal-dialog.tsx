@@ -21,8 +21,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/_ui/select";
-import { Slider } from "@/components/_ui/slider";
-import SegmentBar from "@/components/_common/segment-bar";
 import FormSection from "@/components/companies/new-company/form-section";
 import { OWNERS, STAGES, type Stage } from "@/data/companies";
 import {
@@ -45,7 +43,6 @@ type FormState = {
   owner: string;
   closeDate: string;
   motion: Stage;
-  winProbability: number;
 };
 
 export default function NewDealDialog() {
@@ -67,7 +64,6 @@ export default function NewDealDialog() {
     owner: OWNERS[0].name,
     closeDate: TODAY,
     motion: STAGES[0],
-    winProbability: 25,
   };
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
@@ -105,11 +101,11 @@ export default function NewDealDialog() {
       owner: current.owner,
       value: Math.max(0, Math.round(Number(current.value) || 0)),
       stage: current.stage,
-      winProbability: current.winProbability,
+      stageChangedAt: TODAY,
+      activity: [],
       closeDate: current.closeDate || TODAY,
       motion: current.motion,
       nextStep: "Schedule the first call.",
-      lastActivityDays: 0,
     };
 
     addDeal(deal);
@@ -277,35 +273,6 @@ export default function NewDealDialog() {
                 </Select>
               </Field>
             </div>
-
-            <Field
-              label="Win probability"
-              htmlFor="deal-win"
-              trailing={
-                <span className="caption-style text-foreground tabular-nums">
-                  {current.winProbability}%
-                </span>
-              }
-            >
-              <div className="flex flex-col gap-3">
-                <Slider
-                  id="deal-win"
-                  aria-label="Win probability"
-                  min={0}
-                  max={100}
-                  step={1}
-                  value={[current.winProbability]}
-                  onValueChange={([value]) => update("winProbability", value)}
-                />
-                <SegmentBar
-                  percent={current.winProbability}
-                  segments={40}
-                  className="h-3 w-full border border-white/4 px-px"
-                  segmentClassName="h-2"
-                  trackClassName="bg-white/8"
-                />
-              </div>
-            </Field>
           </FormSection>
 
           <DialogFooter>

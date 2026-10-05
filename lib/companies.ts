@@ -33,9 +33,12 @@ export function activeFilterCount({
 
 const TAG_CHAR_BUDGET = 20;
 
+export type CompanyWins = ReadonlyMap<string, number>;
+
 export function filterCompanies(
   companies: Company[],
   { sortBy, owner, stage, activityWindow }: CompanyFilters,
+  wins: CompanyWins,
 ): Company[] {
   const filtered = companies.filter((company) => {
     if (owner !== ALL_OWNERS && company.owner !== owner) return false;
@@ -53,15 +56,21 @@ export function filterCompanies(
         return b.lastInteraction.date.localeCompare(a.lastInteraction.date);
       case "openDeals":
         return b.openDeals - a.openDeals;
-      case "winProbability":
-        return b.winProbability - a.winProbability;
+      case "winProbability": {
+        const winA = wins.get(a.id);
+        const winB = wins.get(b.id);
+        if (winA === undefined || winB === undefined) {
+          return Number(winA === undefined) - Number(winB === undefined);
+        }
+        return winB - winA;
+      }
       default:
         return b.pipelineValue - a.pipelineValue;
     }
   });
 }
 
-export function companiesCsvRows(companies: Company[]) {
+export function companiesCsvRows(companies: Company[], wins: CompanyWins) {
   return [
     [
       "Company",
@@ -79,7 +88,7 @@ export function companiesCsvRows(companies: Company[]) {
       company.owner,
       company.openDeals,
       company.pipelineValue,
-      company.winProbability,
+      wins.get(company.id) ?? "",
       company.lastInteraction.date,
       company.lastInteraction.label,
     ]),
@@ -101,11 +110,12 @@ export function splitTags(tags: Company["tags"]) {
   return { visible, hidden: tags.length - visible.length };
 }
 
-export function companyHealth(company: Company) {
+export function companyHealth(win: number | null) {
+  const value = win ?? 0;
   return {
-    discovery: Math.round(company.winProbability * 0.372),
-    evaluation: Math.round(company.winProbability * 0.651),
-    procurement: Math.round(company.winProbability * 0.372),
+    discovery: Math.round(value * 0.372),
+    evaluation: Math.round(value * 0.651),
+    procurement: Math.round(value * 0.372),
   };
 }
 
@@ -119,11 +129,21 @@ export const CALCULATIONS = [
   { value: "avgWin", label: "Avg win probability" },
 ];
 
-export function calculate(kind: string, companies: Company[]) {
+export function averageWin(companies: Company[], wins: CompanyWins) {
+  const values = companies.flatMap((item) => wins.get(item.id) ?? []);
+  return values.length
+    ? Math.round(values.reduce((sum, value) => sum + value, 0) / values.length)
+    : null;
+}
+
+export function calculate(
+  kind: string,
+  companies: Company[],
+  wins: CompanyWins,
+) {
   const count = companies.length;
   const pipeline = companies.reduce((sum, item) => sum + item.pipelineValue, 0);
   const deals = companies.reduce((sum, item) => sum + item.openDeals, 0);
-  const win = companies.reduce((sum, item) => sum + item.winProbability, 0);
 
   switch (kind) {
     case "sumPipeline":
@@ -134,8 +154,10 @@ export function calculate(kind: string, companies: Company[]) {
       return `$${formatMoney(Math.max(0, ...companies.map((item) => item.pipelineValue)))}`;
     case "sumDeals":
       return formatMoney(deals);
-    case "avgWin":
-      return `${count ? Math.round(win / count) : 0}%`;
+    case "avgWin": {
+      const avg = averageWin(companies, wins);
+      return avg === null ? "—" : `${avg}%`;
+    }
     default:
       return "";
   }

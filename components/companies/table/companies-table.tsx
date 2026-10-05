@@ -21,9 +21,11 @@ import {
 import { filterCompanies } from "@/lib/companies";
 import { cn } from "@/lib/utils";
 import { useCompaniesStore } from "@/stores/companies-store";
+import { useCompanyWins } from "@/stores/deals-store";
 
 export default function CompaniesTable() {
   const companies = useCompaniesStore((state) => state.companies);
+  const wins = useCompanyWins();
   const sortBy = useCompaniesStore((state) => state.sortBy);
   const owner = useCompaniesStore((state) => state.owner);
   const stage = useCompaniesStore((state) => state.stage);
@@ -37,8 +39,13 @@ export default function CompaniesTable() {
   const openProfile = useCompaniesStore((state) => state.openProfile);
 
   const visible = useMemo(
-    () => filterCompanies(companies, { sortBy, owner, stage, activityWindow }),
-    [companies, sortBy, owner, stage, activityWindow],
+    () =>
+      filterCompanies(
+        companies,
+        { sortBy, owner, stage, activityWindow },
+        wins,
+      ),
+    [companies, sortBy, owner, stage, activityWindow, wins],
   );
 
   const selectedVisible = visible.filter((company) =>
@@ -59,10 +66,7 @@ export default function CompaniesTable() {
           <TableHeader role="rowgroup" className="contents">
             <TableRow
               role="row"
-              className={cn(
-                TABLE_ROW_CLASS,
-                "bg-background sticky top-0 z-10",
-              )}
+              className={cn(TABLE_ROW_CLASS, "bg-background sticky top-0 z-10")}
             >
               {TABLE_COLUMNS.map((column) => (
                 <TableHead
@@ -97,6 +101,7 @@ export default function CompaniesTable() {
               <CompanyRow
                 key={company.id}
                 company={company}
+                win={wins.get(company.id) ?? null}
                 selected={selectedIds.includes(company.id)}
                 active={detailOpen && detailId === company.id}
                 onToggle={() => toggleSelected(company.id)}
@@ -117,7 +122,7 @@ export default function CompaniesTable() {
           </TableBody>
         </Table>
       </ScrollArea>
-      <TableFooter companies={visible} />
+      <TableFooter companies={visible} wins={wins} />
     </div>
   );
 }

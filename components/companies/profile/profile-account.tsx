@@ -6,10 +6,15 @@ import { formatMoney } from "@/lib/companies";
 
 type ProfileAccountProps = {
   company: Company;
+  win: number | null;
   onOpen: () => void;
 };
 
-export default function ProfileAccount({ company, onOpen }: ProfileAccountProps) {
+export default function ProfileAccount({
+  company,
+  win,
+  onOpen,
+}: ProfileAccountProps) {
   return (
     <li>
       <Button
@@ -47,7 +52,7 @@ export default function ProfileAccount({ company, onOpen }: ProfileAccountProps)
             <span className="text-muted-foreground">$</span>
             {formatMoney(company.pipelineValue)}
           </span>
-          <SegmentBar percent={company.winProbability} className="w-[60px]" />
+          <SegmentBar percent={win ?? 0} className="w-[60px]" />
         </span>
       </Button>
     </li>

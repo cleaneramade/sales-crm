@@ -47,11 +47,13 @@ export function CommandTableHeader() {
 
 type CommandCompanyRowProps = {
   company: Company;
+  win: number | null;
   onSelect: () => void;
 };
 
 export function CommandCompanyRow({
   company,
+  win,
   onSelect,
 }: CommandCompanyRowProps) {
   const owner = ownerByName(company.owner);
@@ -109,8 +111,10 @@ export function CommandCompanyRow({
       </span>
 
       <span className="hidden items-center justify-end gap-2 tabular-nums lg:flex">
-        <SegmentBar percent={company.winProbability} className="w-[60px]" />
-        <span className="w-[4ch] text-right">{company.winProbability}%</span>
+        <SegmentBar percent={win ?? 0} className="w-[60px]" />
+        <span className="w-[4ch] text-right">
+          {win === null ? "—" : `${win}%`}
+        </span>
       </span>
 
       <span className="text-soft hidden min-w-0 items-center gap-1 lg:flex">

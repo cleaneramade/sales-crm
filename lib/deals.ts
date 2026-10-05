@@ -1,14 +1,41 @@
 import {
-  LOST_STAGE,
   OPEN_STAGES,
   STALE_AFTER_DAYS,
-  WON_STAGE,
   type CloseWindow,
   type Deal,
+  type DealActivityType,
   type DealSortKey,
   type DealStage,
 } from "@/data/deals";
-import { TODAY, formatMoney } from "@/lib/companies";
+import { TODAY, daysSince, formatMoney } from "@/lib/companies";
+
+export const STAGE_BASE: Record<DealStage, number> = {
+  Discovery: 10,
+  Evaluation: 25,
+  Proposal: 50,
+  Procurement: 75,
+  "Closed Won": 100,
+  "Closed Lost": 0,
+};
+
+export const ACTIVITY_EFFECTS: Record<
+  DealActivityType,
+  { label: string; delta: number }
+> = {
+  meeting: { label: "Meeting booked", delta: 10 },
+  reply: { label: "Reply received", delta: 5 },
+  proposalViewed: { label: "Proposal viewed", delta: 5 },
+  decisionMaker: { label: "Decision-maker added", delta: 10 },
+  closePushed: { label: "Close date pushed", delta: -10 },
+  unanswered: { label: "Email unanswered", delta: -5 },
+  championLeft: { label: "Champion left", delta: -20 },
+};
+
+export const STALE_PENALTY = -15;
+export const MIN_OPEN_WIN = 1;
+export const MAX_OPEN_WIN = 99;
+export const OVERRIDE_STEP = 5;
+export const CLOSE_PUSH_DAYS = 14;
 
 export type DealFilters = {
   sortBy: DealSortKey;
@@ -43,14 +70,117 @@ export function isOpenStage(stage: DealStage) {
   return OPEN_STAGES.includes(stage);
 }
 
+export function addDays(iso: string, days: number) {
+  const day = 24 * 60 * 60 * 1000;
+  return new Date(Date.parse(iso) + days * day).toISOString().slice(0, 10);
+}
+
+export function lastActivityDate(deal: Deal) {
+  return deal.activity.reduce(
+    (newest, event) => (event.date > newest ? event.date : newest),
+    deal.stageChangedAt,
+  );
+}
+
+export function lastActivityDays(deal: Deal) {
+  return daysSince(lastActivityDate(deal));
+}
+
 export function isStale(deal: Deal) {
-  return isOpenStage(deal.stage) && deal.lastActivityDays > STALE_AFTER_DAYS;
+  return isOpenStage(deal.stage) && lastActivityDays(deal) > STALE_AFTER_DAYS;
+}
+
+export type WinAdjustment = {
+  key: string;
+  label: string;
+  delta: number;
+  date?: string;
+};
+
+export type WinBreakdown = {
+  base: number;
+  adjustments: WinAdjustment[];
+  computed: number;
+  manual: boolean;
+  win: number;
+};
+
+function clampOpen(value: number) {
+  return Math.min(MAX_OPEN_WIN, Math.max(MIN_OPEN_WIN, value));
+}
+
+export function dealWinBreakdown(deal: Deal): WinBreakdown {
+  const base = STAGE_BASE[deal.stage];
+  if (!isOpenStage(deal.stage)) {
+    return { base, adjustments: [], computed: base, manual: false, win: base };
+  }
+
+  const adjustments: WinAdjustment[] = deal.activity
+    .filter((event) => event.date >= deal.stageChangedAt)
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .map((event) => ({
+      key: event.id,
+      label: ACTIVITY_EFFECTS[event.type].label,
+      delta: ACTIVITY_EFFECTS[event.type].delta,
+      date: event.date,
+    }));
+
+  if (isStale(deal)) {
+    adjustments.push({
+      key: "stale",
+      label: `No activity in ${STALE_AFTER_DAYS} days`,
+      delta: STALE_PENALTY,
+    });
+  }
+
+  const computed = clampOpen(
+    adjustments.reduce((sum, item) => sum + item.delta, base),
+  );
+  const manual = deal.winOverride !== undefined;
+  const win = manual ? clampOpen(deal.winOverride as number) : computed;
+  return { base, adjustments, computed, manual, win };
 }
 
 export function dealWin(deal: Deal) {
-  if (deal.stage === WON_STAGE) return 100;
-  if (deal.stage === LOST_STAGE) return 0;
-  return deal.winProbability;
+  return dealWinBreakdown(deal).win;
+}
+
+export function isManualWin(deal: Deal) {
+  return isOpenStage(deal.stage) && deal.winOverride !== undefined;
+}
+
+export function companyWinMap(deals: Deal[]) {
+  const totals = new Map<
+    string,
+    { weighted: number; value: number; sum: number; count: number }
+  >();
+  for (const deal of deals) {
+    if (!isOpenStage(deal.stage)) continue;
+    const entry = totals.get(deal.companyId) ?? {
+      weighted: 0,
+      value: 0,
+      sum: 0,
+      count: 0,
+    };
+    const win = dealWin(deal);
+    entry.weighted += deal.value * win;
+    entry.value += deal.value;
+    entry.sum += win;
+    entry.count += 1;
+    totals.set(deal.companyId, entry);
+  }
+  const wins = new Map<string, number>();
+  for (const [companyId, entry] of totals) {
+    wins.set(
+      companyId,
+      Math.round(
+        entry.value > 0
+          ? entry.weighted / entry.value
+          : entry.sum / entry.count,
+      ),
+    );
+  }
+  return wins;
 }
 
 function inWindow(closeDate: string, closeWindow: CloseWindow) {
@@ -145,7 +275,7 @@ export function dealsCsvRows(
       deal.closeDate,
       deal.motion,
       deal.nextStep,
-      deal.lastActivityDays,
+      lastActivityDays(deal),
     ]),
   ];
 }
@@ -163,7 +293,7 @@ export function calculateDeals(kind: string, deals: Deal[]) {
   const open = openDeals(deals);
   const count = open.length;
   const total = open.reduce((sum, deal) => sum + deal.value, 0);
-  const win = open.reduce((sum, deal) => sum + deal.winProbability, 0);
+  const win = open.reduce((sum, deal) => sum + dealWin(deal), 0);
 
   switch (kind) {
     case "totalValue":

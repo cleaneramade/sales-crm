@@ -29,10 +29,19 @@ import {
   DEAL_STAGES,
   LOST_STAGE,
   WON_STAGE,
+  type DealActivityType,
   type DealStage,
 } from "@/data/deals";
 import { formatDate, formatMoney } from "@/lib/companies";
-import { dealWin, isStale } from "@/lib/deals";
+import {
+  MAX_OPEN_WIN,
+  OVERRIDE_STEP,
+  dealWinBreakdown,
+  isOpenStage,
+  isStale,
+  lastActivityDays,
+} from "@/lib/deals";
+import { cn } from "@/lib/utils";
 import { useCompaniesStore } from "@/stores/companies-store";
 import { useDealsStore } from "@/stores/deals-store";
 import CalendarIcon from "@/public/assets/images/_common/calendar.svg";
@@ -40,21 +49,39 @@ import ClipboardIcon from "@/public/assets/images/companies/sidebar/clipboard.sv
 import ClockIcon from "@/public/assets/images/companies/detail/clock.svg";
 import XIcon from "@/public/assets/images/companies/detail/x.svg";
 
+const QUICK_LOGS: { type: DealActivityType; label: string }[] = [
+  { type: "meeting", label: "Log meeting" },
+  { type: "reply", label: "Got a reply" },
+  { type: "proposalViewed", label: "Proposal viewed" },
+  { type: "closePushed", label: "Close date pushed" },
+];
+
+const OVERRIDE_OPTIONS = Array.from(
+  { length: Math.floor(MAX_OPEN_WIN / OVERRIDE_STEP) },
+  (_, index) => (index + 1) * OVERRIDE_STEP,
+);
+
 export default function DealDetail() {
   const detailId = useDealsStore((state) => state.detailId);
   const detailOpen = useDealsStore((state) => state.detailOpen);
   const deals = useDealsStore((state) => state.deals);
   const closeDetail = useDealsStore((state) => state.closeDetail);
   const moveDeal = useDealsStore((state) => state.moveDeal);
+  const logActivity = useDealsStore((state) => state.logActivity);
+  const setWinOverride = useDealsStore((state) => state.setWinOverride);
   const companies = useCompaniesStore((state) => state.companies);
   const openProfile = useCompaniesStore((state) => state.openProfile);
   const openCompanyDetail = useCompaniesStore((state) => state.openDetail);
+  const setAppDialog = useCompaniesStore((state) => state.setAppDialog);
 
   const deal = deals.find((item) => item.id === detailId);
   const company = deal
     ? companies.find((item) => item.id === deal.companyId)
     : undefined;
   const owner = deal ? ownerByName(deal.owner) : null;
+  const open = deal ? isOpenStage(deal.stage) : false;
+  const breakdown = deal ? dealWinBreakdown(deal) : null;
+  const manual = breakdown?.manual ?? false;
 
   function finish(stage: DealStage) {
     if (!deal) return;
@@ -100,7 +127,7 @@ export default function DealDetail() {
           </SheetClose>
         </SheetHeader>
 
-        {deal && owner && (
+        {deal && owner && breakdown && (
           <ScrollArea className="min-h-0 flex-1">
             <div className="flex items-start gap-3 p-5 shadow-[inset_0_-1px_0_var(--line-strong)]">
               <span className="bg-muted flex size-[50px] shrink-0 items-center justify-center rounded-[12.5px] shadow-[0px_6.25px_6.25px_0px_rgba(15,15,15,0.24),0px_0px_0px_1.563px_#232323]">
@@ -190,13 +217,18 @@ export default function DealDetail() {
                 </div>
                 <div className="col-span-2 flex flex-col gap-2">
                   <span className="caption-style text-soft flex items-center justify-between">
-                    Win probability
-                    <span className="text-foreground tabular-nums">
-                      {dealWin(deal)}%
+                    Win chance
+                    <span className="text-foreground flex items-center gap-2 tabular-nums">
+                      {manual && (
+                        <Tag tone="neutral" size="sm">
+                          Manual
+                        </Tag>
+                      )}
+                      {breakdown.win}%
                     </span>
                   </span>
                   <SegmentBar
-                    percent={dealWin(deal)}
+                    percent={breakdown.win}
                     segments={63}
                     className="h-3 w-full border border-white/4 px-px"
                     segmentClassName="h-2"
@@ -207,7 +239,7 @@ export default function DealDetail() {
                   <span className="caption-style text-soft">Last activity</span>
                   <span className="lead-style text-foreground flex items-center gap-1.5 tabular-nums">
                     <ClockIcon aria-hidden className="text-soft size-3.5" />
-                    {deal.lastActivityDays}d ago
+                    {lastActivityDays(deal)}d ago
                   </span>
                 </div>
                 <div className="flex flex-col gap-1.5">
@@ -225,6 +257,118 @@ export default function DealDetail() {
                 </div>
               </div>
             </DetailSection>
+
+            <DetailSection
+              title="Why this number"
+              action={
+                <Button
+                  variant="link"
+                  size="none"
+                  className="caption-style text-soft"
+                  onClick={() => setAppDialog("help")}
+                >
+                  How is this worked out?
+                </Button>
+              }
+            >
+              <ul className="divide-line-strong flex flex-col divide-y">
+                <li className="flex items-center justify-between gap-3 py-2 first:pt-0">
+                  <span className="text-foreground">{deal.stage} stage</span>
+                  <span className="text-foreground tabular-nums">
+                    {breakdown.base}%
+                  </span>
+                </li>
+                {breakdown.adjustments.map((item) => (
+                  <li
+                    key={item.key}
+                    className="flex items-center justify-between gap-3 py-2"
+                  >
+                    <span className="text-soft flex min-w-0 items-center gap-2">
+                      <span className="truncate">{item.label}</span>
+                      {item.date && (
+                        <span className="caption-style text-subtle tabular-nums">
+                          {formatDate(item.date)}
+                        </span>
+                      )}
+                    </span>
+                    <span
+                      className={cn(
+                        "tabular-nums",
+                        item.delta > 0 ? "text-success" : "text-warning",
+                      )}
+                    >
+                      {item.delta > 0 ? "+" : "−"}
+                      {Math.abs(item.delta)}
+                    </span>
+                  </li>
+                ))}
+                {open && (
+                  <li className="flex items-center justify-between gap-3 py-2 last:pb-0">
+                    <span className="text-foreground">
+                      {manual ? "Automatic result" : "Win chance"}
+                    </span>
+                    <span className="text-foreground tabular-nums">
+                      {breakdown.computed}%
+                    </span>
+                  </li>
+                )}
+              </ul>
+            </DetailSection>
+
+            {open && (
+              <DetailSection title="Log activity">
+                <div className="flex flex-wrap gap-2">
+                  {QUICK_LOGS.map((item) => (
+                    <Button
+                      key={item.type}
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => logActivity(deal.id, item.type)}
+                    >
+                      {item.label}
+                    </Button>
+                  ))}
+                </div>
+              </DetailSection>
+            )}
+
+            {open && (
+              <DetailSection title="Override">
+                <div className="flex flex-wrap items-end gap-3">
+                  <Field
+                    label="Set win chance"
+                    htmlFor="deal-detail-override"
+                    className="min-w-[160px] flex-1"
+                  >
+                    <Select
+                      value={manual ? String(deal.winOverride) : ""}
+                      onValueChange={(value) =>
+                        setWinOverride(deal.id, Number(value))
+                      }
+                    >
+                      <SelectTrigger id="deal-detail-override">
+                        <SelectValue placeholder="Automatic" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {OVERRIDE_OPTIONS.map((value) => (
+                          <SelectItem key={value} value={String(value)}>
+                            {value}%
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </Field>
+                  <Button
+                    variant="subtle"
+                    size="sm"
+                    onClick={() => setWinOverride(deal.id, null)}
+                    disabled={!manual}
+                  >
+                    Use automatic
+                  </Button>
+                </div>
+              </DetailSection>
+            )}
 
             <DetailSection title="Next step" className="shadow-none">
               <p className="text-soft">{deal.nextStep}</p>

@@ -11,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/_ui/dialog";
-import { HELP_TOPICS, SHORTCUTS, SUPPORT_EMAIL } from "@/data/workspace";
+import { HELP_SECTIONS, SHORTCUTS, SUPPORT_EMAIL } from "@/data/workspace";
 import { useCompaniesStore } from "@/stores/companies-store";
 import MailIcon from "@/public/assets/images/companies/detail/mail-04.svg";
 
@@ -28,11 +28,40 @@ export default function HelpDialog() {
         <DialogHeader>
           <DialogTitle>Help</DialogTitle>
           <DialogDescription>
-            Shortcuts, quick answers and a way to reach us.
+            Quick answers, shortcuts and a way to reach us.
           </DialogDescription>
         </DialogHeader>
 
-        <section className="flex flex-col gap-3 px-6 py-5 shadow-[inset_0_-1px_0_var(--line-strong)]">
+        {HELP_SECTIONS.map((section) => (
+          <section
+            key={section.title}
+            className="flex flex-col gap-3 px-6 py-5 shadow-[inset_0_-1px_0_var(--line-strong)]"
+          >
+            <span className="eyebrow-style text-soft block">
+              {section.title}
+            </span>
+            <ul className="flex flex-col gap-2">
+              {section.topics.map((topic) => (
+                <li key={topic.question}>
+                  <details className="group border-line-strong rounded-lg border">
+                    <summary className="lead-style flex cursor-pointer list-none items-center justify-between gap-3 rounded-lg px-3 py-2.5 transition-colors duration-150 hover:bg-white/4 [&::-webkit-details-marker]:hidden">
+                      {topic.question}
+                      <span
+                        aria-hidden
+                        className="text-subtle ease-power3-out transition-transform duration-200 group-open:rotate-45"
+                      >
+                        +
+                      </span>
+                    </summary>
+                    <p className="text-soft px-3 pb-3">{topic.answer}</p>
+                  </details>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+
+        <section className="flex flex-col gap-3 px-6 py-5">
           <span className="eyebrow-style text-soft block">
             Keyboard shortcuts
           </span>
@@ -48,28 +77,6 @@ export default function HelpDialog() {
                     <Kbd key={key}>{key}</Kbd>
                   ))}
                 </span>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        <section className="flex flex-col gap-3 px-6 py-5">
-          <span className="eyebrow-style text-soft block">Quick answers</span>
-          <ul className="flex flex-col gap-2">
-            {HELP_TOPICS.map((topic) => (
-              <li key={topic.question}>
-                <details className="group border-line-strong rounded-lg border">
-                  <summary className="lead-style flex cursor-pointer list-none items-center justify-between gap-3 rounded-lg px-3 py-2.5 transition-colors duration-150 hover:bg-white/4 [&::-webkit-details-marker]:hidden">
-                    {topic.question}
-                    <span
-                      aria-hidden
-                      className="text-subtle ease-power3-out transition-transform duration-200 group-open:rotate-45"
-                    >
-                      +
-                    </span>
-                  </summary>
-                  <p className="text-soft px-3 pb-3">{topic.answer}</p>
-                </details>
               </li>
             ))}
           </ul>

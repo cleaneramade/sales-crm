@@ -24,6 +24,25 @@ export const LOST_STAGE: DealStage = "Closed Lost";
 
 export const STALE_AFTER_DAYS = 14;
 
+export const DEAL_ACTIVITY_TYPES = [
+  "meeting",
+  "reply",
+  "proposalViewed",
+  "decisionMaker",
+  "closePushed",
+  "unanswered",
+  "championLeft",
+] as const;
+
+export type DealActivityType = (typeof DEAL_ACTIVITY_TYPES)[number];
+
+export type DealActivity = {
+  id: string;
+  type: DealActivityType;
+  date: string;
+  note?: string;
+};
+
 export type Deal = {
   id: string;
   name: string;
@@ -31,11 +50,12 @@ export type Deal = {
   owner: string;
   value: number;
   stage: DealStage;
-  winProbability: number;
+  stageChangedAt: string;
+  activity: DealActivity[];
+  winOverride?: number;
   closeDate: string;
   motion: Stage;
   nextStep: string;
-  lastActivityDays: number;
   category?: ForecastCategory;
 };
 
@@ -64,11 +84,15 @@ export const DEALS: Deal[] = [
     owner: "Grace Miller",
     value: 184000,
     stage: "Discovery",
-    winProbability: 22,
     closeDate: "2026-11-20",
     motion: "Expansion",
     nextStep: "Book a technical deep dive with the data platform team.",
-    lastActivityDays: 3,
+    stageChangedAt: "2026-08-28",
+    activity: [
+      { id: "deal-01-a1", type: "reply", date: "2026-08-20" },
+      { id: "deal-01-a2", type: "meeting", date: "2026-09-02" },
+      { id: "deal-01-a3", type: "reply", date: "2026-09-11" },
+    ],
   },
   {
     id: "deal-02",
@@ -77,11 +101,14 @@ export const DEALS: Deal[] = [
     owner: "Hannah Mills",
     value: 96000,
     stage: "Discovery",
-    winProbability: 18,
     closeDate: "2026-12-04",
     motion: "New Logo",
     nextStep: "Send the discovery questionnaire to the ads team.",
-    lastActivityDays: 21,
+    stageChangedAt: "2026-08-10",
+    activity: [
+      { id: "deal-02-a1", type: "meeting", date: "2026-08-12" },
+      { id: "deal-02-a2", type: "reply", date: "2026-08-24" },
+    ],
   },
   {
     id: "deal-03",
@@ -90,11 +117,14 @@ export const DEALS: Deal[] = [
     owner: "Drew Nash",
     value: 142500,
     stage: "Discovery",
-    winProbability: 25,
     closeDate: "2026-11-12",
     motion: "Pilot",
     nextStep: "Scope a 30 day pilot with the trust and safety group.",
-    lastActivityDays: 6,
+    stageChangedAt: "2026-08-30",
+    activity: [
+      { id: "deal-03-a1", type: "meeting", date: "2026-09-03" },
+      { id: "deal-03-a2", type: "decisionMaker", date: "2026-09-08" },
+    ],
   },
   {
     id: "deal-04",
@@ -103,11 +133,14 @@ export const DEALS: Deal[] = [
     owner: "Ava Brooks",
     value: 58000,
     stage: "Discovery",
-    winProbability: 30,
     closeDate: "2026-10-28",
     motion: "Upsell",
     nextStep: "Intro call with the admin lead.",
-    lastActivityDays: 2,
+    stageChangedAt: "2026-09-01",
+    activity: [
+      { id: "deal-04-a1", type: "meeting", date: "2026-09-08" },
+      { id: "deal-04-a2", type: "reply", date: "2026-09-12" },
+    ],
   },
   {
     id: "deal-05",
@@ -116,11 +149,11 @@ export const DEALS: Deal[] = [
     owner: "Ricky Brown",
     value: 310000,
     stage: "Discovery",
-    winProbability: 15,
     closeDate: "2027-01-15",
     motion: "New Logo",
     nextStep: "Map stakeholders across production and finance.",
-    lastActivityDays: 17,
+    stageChangedAt: "2026-08-15",
+    activity: [{ id: "deal-05-a1", type: "meeting", date: "2026-08-28" }],
   },
   {
     id: "deal-06",
@@ -129,11 +162,15 @@ export const DEALS: Deal[] = [
     owner: "Kate Chen",
     value: 228000,
     stage: "Evaluation",
-    winProbability: 42,
     closeDate: "2026-10-30",
     motion: "Co-Sell",
     nextStep: "Share the security whitepaper and set up a review.",
-    lastActivityDays: 4,
+    stageChangedAt: "2026-09-01",
+    activity: [
+      { id: "deal-06-a1", type: "meeting", date: "2026-09-04" },
+      { id: "deal-06-a2", type: "proposalViewed", date: "2026-09-08" },
+      { id: "deal-06-a3", type: "reply", date: "2026-09-10" },
+    ],
   },
   {
     id: "deal-07",
@@ -142,11 +179,15 @@ export const DEALS: Deal[] = [
     owner: "Noah Lee",
     value: 167000,
     stage: "Evaluation",
-    winProbability: 48,
     closeDate: "2026-10-16",
     motion: "Expansion",
     nextStep: "Run the sandbox evaluation with finance ops.",
-    lastActivityDays: 1,
+    stageChangedAt: "2026-08-29",
+    activity: [
+      { id: "deal-07-a1", type: "meeting", date: "2026-09-02" },
+      { id: "deal-07-a2", type: "decisionMaker", date: "2026-09-09" },
+      { id: "deal-07-a3", type: "reply", date: "2026-09-13" },
+    ],
   },
   {
     id: "deal-08",
@@ -155,11 +196,14 @@ export const DEALS: Deal[] = [
     owner: "Oliver Chan",
     value: 74000,
     stage: "Evaluation",
-    winProbability: 38,
     closeDate: "2026-09-29",
     motion: "Pilot",
     nextStep: "Collect pilot feedback from the support managers.",
-    lastActivityDays: 19,
+    stageChangedAt: "2026-08-12",
+    activity: [
+      { id: "deal-08-a1", type: "meeting", date: "2026-08-15" },
+      { id: "deal-08-a2", type: "unanswered", date: "2026-08-26" },
+    ],
   },
   {
     id: "deal-09",
@@ -168,11 +212,14 @@ export const DEALS: Deal[] = [
     owner: "James Taylor",
     value: 395000,
     stage: "Evaluation",
-    winProbability: 45,
     closeDate: "2026-11-30",
     motion: "Land & Expand",
     nextStep: "Demo to the operations steering committee.",
-    lastActivityDays: 5,
+    stageChangedAt: "2026-09-03",
+    activity: [
+      { id: "deal-09-a1", type: "meeting", date: "2026-09-05" },
+      { id: "deal-09-a2", type: "reply", date: "2026-09-09" },
+    ],
   },
   {
     id: "deal-10",
@@ -181,11 +228,14 @@ export const DEALS: Deal[] = [
     owner: "Chloe Park",
     value: 41000,
     stage: "Evaluation",
-    winProbability: 40,
     closeDate: "2026-09-26",
     motion: "Co-Sell",
     nextStep: "Confirm the listing requirements with partner team.",
-    lastActivityDays: 8,
+    stageChangedAt: "2026-08-25",
+    activity: [
+      { id: "deal-10-a1", type: "closePushed", date: "2026-09-02" },
+      { id: "deal-10-a2", type: "reply", date: "2026-09-06" },
+    ],
   },
   {
     id: "deal-11",
@@ -194,11 +244,15 @@ export const DEALS: Deal[] = [
     owner: "Mark Darnalds",
     value: 520000,
     stage: "Proposal",
-    winProbability: 58,
     closeDate: "2026-10-22",
     motion: "Expansion",
     nextStep: "Walk legal through the redlined proposal.",
-    lastActivityDays: 2,
+    stageChangedAt: "2026-09-01",
+    activity: [
+      { id: "deal-11-a1", type: "meeting", date: "2026-09-03" },
+      { id: "deal-11-a2", type: "proposalViewed", date: "2026-09-09" },
+      { id: "deal-11-a3", type: "reply", date: "2026-09-12" },
+    ],
   },
   {
     id: "deal-12",
@@ -207,11 +261,14 @@ export const DEALS: Deal[] = [
     owner: "Alex Santos",
     value: 285000,
     stage: "Proposal",
-    winProbability: 62,
     closeDate: "2026-09-30",
     motion: "Upsell",
     nextStep: "Present pricing options to the regional leads.",
-    lastActivityDays: 3,
+    stageChangedAt: "2026-08-31",
+    activity: [
+      { id: "deal-12-a1", type: "proposalViewed", date: "2026-09-08" },
+      { id: "deal-12-a2", type: "meeting", date: "2026-09-11" },
+    ],
   },
   {
     id: "deal-13",
@@ -220,11 +277,14 @@ export const DEALS: Deal[] = [
     owner: "Maria Keller",
     value: 176000,
     stage: "Proposal",
-    winProbability: 55,
     closeDate: "2026-10-09",
     motion: "Renewal",
     nextStep: "Revise the proposal with the volume discount.",
-    lastActivityDays: 16,
+    stageChangedAt: "2026-08-18",
+    activity: [
+      { id: "deal-13-a1", type: "proposalViewed", date: "2026-08-25" },
+      { id: "deal-13-a2", type: "unanswered", date: "2026-08-29" },
+    ],
   },
   {
     id: "deal-14",
@@ -233,11 +293,14 @@ export const DEALS: Deal[] = [
     owner: "Emma Green",
     value: 88000,
     stage: "Proposal",
-    winProbability: 60,
     closeDate: "2026-10-14",
     motion: "Upsell",
     nextStep: "Send the signed order form for review.",
-    lastActivityDays: 7,
+    stageChangedAt: "2026-09-02",
+    activity: [
+      { id: "deal-14-a1", type: "reply", date: "2026-09-05" },
+      { id: "deal-14-a2", type: "proposalViewed", date: "2026-09-07" },
+    ],
   },
   {
     id: "deal-15",
@@ -246,11 +309,15 @@ export const DEALS: Deal[] = [
     owner: "Lina Wong",
     value: 52000,
     stage: "Proposal",
-    winProbability: 50,
     closeDate: "2026-09-24",
     motion: "New Logo",
     nextStep: "Follow up on the pricing question from the CFO.",
-    lastActivityDays: 23,
+    stageChangedAt: "2026-08-05",
+    activity: [
+      { id: "deal-15-a1", type: "proposalViewed", date: "2026-08-10" },
+      { id: "deal-15-a2", type: "closePushed", date: "2026-08-18" },
+      { id: "deal-15-a3", type: "unanswered", date: "2026-08-22" },
+    ],
   },
   {
     id: "deal-16",
@@ -259,11 +326,14 @@ export const DEALS: Deal[] = [
     owner: "Sarah Nguyen",
     value: 640000,
     stage: "Procurement",
-    winProbability: 78,
     closeDate: "2026-09-28",
     motion: "Renewal",
     nextStep: "Finalise the vendor security questionnaire.",
-    lastActivityDays: 1,
+    stageChangedAt: "2026-08-30",
+    activity: [
+      { id: "deal-16-a1", type: "meeting", date: "2026-09-10" },
+      { id: "deal-16-a2", type: "reply", date: "2026-09-13" },
+    ],
   },
   {
     id: "deal-17",
@@ -272,11 +342,14 @@ export const DEALS: Deal[] = [
     owner: "Nia Jameson",
     value: 455000,
     stage: "Procurement",
-    winProbability: 82,
     closeDate: "2026-10-06",
     motion: "Land & Expand",
     nextStep: "Wait for procurement to return the MSA.",
-    lastActivityDays: 15,
+    stageChangedAt: "2026-08-15",
+    activity: [
+      { id: "deal-17-a1", type: "meeting", date: "2026-08-20" },
+      { id: "deal-17-a2", type: "unanswered", date: "2026-08-30" },
+    ],
   },
   {
     id: "deal-18",
@@ -285,11 +358,11 @@ export const DEALS: Deal[] = [
     owner: "Jamie Fox",
     value: 36000,
     stage: "Procurement",
-    winProbability: 85,
     closeDate: "2026-09-20",
     motion: "Upsell",
     nextStep: "Collect the purchase order number.",
-    lastActivityDays: 2,
+    stageChangedAt: "2026-09-05",
+    activity: [{ id: "deal-18-a1", type: "reply", date: "2026-09-12" }],
   },
   {
     id: "deal-19",
@@ -298,11 +371,14 @@ export const DEALS: Deal[] = [
     owner: "Kate Chen",
     value: 210000,
     stage: "Procurement",
-    winProbability: 74,
     closeDate: "2026-10-31",
     motion: "Co-Sell",
     nextStep: "Align on the billing contact and invoice schedule.",
-    lastActivityDays: 9,
+    stageChangedAt: "2026-09-02",
+    activity: [
+      { id: "deal-19-a1", type: "closePushed", date: "2026-09-03" },
+      { id: "deal-19-a2", type: "meeting", date: "2026-09-05" },
+    ],
   },
   {
     id: "deal-20",
@@ -311,11 +387,11 @@ export const DEALS: Deal[] = [
     owner: "Noah Lee",
     value: 120000,
     stage: "Closed Won",
-    winProbability: 100,
     closeDate: "2026-09-08",
     motion: "Renewal",
     nextStep: "Hand off to customer success for kickoff.",
-    lastActivityDays: 6,
+    stageChangedAt: "2026-09-08",
+    activity: [{ id: "deal-20-a1", type: "meeting", date: "2026-09-08" }],
   },
   {
     id: "deal-21",
@@ -324,11 +400,11 @@ export const DEALS: Deal[] = [
     owner: "Ava Brooks",
     value: 198000,
     stage: "Closed Won",
-    winProbability: 100,
     closeDate: "2026-09-02",
     motion: "Upsell",
     nextStep: "Schedule the admin training sessions.",
-    lastActivityDays: 12,
+    stageChangedAt: "2026-09-02",
+    activity: [{ id: "deal-21-a1", type: "meeting", date: "2026-09-02" }],
   },
   {
     id: "deal-22",
@@ -337,11 +413,11 @@ export const DEALS: Deal[] = [
     owner: "Ricky Brown",
     value: 134000,
     stage: "Closed Won",
-    winProbability: 100,
     closeDate: "2026-08-27",
     motion: "Expansion",
     nextStep: "Confirm the go-live date with the localization team.",
-    lastActivityDays: 18,
+    stageChangedAt: "2026-08-27",
+    activity: [{ id: "deal-22-a1", type: "meeting", date: "2026-08-27" }],
   },
   {
     id: "deal-23",
@@ -350,11 +426,11 @@ export const DEALS: Deal[] = [
     owner: "Oliver Chan",
     value: 47000,
     stage: "Closed Won",
-    winProbability: 100,
     closeDate: "2026-09-11",
     motion: "Upsell",
     nextStep: "Send the welcome pack to the events team.",
-    lastActivityDays: 3,
+    stageChangedAt: "2026-09-11",
+    activity: [{ id: "deal-23-a1", type: "meeting", date: "2026-09-11" }],
   },
   {
     id: "deal-24",
@@ -363,11 +439,11 @@ export const DEALS: Deal[] = [
     owner: "Hannah Mills",
     value: 112000,
     stage: "Closed Lost",
-    winProbability: 0,
     closeDate: "2026-09-05",
     motion: "New Logo",
     nextStep: "Revisit next fiscal year once budget reopens.",
-    lastActivityDays: 9,
+    stageChangedAt: "2026-09-05",
+    activity: [{ id: "deal-24-a1", type: "unanswered", date: "2026-09-05" }],
   },
   {
     id: "deal-25",
@@ -376,11 +452,11 @@ export const DEALS: Deal[] = [
     owner: "Drew Nash",
     value: 89000,
     stage: "Closed Lost",
-    winProbability: 0,
     closeDate: "2026-08-30",
     motion: "Pilot",
     nextStep: "Send a loss review summary to the team.",
-    lastActivityDays: 22,
+    stageChangedAt: "2026-08-30",
+    activity: [{ id: "deal-25-a1", type: "unanswered", date: "2026-08-23" }],
   },
   {
     id: "deal-26",
@@ -389,11 +465,11 @@ export const DEALS: Deal[] = [
     owner: "Chloe Park",
     value: 63000,
     stage: "Closed Lost",
-    winProbability: 0,
     closeDate: "2026-09-10",
     motion: "Land & Expand",
     nextStep: "Check in again in the new quarter.",
-    lastActivityDays: 4,
+    stageChangedAt: "2026-09-10",
+    activity: [{ id: "deal-26-a1", type: "unanswered", date: "2026-09-10" }],
   },
   {
     id: "deal-27",
@@ -402,11 +478,11 @@ export const DEALS: Deal[] = [
     owner: "Maria Keller",
     value: 210000,
     stage: "Closed Won",
-    winProbability: 100,
     closeDate: "2026-07-21",
     motion: "Upsell",
     nextStep: "Hand off to customer success for kickoff.",
-    lastActivityDays: 30,
+    stageChangedAt: "2026-07-21",
+    activity: [{ id: "deal-27-a1", type: "meeting", date: "2026-08-15" }],
   },
   {
     id: "deal-28",
@@ -415,11 +491,11 @@ export const DEALS: Deal[] = [
     owner: "James Taylor",
     value: 245000,
     stage: "Closed Won",
-    winProbability: 100,
     closeDate: "2026-08-14",
     motion: "New Logo",
     nextStep: "Schedule the admin training sessions.",
-    lastActivityDays: 20,
+    stageChangedAt: "2026-08-14",
+    activity: [{ id: "deal-28-a1", type: "meeting", date: "2026-08-25" }],
   },
   {
     id: "deal-29",
@@ -428,11 +504,11 @@ export const DEALS: Deal[] = [
     owner: "Mark Darnalds",
     value: 380000,
     stage: "Closed Won",
-    winProbability: 100,
     closeDate: "2026-08-05",
     motion: "Co-Sell",
     nextStep: "Confirm the billing contact and invoice schedule.",
-    lastActivityDays: 25,
+    stageChangedAt: "2026-08-05",
+    activity: [{ id: "deal-29-a1", type: "meeting", date: "2026-08-20" }],
   },
   {
     id: "deal-30",
@@ -441,11 +517,11 @@ export const DEALS: Deal[] = [
     owner: "Kate Chen",
     value: 164000,
     stage: "Closed Won",
-    winProbability: 100,
     closeDate: "2026-07-30",
     motion: "Expansion",
     nextStep: "Hand off to customer success for kickoff.",
-    lastActivityDays: 28,
+    stageChangedAt: "2026-07-30",
+    activity: [{ id: "deal-30-a1", type: "meeting", date: "2026-08-17" }],
   },
   {
     id: "deal-31",
@@ -454,11 +530,11 @@ export const DEALS: Deal[] = [
     owner: "Sarah Nguyen",
     value: 290000,
     stage: "Closed Won",
-    winProbability: 100,
     closeDate: "2026-09-03",
     motion: "Pilot",
     nextStep: "Book the pilot kickoff with the regional team.",
-    lastActivityDays: 8,
+    stageChangedAt: "2026-09-03",
+    activity: [{ id: "deal-31-a1", type: "meeting", date: "2026-09-06" }],
   },
   {
     id: "deal-32",
@@ -467,11 +543,11 @@ export const DEALS: Deal[] = [
     owner: "Nia Jameson",
     value: 175000,
     stage: "Closed Won",
-    winProbability: 100,
     closeDate: "2026-08-19",
     motion: "Upsell",
     nextStep: "Schedule the admin training sessions.",
-    lastActivityDays: 22,
+    stageChangedAt: "2026-08-19",
+    activity: [{ id: "deal-32-a1", type: "meeting", date: "2026-08-23" }],
   },
   {
     id: "deal-33",
@@ -480,11 +556,11 @@ export const DEALS: Deal[] = [
     owner: "Alex Santos",
     value: 128000,
     stage: "Closed Won",
-    winProbability: 100,
     closeDate: "2026-07-16",
     motion: "Renewal",
     nextStep: "Send the signed order form to finance.",
-    lastActivityDays: 34,
+    stageChangedAt: "2026-07-16",
+    activity: [{ id: "deal-33-a1", type: "meeting", date: "2026-08-11" }],
   },
   {
     id: "deal-34",
@@ -493,11 +569,11 @@ export const DEALS: Deal[] = [
     owner: "Emma Green",
     value: 96000,
     stage: "Closed Won",
-    winProbability: 100,
     closeDate: "2026-09-09",
     motion: "Land & Expand",
     nextStep: "Hand off to customer success for kickoff.",
-    lastActivityDays: 5,
+    stageChangedAt: "2026-09-09",
+    activity: [{ id: "deal-34-a1", type: "meeting", date: "2026-09-09" }],
   },
   {
     id: "deal-35",
@@ -506,11 +582,14 @@ export const DEALS: Deal[] = [
     owner: "Drew Nash",
     value: 88000,
     stage: "Procurement",
-    winProbability: 78,
     closeDate: "2026-09-25",
     motion: "Expansion",
     nextStep: "Confirm legal sign-off on the order form.",
-    lastActivityDays: 2,
+    stageChangedAt: "2026-09-04",
+    activity: [
+      { id: "deal-35-a1", type: "championLeft", date: "2026-09-09" },
+      { id: "deal-35-a2", type: "reply", date: "2026-09-12" },
+    ],
   },
   {
     id: "deal-36",
@@ -519,11 +598,14 @@ export const DEALS: Deal[] = [
     owner: "Grace Miller",
     value: 132000,
     stage: "Proposal",
-    winProbability: 55,
     closeDate: "2026-09-29",
     motion: "Co-Sell",
     nextStep: "Walk the buyer through the pricing options.",
-    lastActivityDays: 4,
+    stageChangedAt: "2026-09-01",
+    activity: [
+      { id: "deal-36-a1", type: "meeting", date: "2026-09-05" },
+      { id: "deal-36-a2", type: "reply", date: "2026-09-10" },
+    ],
   },
   {
     id: "deal-37",
@@ -532,10 +614,10 @@ export const DEALS: Deal[] = [
     owner: "Ricky Brown",
     value: 64000,
     stage: "Evaluation",
-    winProbability: 35,
     closeDate: "2026-09-30",
     motion: "Upsell",
     nextStep: "Share the trial results with the champion.",
-    lastActivityDays: 6,
+    stageChangedAt: "2026-09-04",
+    activity: [{ id: "deal-37-a1", type: "reply", date: "2026-09-08" }],
   },
 ];

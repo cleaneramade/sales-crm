@@ -15,12 +15,14 @@ import {
 } from "@/components/_ui/command";
 import { CommandCompanyRow, CommandTableHeader } from "./command-table";
 import { useCompaniesStore } from "@/stores/companies-store";
+import { useCompanyWins } from "@/stores/deals-store";
 import PlusIcon from "@/public/assets/images/_common/plus.svg";
 
 export default function CommandMenu() {
   const open = useCompaniesStore((state) => state.searchOpen);
   const setOpen = useCompaniesStore((state) => state.setSearchOpen);
   const companies = useCompaniesStore((state) => state.companies);
+  const wins = useCompanyWins();
   const openDetail = useCompaniesStore((state) => state.openDetail);
   const setNewCompanyOpen = useCompaniesStore(
     (state) => state.setNewCompanyOpen,
@@ -77,6 +79,7 @@ export default function CommandMenu() {
               <CommandCompanyRow
                 key={company.id}
                 company={company}
+                win={wins.get(company.id) ?? null}
                 onSelect={() => run(() => openDetail(company.id))}
               />
             ))}

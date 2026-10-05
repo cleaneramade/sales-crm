@@ -16,8 +16,9 @@ import {
 import DetailSection from "../detail/detail-section";
 import ProfileAccount from "./profile-account";
 import { CURRENT_USER, profileByName } from "@/data/companies";
-import { ALL_OWNERS, formatMoney } from "@/lib/companies";
+import { ALL_OWNERS, averageWin, formatMoney } from "@/lib/companies";
 import { useCompaniesStore } from "@/stores/companies-store";
+import { useCompanyWins } from "@/stores/deals-store";
 import UsersIcon from "@/public/assets/images/companies/sidebar/users.svg";
 import XIcon from "@/public/assets/images/companies/detail/x.svg";
 import MailIcon from "@/public/assets/images/companies/detail/mail-04.svg";
@@ -29,6 +30,7 @@ export default function Profile() {
   const profileName = useCompaniesStore((state) => state.profileName);
   const profileOpen = useCompaniesStore((state) => state.profileOpen);
   const companies = useCompaniesStore((state) => state.companies);
+  const wins = useCompanyWins();
   const closeProfile = useCompaniesStore((state) => state.closeProfile);
   const openDetail = useCompaniesStore((state) => state.openDetail);
   const setOwner = useCompaniesStore((state) => state.setOwner);
@@ -49,18 +51,13 @@ export default function Profile() {
     (sum, company) => sum + company.pipelineValue,
     0,
   );
-  const avgWin = accounts.length
-    ? Math.round(
-        accounts.reduce((sum, company) => sum + company.winProbability, 0) /
-          accounts.length,
-      )
-    : 0;
+  const avgWin = averageWin(accounts, wins);
 
   const stats = [
     { label: "Accounts", value: String(accounts.length) },
     { label: "Open deals", value: String(openDeals) },
     { label: "Pipeline", value: `$${formatMoney(pipeline)}` },
-    { label: "Avg. win", value: `${avgWin}%` },
+    { label: "Avg. win", value: avgWin === null ? "—" : `${avgWin}%` },
   ];
 
   function showAccounts() {
@@ -160,6 +157,7 @@ export default function Profile() {
                     <ProfileAccount
                       key={company.id}
                       company={company}
+                      win={wins.get(company.id) ?? null}
                       onOpen={() => openDetail(company.id)}
                     />
                   ))}

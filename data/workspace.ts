@@ -60,21 +60,78 @@ export const SHORTCUTS = [
   { keys: ["Esc"], label: "Close a panel or dialog" },
 ];
 
-export const HELP_TOPICS = [
+export type HelpTopic = { question: string; answer: string };
+
+export const HELP_SECTIONS: { title: string; topics: HelpTopic[] }[] = [
   {
-    question: "How do I add a company?",
-    answer:
-      "Use New Company in the toolbar, or search with Ctrl K and pick New Company.",
+    title: "Win chance",
+    topics: [
+      {
+        question: "How is a deal's win chance worked out?",
+        answer:
+          "Every stage starts at a set number: Discovery 10%, Evaluation 25%, Proposal 50% and Procurement 75%. What happens on the deal then moves it up or down. Nobody types it in.",
+      },
+      {
+        question: "What raises it?",
+        answer:
+          "A meeting booked adds 10%, a decision-maker joining adds 10%, a reply adds 5% and the proposal being opened adds 5%.",
+      },
+      {
+        question: "What lowers it?",
+        answer:
+          "A pushed close date takes off 10%, an unanswered email 5% and the main contact leaving 20%. Two weeks with no activity takes off 15% and marks the deal Stale.",
+      },
+      {
+        question: "Why did a number change on its own?",
+        answer:
+          "Something was logged on the deal, or two weeks passed with no activity. Open the deal and read Why this number to see each reason.",
+      },
+      {
+        question: "Why did it reset when I moved the deal?",
+        answer:
+          "Each stage starts fresh. Only activity since the deal reached its current stage counts, so old wins and warnings don't follow it forever.",
+      },
+      {
+        question: "Can I set the number myself?",
+        answer:
+          "Yes. Open the deal and use Override. It shows a Manual mark so everyone knows it's a judgment call, and goes back to automatic when the stage changes.",
+      },
+      {
+        question: "How is a company's win chance worked out?",
+        answer:
+          "It's the average of its open deals, with bigger deals counting more. A company with no open deals shows a dash.",
+      },
+      {
+        question: "What about won and lost deals?",
+        answer:
+          "Won deals count as 100% and lost deals as 0%. They no longer move.",
+      },
+      {
+        question: "How does Forecast use it?",
+        answer:
+          "Deals in Procurement or at 70% and up count as Commit. Deals in Proposal or at 40% and up count as Best Case. The rest are Pipeline. You can change a deal's category on the Forecast page.",
+      },
+    ],
   },
   {
-    question: "How do I see one rep's accounts?",
-    answer:
-      "Click an owner's name, then Filter table by owner in their profile.",
-  },
-  {
-    question: "Can I export what I see?",
-    answer:
-      "Export downloads the companies that match your current filters as a CSV.",
+    title: "Getting around",
+    topics: [
+      {
+        question: "How do I add a company?",
+        answer:
+          "Use New Company in the toolbar, or search with Ctrl K and pick New Company.",
+      },
+      {
+        question: "How do I see one rep's accounts?",
+        answer:
+          "Click an owner's name, then Filter table by owner in their profile.",
+      },
+      {
+        question: "Can I export what I see?",
+        answer:
+          "Export downloads what matches your current filters as a spreadsheet file.",
+      },
+    ],
   },
 ];
 

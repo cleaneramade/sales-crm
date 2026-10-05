@@ -11,16 +11,22 @@ import {
   DropdownMenuTrigger,
 } from "@/components/_ui/dropdown-menu";
 import type { Company } from "@/data/companies";
-import { CALCULATIONS, NO_CALCULATION, calculate } from "@/lib/companies";
+import {
+  CALCULATIONS,
+  NO_CALCULATION,
+  calculate,
+  type CompanyWins,
+} from "@/lib/companies";
 import PlusIcon from "@/public/assets/images/_common/plus.svg";
 
 type TableFooterProps = {
   companies: Company[];
+  wins: CompanyWins;
 };
 
 const DEFAULT_SLOTS = ["sumPipeline", "avgWin", NO_CALCULATION];
 
-export default function TableFooter({ companies }: TableFooterProps) {
+export default function TableFooter({ companies, wins }: TableFooterProps) {
   const [slots, setSlots] = useState(DEFAULT_SLOTS);
 
   function setSlot(index: number, value: string) {
@@ -48,7 +54,7 @@ export default function TableFooter({ companies }: TableFooterProps) {
                 {calculation ? (
                   <>
                     <span className="text-foreground tabular-nums">
-                      {calculate(slot, companies)}
+                      {calculate(slot, companies, wins)}
                     </span>
                     <span className="text-muted-foreground truncate">
                       {calculation.label}

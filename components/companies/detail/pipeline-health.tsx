@@ -1,27 +1,32 @@
 import SegmentBar from "@/components/_common/segment-bar";
-import type { Company } from "@/data/companies";
 import { companyHealth } from "@/lib/companies";
 
 type PipelineHealthProps = {
-  company: Company;
+  win: number | null;
 };
 
-export default function PipelineHealth({ company }: PipelineHealthProps) {
-  const health = companyHealth(company);
+export default function PipelineHealth({ win }: PipelineHealthProps) {
+  const health = companyHealth(win);
   const stages = [
     { label: "Discovery", value: health.discovery, tone: "danger" as const },
     { label: "Evaluation", value: health.evaluation, tone: "warning" as const },
-    { label: "Procurement", value: health.procurement, tone: "success" as const },
+    {
+      label: "Procurement",
+      value: health.procurement,
+      tone: "success" as const,
+    },
   ];
 
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-col gap-1.5">
         <span className="block text-[28px] leading-none font-semibold">
-          {company.winProbability}%
+          {win === null ? "—" : `${win}%`}
         </span>
-        <span className="caption-style block text-soft">
-          Win probability across all open deals
+        <span className="caption-style text-soft block">
+          {win === null
+            ? "No open deals yet"
+            : "Win probability across all open deals"}
         </span>
       </div>
       <div className="flex flex-col gap-3">
@@ -29,7 +34,7 @@ export default function PipelineHealth({ company }: PipelineHealthProps) {
           <div key={stage.label} className="flex flex-col gap-2">
             <div className="caption-style flex items-center justify-between">
               <span>{stage.label}</span>
-              <span>{stage.value}%</span>
+              <span>{win === null ? "—" : `${stage.value}%`}</span>
             </div>
             <SegmentBar
               percent={stage.value}

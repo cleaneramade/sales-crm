@@ -19,7 +19,7 @@ import SegmentBar from "@/components/_common/segment-bar";
 import { TAG_TONES, ownerByName, type Company } from "@/data/companies";
 import { DEAL_STAGES, type Deal, type DealStage } from "@/data/deals";
 import { formatDate, formatMoney } from "@/lib/companies";
-import { dealWin, isStale } from "@/lib/deals";
+import { dealWin, isManualWin, isStale, lastActivityDays } from "@/lib/deals";
 import { useDealsStore } from "@/stores/deals-store";
 import CalendarIcon from "@/public/assets/images/_common/calendar.svg";
 import ClockIcon from "@/public/assets/images/companies/detail/clock.svg";
@@ -126,6 +126,11 @@ export default function DealCard({
 
       <div className="caption-style flex items-center gap-2">
         <SegmentBar percent={win} className="flex-1" />
+        {isManualWin(deal) && (
+          <Tag tone="neutral" size="sm">
+            Manual
+          </Tag>
+        )}
         <span className="w-[4ch] text-right tabular-nums">{win}%</span>
       </div>
 
@@ -140,7 +145,7 @@ export default function DealCard({
         {isStale(deal) && (
           <span
             className="text-warning flex shrink-0 items-center gap-1"
-            title={`No activity for ${deal.lastActivityDays} days`}
+            title={`No activity for ${lastActivityDays(deal)} days`}
           >
             <ClockIcon aria-hidden className="size-3" />
             Stale

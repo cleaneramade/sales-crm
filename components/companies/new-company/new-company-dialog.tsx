@@ -21,8 +21,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/_ui/select";
-import { Slider } from "@/components/_ui/slider";
-import SegmentBar from "@/components/_common/segment-bar";
 import FormSection from "./form-section";
 import LogoUpload from "./logo-upload";
 import {
@@ -48,7 +46,6 @@ type FormState = {
   owner: string;
   pipelineValue: string;
   openDeals: string;
-  winProbability: number;
   interactionDate: string;
   interactionType: string;
 };
@@ -61,7 +58,6 @@ const EMPTY_FORM: FormState = {
   owner: OWNERS[0].name,
   pipelineValue: "",
   openDeals: "1",
-  winProbability: 50,
   interactionDate: TODAY,
   interactionType: INTERACTION_TYPES[0],
 };
@@ -95,7 +91,6 @@ export default function NewCompanyDialog() {
       owner: form.owner,
       openDeals: Math.max(0, Math.round(Number(form.openDeals) || 0)),
       pipelineValue: Math.max(0, Math.round(Number(form.pipelineValue) || 0)),
-      winProbability: form.winProbability,
       trend: DEFAULT_TREND,
       lastInteraction: {
         date: form.interactionDate || TODAY,
@@ -250,35 +245,6 @@ export default function NewCompanyDialog() {
                 />
               </Field>
             </div>
-
-            <Field
-              label="Win probability"
-              htmlFor="company-win"
-              trailing={
-                <span className="caption-style text-foreground tabular-nums">
-                  {form.winProbability}%
-                </span>
-              }
-            >
-              <div className="flex flex-col gap-3">
-                <Slider
-                  id="company-win"
-                  aria-label="Win probability"
-                  min={0}
-                  max={100}
-                  step={1}
-                  value={[form.winProbability]}
-                  onValueChange={([value]) => update("winProbability", value)}
-                />
-                <SegmentBar
-                  percent={form.winProbability}
-                  segments={40}
-                  className="h-3 w-full border border-white/4 px-px"
-                  segmentClassName="h-2"
-                  trackClassName="bg-white/8"
-                />
-              </div>
-            </Field>
           </FormSection>
 
           <FormSection title="Last interaction">

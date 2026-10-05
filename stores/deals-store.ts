@@ -1,7 +1,20 @@
+import { useMemo } from "react";
 import { create } from "zustand";
-import { DEALS, type Deal, type DealStage } from "@/data/deals";
+import {
+  DEALS,
+  type Deal,
+  type DealActivityType,
+  type DealStage,
+} from "@/data/deals";
 import type { ForecastCategory } from "@/data/forecast";
-import { DEFAULT_DEAL_FILTERS, type DealFilters } from "@/lib/deals";
+import { TODAY } from "@/lib/companies";
+import {
+  CLOSE_PUSH_DAYS,
+  DEFAULT_DEAL_FILTERS,
+  addDays,
+  companyWinMap,
+  type DealFilters,
+} from "@/lib/deals";
 
 type DealsState = DealFilters & {
   deals: Deal[];
@@ -19,6 +32,8 @@ type DealsState = DealFilters & {
   moveDeal: (id: string, stage: DealStage) => void;
   addDeal: (deal: Deal) => void;
   setCategory: (id: string, category: ForecastCategory) => void;
+  logActivity: (id: string, type: DealActivityType) => void;
+  setWinOverride: (id: string, win: number | null) => void;
 };
 
 export const useDealsStore = create<DealsState>((set) => ({
@@ -38,7 +53,14 @@ export const useDealsStore = create<DealsState>((set) => ({
   moveDeal: (id, stage) =>
     set((state) => ({
       deals: state.deals.map((deal) =>
-        deal.id === id ? { ...deal, stage } : deal,
+        deal.id === id && deal.stage !== stage
+          ? {
+              ...deal,
+              stage,
+              stageChangedAt: TODAY,
+              winOverride: undefined,
+            }
+          : deal,
       ),
     })),
   addDeal: (deal) =>
@@ -52,4 +74,37 @@ export const useDealsStore = create<DealsState>((set) => ({
         deal.id === id ? { ...deal, category } : deal,
       ),
     })),
+  logActivity: (id, type) =>
+    set((state) => ({
+      deals: state.deals.map((deal) =>
+        deal.id === id
+          ? {
+              ...deal,
+              closeDate:
+                type === "closePushed"
+                  ? addDays(deal.closeDate, CLOSE_PUSH_DAYS)
+                  : deal.closeDate,
+              activity: [
+                ...deal.activity,
+                {
+                  id: `${deal.id}-a${deal.activity.length + 1}-${Date.now()}`,
+                  type,
+                  date: TODAY,
+                },
+              ],
+            }
+          : deal,
+      ),
+    })),
+  setWinOverride: (id, win) =>
+    set((state) => ({
+      deals: state.deals.map((deal) =>
+        deal.id === id ? { ...deal, winOverride: win ?? undefined } : deal,
+      ),
+    })),
 }));
+
+export function useCompanyWins() {
+  const deals = useDealsStore((state) => state.deals);
+  return useMemo(() => companyWinMap(deals), [deals]);
+}

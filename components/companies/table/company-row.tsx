@@ -22,6 +22,7 @@ import DotsIcon from "@/public/assets/images/companies/table/dots-horizontal.svg
 
 type CompanyRowProps = {
   company: Company;
+  win: number | null;
   selected: boolean;
   active: boolean;
   onToggle: () => void;
@@ -39,6 +40,7 @@ function stop(event: MouseEvent) {
 
 export default function CompanyRow({
   company,
+  win,
   selected,
   active,
   onToggle,
@@ -106,8 +108,10 @@ export default function CompanyRow({
       </TableCell>
       <TableCell role="cell" className={cellClass("winProbability")}>
         <span className="flex items-center gap-2">
-          <SegmentBar percent={company.winProbability} className="w-[74px]" />
-          <span className="w-[4ch] text-right">{company.winProbability}%</span>
+          <SegmentBar percent={win ?? 0} className="w-[74px]" />
+          <span className="w-[4ch] text-right">
+            {win === null ? "—" : `${win}%`}
+          </span>
         </span>
       </TableCell>
       <TableCell role="cell" className={cellClass("trend")}>
