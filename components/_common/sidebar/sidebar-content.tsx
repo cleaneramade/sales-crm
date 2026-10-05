@@ -37,8 +37,6 @@ import UserPlusIcon from "@/public/assets/images/companies/sidebar/user-plus.svg
 import MessageQuestionIcon from "@/public/assets/images/companies/sidebar/message-question.svg";
 import WalletIcon from "@/public/assets/images/companies/sidebar/wallet.svg";
 
-const BASE_COMPANY_COUNT = 223;
-
 export default function SidebarContent() {
   const companyCount = useCompaniesStore((state) => state.companies.length);
   const contactCount = useContactsStore((state) => state.contacts.length);
@@ -88,7 +86,7 @@ export default function SidebarContent() {
               icon={BuildingIcon}
               label="Companies"
               href={ROUTES.companies.path}
-              count={BASE_COMPANY_COUNT + companyCount}
+              count={companyCount}
             />
             <SidebarNavItem
               icon={ClipboardIcon}
