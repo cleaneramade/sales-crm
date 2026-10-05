@@ -4,8 +4,9 @@ import { useMemo } from "react";
 import Button from "@/components/_ui/button";
 import Tag from "@/components/_ui/tag";
 import ContactInitials from "@/components/contacts/contact-initials";
-import { CONTACT_ROLE_TONES } from "@/lib/contacts";
-import { useContactsStore } from "@/stores/contacts-store";
+import ContactReach from "@/components/contacts/contact-reach";
+import { CONTACT_ROLE_TONES, contactSummaryFor } from "@/lib/contacts";
+import { useContactSummaries, useContactsStore } from "@/stores/contacts-store";
 
 type CompanyPeopleProps = {
   companyId: string;
@@ -17,6 +18,7 @@ export default function CompanyPeople({
   onOpenContact,
 }: CompanyPeopleProps) {
   const contacts = useContactsStore((state) => state.contacts);
+  const summaries = useContactSummaries();
   const people = useMemo(
     () => contacts.filter((contact) => contact.companyId === companyId),
     [contacts, companyId],
@@ -31,7 +33,7 @@ export default function CompanyPeople({
   return (
     <ul className="divide-line-strong flex flex-col divide-y">
       {people.map((contact) => (
-        <li key={contact.id}>
+        <li key={contact.id} className="flex items-center gap-2">
           <Button
             variant="item"
             size="none"
@@ -51,6 +53,12 @@ export default function CompanyPeople({
               {contact.role}
             </Tag>
           </Button>
+          <ContactReach
+            contact={contact}
+            left={contactSummaryFor(summaries, contact.id).left}
+            linkedin={false}
+            className="shrink-0"
+          />
         </li>
       ))}
     </ul>

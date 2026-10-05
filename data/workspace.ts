@@ -172,6 +172,11 @@ export const HELP_SECTIONS: { title: string; topics: HelpTopic[] }[] = [
           "Each contact belongs to a company and is linked to some of its deals. Add one with New Contact, or search with Ctrl K. Last touch and engagement come from the activity logged with them on the Deals Board.",
       },
       {
+        question: "How do I reach a contact?",
+        answer:
+          "Email, Call and LinkedIn buttons sit on the contact row and in the contact panel. They open your email app, your phone or LinkedIn. Logging the conversation is still done with Log activity.",
+      },
+      {
         question: "What happens when I add a decision maker?",
         answer:
           "Choose a deal when you add them with the Decision maker role. It logs Decision-maker added on that deal, which adds 10% to its win chance. Changing an existing contact to Decision maker does the same on their first open deal.",

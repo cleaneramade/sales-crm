@@ -88,6 +88,24 @@ export function contactInitials(name: string) {
     .join("");
 }
 
+export const CONTACT_LEFT_NOTE =
+  "Left the company — details may be out of date";
+
+export function contactLinkedIn(contact: Contact) {
+  const slug = contact.name
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  return slug ? `https://www.linkedin.com/in/${slug}` : "";
+}
+
+export function contactPhoneHref(phone: string) {
+  const digits = phone.replace(/[^+\d]/g, "");
+  return digits ? `tel:${digits}` : "";
+}
+
 export function contactSummaryMap(contacts: Contact[], deals: Deal[]) {
   const dealById = new Map(deals.map((deal) => [deal.id, deal]));
   const summaries = new Map<string, ContactSummary>();

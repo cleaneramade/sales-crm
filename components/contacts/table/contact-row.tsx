@@ -6,6 +6,7 @@ import { TableCell, TableRow } from "@/components/_ui/table";
 import SegmentBar from "@/components/_common/segment-bar";
 import CompanyMark from "@/components/activities/company-mark";
 import ContactInitials from "../contact-initials";
+import ContactReach from "../contact-reach";
 import type { Company } from "@/data/companies";
 import type { Contact } from "@/data/contacts";
 import { formatDate, formatMoney } from "@/lib/companies";
@@ -135,6 +136,9 @@ export default function ContactRow({
         ) : (
           <span className="text-muted-foreground">—</span>
         )}
+      </TableCell>
+      <TableCell role="cell" className={cellClass("reach")} onClick={stop}>
+        <ContactReach contact={contact} left={summary.left} />
       </TableCell>
       <TableCell role="cell" className={cellClass("action")} onClick={stop}>
         <Button

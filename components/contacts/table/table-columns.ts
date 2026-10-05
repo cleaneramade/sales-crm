@@ -10,13 +10,14 @@ export const TABLE_COLUMNS = [
     className: "justify-end tabular-nums",
   },
   { key: "lastTouch", label: "Last Touch", className: "justify-start" },
+  { key: "reach", label: "Reach out", className: "justify-center" },
   { key: "action", label: "Action", className: "justify-center" },
 ] as const;
 
 export type TableColumnKey = (typeof TABLE_COLUMNS)[number]["key"];
 
 export const TABLE_GRID_CLASS =
-  "grid min-w-max grid-cols-[repeat(8,max-content)] justify-between";
+  "grid min-w-max grid-cols-[repeat(9,max-content)] justify-between";
 
 export const TABLE_ROW_CLASS = "col-span-full grid grid-cols-subgrid";
 

@@ -22,12 +22,15 @@ import {
 import Tag from "@/components/_ui/tag";
 import DetailSection from "@/components/companies/detail/detail-section";
 import ContactInitials from "../contact-initials";
+import CopyButton from "../copy-button";
+import ContactActions from "./contact-actions";
 import { CONTACT_ROLES, type ContactRole } from "@/data/contacts";
 import { formatDate, formatMoney } from "@/lib/companies";
 import {
   CONTACT_ROLE_TONES,
   contactDeals,
   contactEvents,
+  contactPhoneHref,
   contactSummaryFor,
 } from "@/lib/contacts";
 import { ACTIVITY_EFFECTS, isOpenStage } from "@/lib/deals";
@@ -134,26 +137,30 @@ export default function ContactDetail() {
 
         {contact && summary && (
           <ScrollArea className="min-h-0 flex-1">
-            <div className="flex items-start gap-3 p-5 shadow-[inset_0_-1px_0_var(--line-strong)]">
-              <ContactInitials name={contact.name} size="lg" />
-              <div className="flex min-w-0 flex-col gap-3">
-                <div className="flex min-w-0 flex-col gap-1.5">
-                  <h2 className="truncate">{contact.name}</h2>
-                  <span className="caption-style text-soft">
-                    {contact.title}
-                  </span>
-                </div>
-                <div className="flex flex-wrap items-center gap-[3px]">
-                  <Tag tone={CONTACT_ROLE_TONES[contact.role]} size="sm">
-                    {contact.role}
-                  </Tag>
-                  {summary.left && (
-                    <Tag tone="neutral" size="sm">
-                      Left company
+            <div className="flex flex-col gap-4 p-5 shadow-[inset_0_-1px_0_var(--line-strong)]">
+              <div className="flex items-start gap-3">
+                <ContactInitials name={contact.name} size="lg" />
+                <div className="flex min-w-0 flex-col gap-3">
+                  <div className="flex min-w-0 flex-col gap-1.5">
+                    <h2 className="truncate">{contact.name}</h2>
+                    <span className="caption-style text-soft">
+                      {contact.title}
+                      {company && ` · ${company.name}`}
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-[3px]">
+                    <Tag tone={CONTACT_ROLE_TONES[contact.role]} size="sm">
+                      {contact.role}
                     </Tag>
-                  )}
+                    {summary.left && (
+                      <Tag tone="neutral" size="sm">
+                        Left company
+                      </Tag>
+                    )}
+                  </div>
                 </div>
               </div>
+              <ContactActions contact={contact} left={summary.left} />
             </div>
 
             <DetailSection title="Contact">
@@ -170,22 +177,28 @@ export default function ContactDetail() {
                   </Button>
                 )}
                 {contact.email && (
-                  <a
-                    href={`mailto:${contact.email}`}
-                    className="hover:text-foreground flex items-center gap-1"
-                  >
-                    <MailIcon aria-hidden className="text-soft size-3" />
-                    {contact.email}
-                  </a>
+                  <span className="flex items-center gap-1">
+                    <a
+                      href={`mailto:${contact.email}`}
+                      className="hover:text-foreground flex items-center gap-1"
+                    >
+                      <MailIcon aria-hidden className="text-soft size-3" />
+                      {contact.email}
+                    </a>
+                    <CopyButton value={contact.email} label="Copy email" />
+                  </span>
                 )}
                 {contact.phone && (
-                  <a
-                    href={`tel:${contact.phone.replace(/[^+\d]/g, "")}`}
-                    className="hover:text-foreground flex items-center gap-1"
-                  >
-                    <PhoneIcon aria-hidden className="text-soft size-3" />
-                    {contact.phone}
-                  </a>
+                  <span className="flex items-center gap-1">
+                    <a
+                      href={contactPhoneHref(contact.phone)}
+                      className="hover:text-foreground flex items-center gap-1"
+                    >
+                      <PhoneIcon aria-hidden className="text-soft size-3" />
+                      {contact.phone}
+                    </a>
+                    <CopyButton value={contact.phone} label="Copy phone" />
+                  </span>
                 )}
               </div>
             </DetailSection>
