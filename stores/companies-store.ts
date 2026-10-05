@@ -3,6 +3,8 @@ import { COMPANIES, type Company, type SortKey } from "@/data/companies";
 import { NOTIFICATIONS } from "@/data/notifications";
 import { DEFAULT_FILTERS } from "@/lib/companies";
 
+export type AppDialog = "invite" | "help" | "billing";
+
 type CompaniesState = {
   companies: Company[];
   sortBy: SortKey;
@@ -18,7 +20,8 @@ type CompaniesState = {
   sidebarOpen: boolean;
   searchOpen: boolean;
   unreadNotificationIds: string[];
-  activeTab: string;
+  appDialog: AppDialog | null;
+  planId: string | null;
   setSortBy: (sortBy: SortKey) => void;
   setOwner: (owner: string) => void;
   setStage: (stage: string) => void;
@@ -35,7 +38,8 @@ type CompaniesState = {
   setSearchOpen: (open: boolean) => void;
   markNotificationRead: (id: string) => void;
   markAllNotificationsRead: () => void;
-  setActiveTab: (tab: string) => void;
+  setAppDialog: (dialog: AppDialog | null) => void;
+  setPlanId: (planId: string) => void;
   addCompany: (company: Company) => void;
 };
 
@@ -53,7 +57,8 @@ export const useCompaniesStore = create<CompaniesState>((set) => ({
   unreadNotificationIds: NOTIFICATIONS.filter((item) => item.unread).map(
     (item) => item.id,
   ),
-  activeTab: "companies",
+  appDialog: null,
+  planId: null,
   setSortBy: (sortBy) => set({ sortBy }),
   setOwner: (owner) => set({ owner }),
   setStage: (stage) => set({ stage }),
@@ -82,7 +87,8 @@ export const useCompaniesStore = create<CompaniesState>((set) => ({
       ),
     })),
   markAllNotificationsRead: () => set({ unreadNotificationIds: [] }),
-  setActiveTab: (activeTab) => set({ activeTab }),
+  setAppDialog: (appDialog) => set({ appDialog, sidebarOpen: false }),
+  setPlanId: (planId) => set({ planId }),
   addCompany: (company) =>
     set((state) => ({
       companies: [company, ...state.companies],

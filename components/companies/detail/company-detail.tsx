@@ -40,6 +40,7 @@ export default function CompanyDetail() {
   const companies = useCompaniesStore((state) => state.companies);
   const closeDetail = useCompaniesStore((state) => state.closeDetail);
   const openProfile = useCompaniesStore((state) => state.openProfile);
+  const setAppDialog = useCompaniesStore((state) => state.setAppDialog);
   const [trendWindow, setTrendWindow] = useState(TREND_WINDOWS[1]);
   const [scoreWindow, setScoreWindow] = useState(TREND_WINDOWS[1]);
 
@@ -142,7 +143,7 @@ export default function CompanyDetail() {
                 />
               }
             >
-              <ActivityTrend company={company} />
+              <ActivityTrend company={company} range={trendWindow} />
             </DetailSection>
 
             <DetailSection
@@ -168,7 +169,12 @@ export default function CompanyDetail() {
         )}
 
         <SheetFooter>
-          <Button variant="link" size="none" href="#" className="lead-style">
+          <Button
+            variant="link"
+            size="none"
+            className="lead-style"
+            onClick={() => setAppDialog("help")}
+          >
             Need help? Ask us.
           </Button>
           <div className="flex items-center gap-2">

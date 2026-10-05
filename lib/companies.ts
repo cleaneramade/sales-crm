@@ -109,14 +109,54 @@ export function companyHealth(company: Company) {
   };
 }
 
-export function companyActivity(company: Company) {
+export const NO_CALCULATION = "none";
+
+export const CALCULATIONS = [
+  { value: "sumPipeline", label: "Sum of pipeline" },
+  { value: "avgPipeline", label: "Avg pipeline value" },
+  { value: "maxPipeline", label: "Largest pipeline" },
+  { value: "sumDeals", label: "Total open deals" },
+  { value: "avgWin", label: "Avg win probability" },
+];
+
+export function calculate(kind: string, companies: Company[]) {
+  const count = companies.length;
+  const pipeline = companies.reduce((sum, item) => sum + item.pipelineValue, 0);
+  const deals = companies.reduce((sum, item) => sum + item.openDeals, 0);
+  const win = companies.reduce((sum, item) => sum + item.winProbability, 0);
+
+  switch (kind) {
+    case "sumPipeline":
+      return `$${formatMoney(pipeline)}`;
+    case "avgPipeline":
+      return `$${formatMoney(count ? Math.round(pipeline / count) : 0)}`;
+    case "maxPipeline":
+      return `$${formatMoney(Math.max(0, ...companies.map((item) => item.pipelineValue)))}`;
+    case "sumDeals":
+      return formatMoney(deals);
+    case "avgWin":
+      return `${count ? Math.round(win / count) : 0}%`;
+    default:
+      return "";
+  }
+}
+
+const WINDOW_SCALE: Record<string, number> = {
+  "Last 7 Days": 0.25,
+  "Last 30 Days": 1,
+  "Last 90 Days": 2.75,
+};
+
+export function companyActivity(company: Company, range = "Last 30 Days") {
   const deals = company.openDeals;
+  const scale = WINDOW_SCALE[range] ?? 1;
+  const scaled = (value: number) => Math.max(0, Math.round(value * scale));
   return {
-    total: deals * 15,
-    touches: deals * 4,
-    emails: deals + 4,
-    meetings: Math.ceil(deals / 2),
-    calls: deals + 1,
+    total: scaled(deals * 15),
+    touches: scaled(deals * 4),
+    emails: scaled(deals + 4),
+    meetings: scaled(Math.ceil(deals / 2)),
+    calls: scaled(deals + 1),
   };
 }
 
