@@ -147,7 +147,7 @@ export default function LogActivityDialog() {
     if (next.deal) return dealRef.current?.focus();
     if (next.date) return dateRef.current?.focus();
 
-    if (pushing) {
+    if (current.type === "closePushed") {
       const dealId = current.dealId;
       handoff.run(
         () => handleOpenChange(false),

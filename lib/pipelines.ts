@@ -14,7 +14,7 @@ export type PipelineSummary = {
   staleCount: number;
 };
 
-export function regionDeals(deals: Deal[], region: Region) {
+function regionDeals(deals: Deal[], region: Region) {
   return deals.filter((deal) => deal.region === region);
 }
 

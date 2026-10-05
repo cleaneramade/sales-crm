@@ -7,7 +7,7 @@ import DealColumn from "./deal-column";
 import { DEAL_STAGES, type DealStage, type Region } from "@/data/deals";
 import { dealsInStage, visibleDeals } from "@/lib/deals";
 import { useCompaniesStore } from "@/stores/companies-store";
-import { useDealsStore } from "@/stores/deals-store";
+import { useDealFilters, useDealsStore } from "@/stores/deals-store";
 
 type DealsBoardProps = {
   region?: Region;
@@ -15,11 +15,13 @@ type DealsBoardProps = {
 
 export default function DealsBoard({ region }: DealsBoardProps) {
   const deals = useDealsStore((state) => state.deals);
-  const sortBy = useDealsStore((state) => state.sortBy);
-  const owner = useDealsStore((state) => state.owner);
-  const motion = useDealsStore((state) => state.motion);
-  const closeWindow = useDealsStore((state) => state.closeWindow);
-  const regionFilter = useDealsStore((state) => state.region);
+  const {
+    sortBy,
+    owner,
+    motion,
+    closeWindow,
+    region: regionFilter,
+  } = useDealFilters(region ?? "all");
   const moveDeal = useDealsStore((state) => state.moveDeal);
   const companies = useCompaniesStore((state) => state.companies);
   const [draggingId, setDraggingId] = useState<string | null>(null);

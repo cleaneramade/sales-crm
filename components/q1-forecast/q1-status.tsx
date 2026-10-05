@@ -2,8 +2,7 @@
 
 import { HEALTHY_COVERAGE, formatQ1Coverage } from "@/lib/q1-forecast";
 import { useQ1Report } from "@/stores/q1-forecast-store";
-import ActiveDot from "@/public/assets/images/companies/header/active-dot.svg";
-import PendingDot from "@/public/assets/images/companies/sidebar/dot-yellow.svg";
+import StatusPill from "@/components/_common/status-pill";
 
 export default function Q1Status() {
   const { coverage, openPipeline } = useQ1Report();
@@ -17,15 +16,8 @@ export default function Q1Status() {
         : `Coverage ${formatQ1Coverage(coverage)}`;
 
   return (
-    <span className="caption-style bg-muted inline-flex shrink-0 items-center gap-0.5 rounded-full border border-[#363636] py-[3px] pr-[5px] pl-[3px]">
-      {needsPipeline ? (
-        <PendingDot aria-hidden className="size-3" />
-      ) : healthy ? (
-        <ActiveDot aria-hidden className="size-3" />
-      ) : (
-        <span aria-hidden className="size-3" />
-      )}
+    <StatusPill tone={needsPipeline ? "amber" : healthy ? "green" : "none"}>
       {label}
-    </span>
+    </StatusPill>
   );
 }

@@ -18,9 +18,9 @@ import {
 } from "@/data/deals";
 import { TODAY } from "@/lib/companies";
 import { downloadCsv } from "@/lib/csv";
-import { dealsCsvRows, visibleDeals } from "@/lib/deals";
+import { dealsCsvRows, visibleDeals, type DealScope } from "@/lib/deals";
 import { useCompaniesStore } from "@/stores/companies-store";
-import { useDealsStore } from "@/stores/deals-store";
+import { useDealFilters, useDealsStore } from "@/stores/deals-store";
 import ShareIcon from "@/public/assets/images/companies/toolbar/share.svg";
 import PlusIcon from "@/public/assets/images/_common/plus.svg";
 
@@ -29,16 +29,15 @@ type DealsToolbarProps = {
 };
 
 export default function DealsToolbar({ region }: DealsToolbarProps) {
-  const sortBy = useDealsStore((state) => state.sortBy);
-  const owner = useDealsStore((state) => state.owner);
-  const motion = useDealsStore((state) => state.motion);
-  const closeWindow = useDealsStore((state) => state.closeWindow);
-  const setSortBy = useDealsStore((state) => state.setSortBy);
-  const setOwner = useDealsStore((state) => state.setOwner);
-  const setMotion = useDealsStore((state) => state.setMotion);
-  const setCloseWindow = useDealsStore((state) => state.setCloseWindow);
-  const regionFilter = useDealsStore((state) => state.region);
-  const setRegionFilter = useDealsStore((state) => state.setRegionFilter);
+  const scope: DealScope = region ?? "all";
+  const {
+    sortBy,
+    owner,
+    motion,
+    closeWindow,
+    region: regionFilter,
+  } = useDealFilters(scope);
+  const setFilters = useDealsStore((state) => state.setFilters);
   const openNewDeal = useDealsStore((state) => state.openNewDeal);
 
   function exportCsv() {
@@ -71,33 +70,37 @@ export default function DealsToolbar({ region }: DealsToolbarProps) {
           label="Sort by"
           value={sortBy}
           options={DEAL_SORT_MENU_OPTIONS}
-          onChange={(value) => setSortBy(value as DealSortKey)}
+          onChange={(value) =>
+            setFilters(scope, { sortBy: value as DealSortKey })
+          }
         />
         <FilterMenu
           label="Filter"
           value={owner}
           options={DEAL_OWNER_OPTIONS}
-          onChange={setOwner}
+          onChange={(value) => setFilters(scope, { owner: value })}
         />
         <FilterMenu
           label="Motion"
           value={motion}
           options={MOTION_OPTIONS}
-          onChange={setMotion}
+          onChange={(value) => setFilters(scope, { motion: value })}
         />
         {!region && (
           <FilterMenu
             label="Region"
             value={regionFilter}
             options={REGION_OPTIONS}
-            onChange={setRegionFilter}
+            onChange={(value) => setFilters(scope, { region: value })}
           />
         )}
         <FilterMenu
           label="Close Date"
           value={closeWindow}
           options={CLOSE_WINDOW_OPTIONS}
-          onChange={(value) => setCloseWindow(value as CloseWindow)}
+          onChange={(value) =>
+            setFilters(scope, { closeWindow: value as CloseWindow })
+          }
         />
       </div>
 

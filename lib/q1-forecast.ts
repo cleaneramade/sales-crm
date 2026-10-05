@@ -56,7 +56,7 @@ export function q1Owners(deals: Deal[], team: string) {
     .sort((a, b) => a.localeCompare(b));
 }
 
-export function q1DealsInView(deals: Deal[], { owner, team }: Q1Filters) {
+function q1DealsInView(deals: Deal[], { owner, team }: Q1Filters) {
   const names = q1Owners(deals, team).filter(
     (name) => owner === ALL_Q1 || name === owner,
   );
@@ -67,7 +67,7 @@ export function q1DealsInView(deals: Deal[], { owner, team }: Q1Filters) {
     );
 }
 
-export function q1Coverage(openPipeline: number, quota: number) {
+function q1Coverage(openPipeline: number, quota: number) {
   return quota > 0 ? openPipeline / quota : null;
 }
 
@@ -200,7 +200,7 @@ export function q1OpenDealCount(deals: Deal[]) {
   ).length;
 }
 
-export function q1DealWeighted(deal: Deal) {
+function q1DealWeighted(deal: Deal) {
   return Math.round((deal.value * dealWin(deal)) / 100);
 }
 

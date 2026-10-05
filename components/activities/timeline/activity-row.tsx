@@ -1,5 +1,3 @@
-"use client";
-
 import Avatar from "@/components/_ui/avatar";
 import Button from "@/components/_ui/button";
 import Tag from "@/components/_ui/tag";

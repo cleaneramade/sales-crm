@@ -1,15 +1,17 @@
 "use client";
 
+import SummaryTiles, {
+  type SummaryTile,
+} from "@/components/_common/summary-tiles";
 import { CURRENT_QUARTER_ID } from "@/data/forecast";
 import { formatMoney } from "@/lib/companies";
 import { quarterById } from "@/lib/forecast";
-import { cn } from "@/lib/utils";
 import { useSlippingReport } from "@/stores/slipping-store";
 
 export default function Summary() {
   const { summary } = useSlippingReport();
 
-  const tiles = [
+  const tiles: SummaryTile[] = [
     {
       key: "count",
       label: "Slipping deals",
@@ -42,27 +44,5 @@ export default function Summary() {
     },
   ];
 
-  return (
-    <div className="grid shrink-0 grid-cols-2 gap-2 px-4 pb-4 sm:grid-cols-5">
-      {tiles.map((tile, index) => (
-        <div
-          key={tile.key}
-          className={cn(
-            "border-line-strong flex min-w-0 flex-col gap-3 rounded-lg border p-[11px]",
-            index === tiles.length - 1 && "col-span-2 sm:col-span-1",
-          )}
-        >
-          <span className="caption-style text-soft block truncate">
-            {tile.label}
-          </span>
-          <span className="lead-style block truncate tabular-nums">
-            {tile.value}
-          </span>
-          <span className="caption-style text-soft block truncate">
-            {tile.note}
-          </span>
-        </div>
-      ))}
-    </div>
-  );
+  return <SummaryTiles tiles={tiles} />;
 }

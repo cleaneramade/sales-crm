@@ -1,5 +1,3 @@
-"use client";
-
 import type { MouseEvent, ReactNode } from "react";
 import Avatar from "@/components/_ui/avatar";
 import Button from "@/components/_ui/button";

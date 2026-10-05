@@ -93,7 +93,7 @@ export function statsFor(stats: SequenceStatsMap, sequenceId: string) {
   return stats.get(sequenceId) ?? EMPTY_SEQUENCE_STATS;
 }
 
-export function hasReplied(enrollment: Enrollment) {
+function hasReplied(enrollment: Enrollment) {
   return (
     enrollment.status === "Replied" || enrollment.status === "Meeting booked"
   );
@@ -112,7 +112,7 @@ export function displayStatus(
   };
 }
 
-export function sequenceStats(sequence: Sequence): SequenceStats {
+function sequenceStats(sequence: Sequence): SequenceStats {
   const enrolled = sequence.enrollments.length;
   const emailSteps = sequence.steps.filter((step) => step.channel === "Email");
   const sent = emailSteps.reduce((sum, step) => sum + step.sent, 0);

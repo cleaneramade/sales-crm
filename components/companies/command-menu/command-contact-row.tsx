@@ -1,5 +1,3 @@
-"use client";
-
 import { CommandItem } from "@/components/_ui/command";
 import Tag from "@/components/_ui/tag";
 import ContactInitials from "@/components/contacts/contact-initials";

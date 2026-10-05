@@ -15,9 +15,9 @@ export default function PipelinePage({ region }: PipelinePageProps) {
   const pipeline = pipelineByRegion(region);
 
   return (
-    <section id={pipeline?.id} className="flex min-h-0 min-w-0 flex-1 flex-col">
+    <section id={pipeline.id} className="flex min-h-0 min-w-0 flex-1 flex-col">
       <Header
-        title={pipeline?.title ?? region}
+        title={pipeline.title}
         tabs={PIPELINE_REGION_TABS}
         status={<PipelineStatus region={region} />}
       />

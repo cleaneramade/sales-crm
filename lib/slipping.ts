@@ -78,7 +78,7 @@ function daysBetween(later: string, earlier: string) {
   return Math.round((Date.parse(later) - Date.parse(earlier)) / day);
 }
 
-export function slippingRow(deal: Deal): SlippingDeal | null {
+function slippingRow(deal: Deal): SlippingDeal | null {
   if (!isOpenStage(deal.stage)) return null;
   const pushes = deal.activity.filter((event) => event.type === "closePushed");
   const pastDueDays =
@@ -128,7 +128,7 @@ export function slippingOwners(rows: SlippingDeal[], team: string) {
     .sort((a, b) => a.localeCompare(b));
 }
 
-export function sortSlipping(rows: SlippingDeal[], sortBy: SlippingSortKey) {
+function sortSlipping(rows: SlippingDeal[], sortBy: SlippingSortKey) {
   return [...rows].sort((a, b) => {
     switch (sortBy) {
       case "value":

@@ -71,7 +71,7 @@ export default function Header({ title, status, tabs }: HeaderProps) {
       {tabs && (
         <nav
           aria-label={`${title} views`}
-          className="border-border flex items-center gap-4 border-b px-4"
+          className="border-border flex items-center gap-4 overflow-x-auto border-b px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {tabs.map((tab) => {
             const active = isActivePath(pathname, tab.href);

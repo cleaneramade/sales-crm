@@ -37,9 +37,10 @@ import {
   DEFAULT_DEAL_FILTERS,
   dealActiveFilterCount,
   filterDeals,
+  type DealScope,
 } from "@/lib/deals";
 import { cn } from "@/lib/utils";
-import { useDealsStore } from "@/stores/deals-store";
+import { useDealFilters, useDealsStore } from "@/stores/deals-store";
 import FilterIcon from "@/public/assets/images/_common/filter.svg";
 import XIcon from "@/public/assets/images/companies/detail/x.svg";
 
@@ -54,16 +55,15 @@ export default function MobileFilters({
 }: MobileFiltersProps) {
   const [open, setOpen] = useState(false);
   const deals = useDealsStore((state) => state.deals);
-  const sortBy = useDealsStore((state) => state.sortBy);
-  const owner = useDealsStore((state) => state.owner);
-  const motion = useDealsStore((state) => state.motion);
-  const closeWindow = useDealsStore((state) => state.closeWindow);
-  const regionFilter = useDealsStore((state) => state.region);
-  const setRegionFilter = useDealsStore((state) => state.setRegionFilter);
-  const setSortBy = useDealsStore((state) => state.setSortBy);
-  const setOwner = useDealsStore((state) => state.setOwner);
-  const setMotion = useDealsStore((state) => state.setMotion);
-  const setCloseWindow = useDealsStore((state) => state.setCloseWindow);
+  const scope: DealScope = region ?? "all";
+  const {
+    sortBy,
+    owner,
+    motion,
+    closeWindow,
+    region: regionFilter,
+  } = useDealFilters(scope);
+  const setFilters = useDealsStore((state) => state.setFilters);
   const resetFilters = useDealsStore((state) => state.resetFilters);
 
   const activeRegion = region ?? regionFilter;
@@ -126,7 +126,9 @@ export default function MobileFilters({
             <Field label="Sort by" htmlFor="mobile-deal-sort">
               <Select
                 value={sortBy}
-                onValueChange={(value) => setSortBy(value as DealSortKey)}
+                onValueChange={(value) =>
+                  setFilters(scope, { sortBy: value as DealSortKey })
+                }
               >
                 <SelectTrigger id="mobile-deal-sort">
                   <SelectValue />
@@ -142,7 +144,10 @@ export default function MobileFilters({
             </Field>
 
             <Field label="Deal owner" htmlFor="mobile-deal-owner">
-              <Select value={owner} onValueChange={setOwner}>
+              <Select
+                value={owner}
+                onValueChange={(value) => setFilters(scope, { owner: value })}
+              >
                 <SelectTrigger id="mobile-deal-owner">
                   <SelectValue />
                 </SelectTrigger>
@@ -167,7 +172,10 @@ export default function MobileFilters({
             </Field>
 
             <Field label="Motion" htmlFor="mobile-deal-motion">
-              <Select value={motion} onValueChange={setMotion}>
+              <Select
+                value={motion}
+                onValueChange={(value) => setFilters(scope, { motion: value })}
+              >
                 <SelectTrigger id="mobile-deal-motion">
                   <SelectValue />
                 </SelectTrigger>
@@ -183,7 +191,12 @@ export default function MobileFilters({
 
             {!region && (
               <Field label="Region" htmlFor="mobile-deal-region">
-                <Select value={regionFilter} onValueChange={setRegionFilter}>
+                <Select
+                  value={regionFilter}
+                  onValueChange={(value) =>
+                    setFilters(scope, { region: value })
+                  }
+                >
                   <SelectTrigger id="mobile-deal-region">
                     <SelectValue />
                   </SelectTrigger>
@@ -201,7 +214,9 @@ export default function MobileFilters({
             <Field label="Close date" htmlFor="mobile-deal-close">
               <Select
                 value={closeWindow}
-                onValueChange={(value) => setCloseWindow(value as CloseWindow)}
+                onValueChange={(value) =>
+                  setFilters(scope, { closeWindow: value as CloseWindow })
+                }
               >
                 <SelectTrigger id="mobile-deal-close">
                   <SelectValue />
@@ -222,7 +237,7 @@ export default function MobileFilters({
           <Button
             variant="ghost"
             size="sm"
-            onClick={resetFilters}
+            onClick={() => resetFilters(scope)}
             disabled={
               activeCount === 0 && sortBy === DEFAULT_DEAL_FILTERS.sortBy
             }

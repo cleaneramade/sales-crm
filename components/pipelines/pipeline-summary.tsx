@@ -1,6 +1,11 @@
 "use client";
 
 import { useMemo } from "react";
+import { ScrollArea } from "@/components/_ui/scroll-area";
+import SummaryTiles, {
+  SummaryTileCard,
+  type SummaryTile,
+} from "@/components/_common/summary-tiles";
 import { CURRENT_QUARTER_ID } from "@/data/forecast";
 import type { Region } from "@/data/deals";
 import { formatMoney } from "@/lib/companies";
@@ -20,7 +25,7 @@ export default function PipelineSummary({ region }: PipelineSummaryProps) {
   );
   const quarter = quarterById(CURRENT_QUARTER_ID).label;
 
-  const tiles = [
+  const tiles: SummaryTile[] = [
     {
       key: "open",
       label: "Open pipeline",
@@ -49,7 +54,7 @@ export default function PipelineSummary({ region }: PipelineSummaryProps) {
       key: "winRate",
       label: "Win rate",
       value: summary.winRate === null ? "—" : `${summary.winRate}%`,
-      note: "Won of won and lost",
+      note: "All time, won of won and lost",
     },
     {
       key: "stale",
@@ -60,21 +65,19 @@ export default function PipelineSummary({ region }: PipelineSummaryProps) {
   ];
 
   return (
-    <div className="grid shrink-0 grid-cols-2 gap-2 px-4 pb-4 sm:grid-cols-3 lg:grid-cols-6">
-      {tiles.map((tile) => (
-        <div
-          key={tile.key}
-          className="border-line-strong flex min-w-0 flex-col gap-3 rounded-lg border p-[11px]"
-        >
-          <span className="caption-style text-soft block">{tile.label}</span>
-          <span className="lead-style block truncate tabular-nums">
-            {tile.value}
-          </span>
-          <span className="caption-style text-soft block truncate">
-            {tile.note}
-          </span>
+    <>
+      <ScrollArea fade orientation="horizontal" className="shrink-0 md:hidden">
+        <div className="flex w-max gap-2 px-4 pb-4">
+          {tiles.map((tile) => (
+            <SummaryTileCard
+              key={tile.key}
+              tile={tile}
+              className="w-48 shrink-0"
+            />
+          ))}
         </div>
-      ))}
-    </div>
+      </ScrollArea>
+      <SummaryTiles tiles={tiles} className="hidden md:grid" />
+    </>
   );
 }

@@ -1,8 +1,8 @@
 import Header from "@/components/_common/header";
+import StatusPill from "@/components/_common/status-pill";
 import CompaniesToolbar from "./toolbar/toolbar";
 import CompaniesTable from "./table/companies-table";
 import { PIPELINE_TABS } from "@/lib/routes";
-import ActiveDot from "@/public/assets/images/companies/header/active-dot.svg";
 
 export default function Companies() {
   return (
@@ -10,12 +10,7 @@ export default function Companies() {
       <Header
         title="Companies"
         tabs={PIPELINE_TABS}
-        status={
-          <span className="caption-style bg-muted inline-flex shrink-0 items-center gap-0.5 rounded-full border border-[#363636] py-[3px] pr-[5px] pl-[3px]">
-            <ActiveDot aria-hidden className="size-3" />
-            Active
-          </span>
-        }
+        status={<StatusPill>Active</StatusPill>}
       />
       <CompaniesToolbar />
       <CompaniesTable />

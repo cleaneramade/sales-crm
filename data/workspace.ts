@@ -79,7 +79,7 @@ export const HELP_SECTIONS: { title: string; topics: HelpTopic[] }[] = [
       {
         question: "What lowers it?",
         answer:
-          "A pushed close date takes off 10%, an unanswered email 5% and the main contact leaving 20%. Two weeks with no activity takes off 15% and marks the deal Stale.",
+          "A pushed close date takes off 10%, an unanswered email 5% and the main contact leaving 20%. Two weeks with no activity takes off 15% and marks the deal Stale. Pushing a close date or a contact leaving doesn't count as activity.",
       },
       {
         question: "Does logging the same thing again keep raising it?",

@@ -145,7 +145,7 @@ const WEEKDAYS = [
   "Saturday",
 ];
 
-export function dayLabel(date: string) {
+function dayLabel(date: string) {
   const age = daysSince(date);
   if (age === 0) return "Today";
   if (age === 1) return "Yesterday";
@@ -245,7 +245,7 @@ function daysUntil(iso: string) {
   return Math.round((Date.parse(iso) - Date.parse(TODAY)) / day);
 }
 
-export function attentionReason(deal: Deal): AttentionReason | null {
+function attentionReason(deal: Deal): AttentionReason | null {
   if (!isOpenStage(deal.stage)) return null;
   if (deal.closeDate < TODAY) return "pastClose";
   if (isStale(deal)) return "stale";

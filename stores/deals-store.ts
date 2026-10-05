@@ -15,22 +15,20 @@ import {
   companySummaryMap,
   isOpenStage,
   type DealFilters,
+  type DealScope,
 } from "@/lib/deals";
 
-type DealsState = DealFilters & {
+type DealsState = {
   deals: Deal[];
+  filtersByScope: Partial<Record<DealScope, DealFilters>>;
   detailId: string | null;
   detailOpen: boolean;
   newDealOpen: boolean;
   newDealRegion: Region;
   pushId: string | null;
   pushOpen: boolean;
-  setSortBy: (sortBy: DealFilters["sortBy"]) => void;
-  setOwner: (owner: string) => void;
-  setMotion: (motion: string) => void;
-  setCloseWindow: (closeWindow: DealFilters["closeWindow"]) => void;
-  setRegionFilter: (region: string) => void;
-  resetFilters: () => void;
+  setFilters: (scope: DealScope, patch: Partial<DealFilters>) => void;
+  resetFilters: (scope: DealScope) => void;
   openDetail: (id: string) => void;
   closeDetail: () => void;
   setNewDealOpen: (open: boolean) => void;
@@ -44,7 +42,7 @@ type DealsState = DealFilters & {
   setRegion: (id: string, region: Region) => void;
   logActivity: (
     id: string,
-    type: DealActivityType,
+    type: Exclude<DealActivityType, "closePushed">,
     options?: { date?: string; note?: string; contactId?: string },
   ) => void;
   setWinOverride: (id: string, win: number | null) => void;
@@ -52,19 +50,27 @@ type DealsState = DealFilters & {
 
 export const useDealsStore = create<DealsState>((set) => ({
   deals: DEALS,
-  ...DEFAULT_DEAL_FILTERS,
+  filtersByScope: {},
   detailId: null,
   detailOpen: false,
   newDealOpen: false,
   newDealRegion: REGIONS[0],
   pushId: null,
   pushOpen: false,
-  setSortBy: (sortBy) => set({ sortBy }),
-  setOwner: (owner) => set({ owner }),
-  setMotion: (motion) => set({ motion }),
-  setCloseWindow: (closeWindow) => set({ closeWindow }),
-  setRegionFilter: (region) => set({ region }),
-  resetFilters: () => set({ ...DEFAULT_DEAL_FILTERS }),
+  setFilters: (scope, patch) =>
+    set((state) => ({
+      filtersByScope: {
+        ...state.filtersByScope,
+        [scope]: {
+          ...(state.filtersByScope[scope] ?? DEFAULT_DEAL_FILTERS),
+          ...patch,
+        },
+      },
+    })),
+  resetFilters: (scope) =>
+    set((state) => ({
+      filtersByScope: { ...state.filtersByScope, [scope]: undefined },
+    })),
   openDetail: (detailId) => set({ detailId, detailOpen: true }),
   closeDetail: () => set({ detailOpen: false }),
   setNewDealOpen: (newDealOpen) => set({ newDealOpen }),
@@ -127,7 +133,7 @@ export const useDealsStore = create<DealsState>((set) => ({
   logActivity: (id, type, options) =>
     set((state) => ({
       deals: state.deals.map((deal) =>
-        deal.id === id && type !== "closePushed"
+        deal.id === id
           ? {
               ...deal,
               activity: [
@@ -153,6 +159,12 @@ export const useDealsStore = create<DealsState>((set) => ({
       ),
     })),
 }));
+
+export function useDealFilters(scope: DealScope) {
+  return useDealsStore(
+    (state) => state.filtersByScope[scope] ?? DEFAULT_DEAL_FILTERS,
+  );
+}
 
 export function useCompanySummaries() {
   const deals = useDealsStore((state) => state.deals);

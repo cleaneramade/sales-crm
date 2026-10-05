@@ -17,13 +17,6 @@ import {
   teamTotals,
   type Rollup,
 } from "@/lib/forecast";
-import { ROUTES } from "@/lib/routes";
-
-export const TEAM_ROUTES: Record<Team, string> = {
-  "Strategic AEs": ROUTES.strategicAes.path,
-  "Mid Market": ROUTES.midMarket.path,
-  "SDR Team": ROUTES.sdrTeam.path,
-};
 
 export function isSdrTeam(team: Team) {
   return team === "SDR Team";

@@ -6,6 +6,7 @@ import {
   type DealActivityType,
   type DealSortKey,
   type DealStage,
+  type Region,
 } from "@/data/deals";
 import {
   TODAY,
@@ -52,6 +53,8 @@ export type DealFilters = {
   closeWindow: CloseWindow;
   region: string;
 };
+
+export type DealScope = "all" | Region;
 
 export const ALL_DEAL_OWNERS = "all";
 export const ANY_MOTION = "any";
@@ -287,7 +290,7 @@ export function filterDeals(
   );
 }
 
-export function sortDeals(deals: Deal[], sortBy: DealSortKey) {
+function sortDeals(deals: Deal[], sortBy: DealSortKey) {
   return [...deals].sort((a, b) => {
     switch (sortBy) {
       case "closeDate":
@@ -306,10 +309,6 @@ export function visibleDeals(deals: Deal[], filters: DealFilters) {
 
 export function dealsInStage(deals: Deal[], stage: DealStage) {
   return deals.filter((deal) => deal.stage === stage);
-}
-
-export function stageTotal(deals: Deal[], stage: DealStage) {
-  return dealsInStage(deals, stage).reduce((sum, deal) => sum + deal.value, 0);
 }
 
 export function weightedTotal(deals: Deal[]) {
@@ -336,6 +335,7 @@ export function dealsCsvRows(
       "Deal",
       "Company",
       "Stage",
+      "Region",
       "Owner",
       "Value",
       "Win Probability (%)",
@@ -348,6 +348,7 @@ export function dealsCsvRows(
       deal.name,
       companyName(deal.companyId),
       deal.stage,
+      deal.region,
       deal.owner,
       deal.value,
       dealWin(deal),

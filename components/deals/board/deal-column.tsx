@@ -1,5 +1,3 @@
-"use client";
-
 import type { DragEvent } from "react";
 import CountBadge from "@/components/_ui/count-badge";
 import { ScrollArea } from "@/components/_ui/scroll-area";

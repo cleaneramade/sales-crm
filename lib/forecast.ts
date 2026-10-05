@@ -64,7 +64,7 @@ export function quarterById(id: string): Quarter {
   return QUARTERS.find((quarter) => quarter.id === id) ?? QUARTERS[0];
 }
 
-export function defaultCategory(deal: Deal): ForecastCategory {
+function defaultCategory(deal: Deal): ForecastCategory {
   if (deal.stage === WON_STAGE) return "Closed";
   if (deal.stage === LOST_STAGE) return "Omitted";
   const win = dealWin(deal);
@@ -200,14 +200,6 @@ export function formatCoverage({
   if (coverage === null) return "Met";
   if (commit + bestCase + pipeline === 0) return "—";
   return `${coverage.toFixed(1)}x`;
-}
-
-export function formatCompactMoney(value: number) {
-  if (value >= 1_000_000) {
-    return `$${(value / 1_000_000).toFixed(2).replace(/\.?0+$/, "")}M`;
-  }
-  if (value >= 1_000) return `$${Math.round(value / 1_000)}k`;
-  return `$${value}`;
 }
 
 export function forecastCsvRows(
