@@ -4,9 +4,10 @@ import type { MouseEvent, ReactNode } from "react";
 import Avatar from "@/components/_ui/avatar";
 import Button from "@/components/_ui/button";
 import { TableCell, TableRow } from "@/components/_ui/table";
+import Money from "@/components/_common/money";
 import SegmentBar from "@/components/_common/segment-bar";
 import { MEETINGS_TARGET } from "@/data/team";
-import { formatDate, formatMoney } from "@/lib/companies";
+import { formatDate } from "@/lib/companies";
 import { formatAttainment, type TeamMember } from "@/lib/team";
 import { cn } from "@/lib/utils";
 import {
@@ -25,15 +26,6 @@ type MemberRowProps = {
 
 function stop(event: MouseEvent) {
   event.stopPropagation();
-}
-
-function Money({ value }: { value: number }) {
-  return (
-    <span className="flex items-center gap-1">
-      <span className="text-muted-foreground">$</span>
-      {formatMoney(value)}
-    </span>
-  );
 }
 
 function Meter({ percent, label }: { percent: number; label: string }) {

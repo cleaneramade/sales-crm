@@ -15,6 +15,12 @@ export default function Summary() {
       note: "Jan to Mar 2027",
     },
     {
+      key: "closed",
+      label: "Closed Won",
+      value: `$${formatMoney(totals.closed)}`,
+      note: "Already booked",
+    },
+    {
       key: "commit",
       label: "Commit",
       value: `$${formatMoney(totals.commit)}`,
@@ -35,7 +41,7 @@ export default function Summary() {
     {
       key: "weighted",
       label: "Weighted",
-      value: `$${formatMoney(weighted)}`,
+      value: `$${formatMoney(Math.round(weighted))}`,
       note: "Value times win chance",
     },
     {
@@ -53,7 +59,7 @@ export default function Summary() {
   ];
 
   return (
-    <div className="grid shrink-0 grid-cols-2 gap-2 px-4 pb-4 sm:grid-cols-3 xl:grid-cols-4">
+    <div className="grid shrink-0 grid-cols-2 gap-2 px-4 pb-4 sm:grid-cols-4">
       {tiles.map((tile) => (
         <div
           key={tile.key}

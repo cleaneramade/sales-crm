@@ -121,6 +121,16 @@ export const HELP_SECTIONS: { title: string; topics: HelpTopic[] }[] = [
         answer:
           "It covers deals closing January to March 2027. Weighted is each deal's value times its win chance, added up. Coverage is open pipeline divided by quota, and 3x is healthy. The report also shows how much more pipeline reaches 3x.",
       },
+      {
+        question: "What counts as a slipping deal?",
+        answer:
+          "An open deal that has had its close date pushed at least once, or whose close date has already passed. The Slipping Deals report lists them with how many times each slipped and how many days.",
+      },
+      {
+        question: "What happens when I push a close date?",
+        answer:
+          "The win chance drops 10%. A pushed close date counts twice per stage at most, so further pushes are recorded but don't lower it again. Each push saves the old and new date.",
+      },
     ],
   },
   {

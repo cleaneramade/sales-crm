@@ -84,11 +84,15 @@ export function addDays(iso: string, days: number) {
   return new Date(Date.parse(iso) + days * day).toISOString().slice(0, 10);
 }
 
+const NOT_ACTIVITY: DealActivityType[] = ["closePushed", "championLeft"];
+
 export function lastActivityDate(deal: Deal) {
-  return deal.activity.reduce(
-    (newest, event) => (event.date > newest ? event.date : newest),
-    deal.stageChangedAt,
-  );
+  return deal.activity
+    .filter((event) => !NOT_ACTIVITY.includes(event.type))
+    .reduce(
+      (newest, event) => (event.date > newest ? event.date : newest),
+      deal.stageChangedAt,
+    );
 }
 
 export function lastActivityDays(deal: Deal) {
@@ -303,10 +307,15 @@ export function stageTotal(deals: Deal[], stage: DealStage) {
   return dealsInStage(deals, stage).reduce((sum, deal) => sum + deal.value, 0);
 }
 
-export function weightedValue(deals: Deal[]) {
-  return Math.round(
-    deals.reduce((sum, deal) => sum + (deal.value * dealWin(deal)) / 100, 0),
+export function weightedTotal(deals: Deal[]) {
+  return deals.reduce(
+    (sum, deal) => sum + (deal.value * dealWin(deal)) / 100,
+    0,
   );
+}
+
+export function weightedValue(deals: Deal[]) {
+  return Math.round(weightedTotal(deals));
 }
 
 export function openDeals(deals: Deal[]) {

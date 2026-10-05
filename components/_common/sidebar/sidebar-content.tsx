@@ -11,6 +11,7 @@ import { isOpenStage } from "@/lib/deals";
 import { openDealsInQuarter } from "@/lib/forecast";
 import { q1OpenDealCount } from "@/lib/q1-forecast";
 import { ROUTES } from "@/lib/routes";
+import { slippingCount } from "@/lib/slipping";
 import { teamRoster } from "@/lib/team";
 import { useCompaniesStore } from "@/stores/companies-store";
 import { useContactsStore } from "@/stores/contacts-store";
@@ -47,6 +48,7 @@ export default function SidebarContent() {
     (state) => openDealsInQuarter(state.deals, CURRENT_QUARTER_ID).length,
   );
   const q1Count = useDealsStore((state) => q1OpenDealCount(state.deals));
+  const slippingTotal = useDealsStore((state) => slippingCount(state.deals));
   const attentionCount = useDealsStore(
     (state) => needsAttention(state.deals).length,
   );
@@ -148,6 +150,7 @@ export default function SidebarContent() {
               icon={AlertTriangleIcon}
               label="Slipping Deals"
               href={ROUTES.slippingDeals.path}
+              count={slippingTotal}
             />
           </SidebarSection>
 

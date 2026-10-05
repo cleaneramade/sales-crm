@@ -7,6 +7,7 @@ import { useQ1Report } from "@/stores/q1-forecast-store";
 import type { ForecastCategory } from "@/data/forecast";
 
 const CATEGORY_BAR: Record<string, string> = {
+  Closed: "bg-(--tag-teal-text)",
   Commit: "bg-success",
   "Best Case": "bg-warning",
   Pipeline: "bg-(--tag-blue-text)",

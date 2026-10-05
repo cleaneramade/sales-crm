@@ -69,6 +69,7 @@ export default function DealDetail() {
   const closeDetail = useDealsStore((state) => state.closeDetail);
   const moveDeal = useDealsStore((state) => state.moveDeal);
   const logActivity = useDealsStore((state) => state.logActivity);
+  const openPush = useDealsStore((state) => state.openPush);
   const setWinOverride = useDealsStore((state) => state.setWinOverride);
   const companies = useCompaniesStore((state) => state.companies);
   const openProfile = useCompaniesStore((state) => state.openProfile);
@@ -331,7 +332,11 @@ export default function DealDetail() {
                       key={item.type}
                       variant="secondary"
                       size="sm"
-                      onClick={() => logActivity(deal.id, item.type)}
+                      onClick={() =>
+                        item.type === "closePushed"
+                          ? openPush(deal.id)
+                          : logActivity(deal.id, item.type)
+                      }
                     >
                       {item.label}
                     </Button>

@@ -2,7 +2,7 @@ import { ownerByName } from "@/data/companies";
 import { DEAL_STAGES, type Deal, type DealStage } from "@/data/deals";
 import { Q1_QUARTER_ID, QUOTAS, type ForecastCategory } from "@/data/forecast";
 import { TEAMS, type Team } from "@/data/team";
-import { dealWin, isOpenStage, weightedValue } from "@/lib/deals";
+import { dealWin, isOpenStage, weightedTotal } from "@/lib/deals";
 import {
   buildRollup,
   dealCategory,
@@ -30,6 +30,7 @@ export const DEFAULT_Q1_FILTERS: Q1Filters = {
 export const Q1_TEAMS: Team[] = [...TEAMS];
 
 export const Q1_CATEGORIES: ForecastCategory[] = [
+  "Closed",
   "Commit",
   "Best Case",
   "Pipeline",
@@ -87,7 +88,7 @@ export type Q1Stage = {
   count: number;
   value: number;
   avgWin: number | null;
-  weighted: number;
+  weighted: number | null;
 };
 
 export type Q1Rep = Rollup & {
@@ -118,7 +119,7 @@ function toRep(rollup: Rollup, deals: Deal[]): Q1Rep {
   const open = openPipelineOf(rollup);
   return {
     ...rollup,
-    weighted: weightedValue(deals.filter((deal) => isOpenStage(deal.stage))),
+    weighted: weightedTotal(deals.filter((deal) => isOpenStage(deal.stage))),
     openPipeline: open,
     openCoverage: q1Coverage(open, rollup.quota),
   };
@@ -174,7 +175,7 @@ export function buildQ1Report(deals: Deal[], filters: Q1Filters): Q1Report {
       count: list.length,
       value: list.reduce((sum, deal) => sum + deal.value, 0),
       avgWin: averageOpenWin(list),
-      weighted: weightedValue(list),
+      weighted: isOpenStage(stage) ? weightedTotal(list) : null,
     };
   }).filter((row) => isOpenStage(row.stage) || row.count > 0);
 
@@ -183,7 +184,7 @@ export function buildQ1Report(deals: Deal[], filters: Q1Filters): Q1Report {
     counted,
     totals,
     openPipeline,
-    weighted: weightedValue(open),
+    weighted: weightedTotal(open),
     coverage: q1Coverage(openPipeline, totals.quota),
     needed: Math.max(0, HEALTHY_COVERAGE * totals.quota - openPipeline),
     months,

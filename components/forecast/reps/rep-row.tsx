@@ -1,9 +1,9 @@
 import Avatar from "@/components/_ui/avatar";
 import Button from "@/components/_ui/button";
 import { TableCell, TableRow } from "@/components/_ui/table";
+import Money from "@/components/_common/money";
 import SegmentBar from "@/components/_common/segment-bar";
 import { ownerByName } from "@/data/companies";
-import { formatMoney } from "@/lib/companies";
 import { formatCoverage, type Rollup } from "@/lib/forecast";
 import { cn } from "@/lib/utils";
 import {
@@ -21,15 +21,6 @@ type RepRowProps = {
 
 function cellClass(key: RepColumnKey) {
   return cn(REP_CELL_CLASS, repColumnClass(key));
-}
-
-function Money({ value }: { value: number }) {
-  return (
-    <span className="flex items-center gap-1">
-      <span className="text-muted-foreground">$</span>
-      {formatMoney(value)}
-    </span>
-  );
 }
 
 export default function RepRow({ rollup, total, onOpenOwner }: RepRowProps) {

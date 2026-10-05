@@ -13,6 +13,7 @@ import {
   DEFAULT_DEAL_FILTERS,
   addDays,
   companySummaryMap,
+  isOpenStage,
   type DealFilters,
 } from "@/lib/deals";
 
@@ -21,6 +22,8 @@ type DealsState = DealFilters & {
   detailId: string | null;
   detailOpen: boolean;
   newDealOpen: boolean;
+  pushId: string | null;
+  pushOpen: boolean;
   setSortBy: (sortBy: DealFilters["sortBy"]) => void;
   setOwner: (owner: string) => void;
   setMotion: (motion: string) => void;
@@ -29,6 +32,9 @@ type DealsState = DealFilters & {
   openDetail: (id: string) => void;
   closeDetail: () => void;
   setNewDealOpen: (open: boolean) => void;
+  openPush: (id: string) => void;
+  setPushOpen: (open: boolean) => void;
+  pushCloseDate: (id: string, newDate: string) => void;
   moveDeal: (id: string, stage: DealStage) => void;
   addDeal: (deal: Deal) => void;
   setCategory: (id: string, category: ForecastCategory) => void;
@@ -46,6 +52,8 @@ export const useDealsStore = create<DealsState>((set) => ({
   detailId: null,
   detailOpen: false,
   newDealOpen: false,
+  pushId: null,
+  pushOpen: false,
   setSortBy: (sortBy) => set({ sortBy }),
   setOwner: (owner) => set({ owner }),
   setMotion: (motion) => set({ motion }),
@@ -54,6 +62,31 @@ export const useDealsStore = create<DealsState>((set) => ({
   openDetail: (detailId) => set({ detailId, detailOpen: true }),
   closeDetail: () => set({ detailOpen: false }),
   setNewDealOpen: (newDealOpen) => set({ newDealOpen }),
+  openPush: (pushId) => set({ pushId, pushOpen: true }),
+  setPushOpen: (pushOpen) => set({ pushOpen }),
+  pushCloseDate: (id, newDate) =>
+    set((state) => ({
+      deals: state.deals.map((deal) =>
+        deal.id === id &&
+        isOpenStage(deal.stage) &&
+        newDate > deal.closeDate &&
+        newDate >= TODAY
+          ? {
+              ...deal,
+              closeDate: newDate,
+              activity: [
+                ...deal.activity,
+                {
+                  id: `${deal.id}-a${deal.activity.length + 1}-${Date.now()}`,
+                  type: "closePushed",
+                  date: TODAY,
+                  from: deal.closeDate,
+                },
+              ],
+            }
+          : deal,
+      ),
+    })),
   moveDeal: (id, stage) =>
     set((state) => ({
       deals: state.deals.map((deal) =>
@@ -94,6 +127,7 @@ export const useDealsStore = create<DealsState>((set) => ({
                   id: `${deal.id}-a${deal.activity.length + 1}-${Date.now()}`,
                   type,
                   date: options?.date ?? TODAY,
+                  ...(type === "closePushed" ? { from: deal.closeDate } : {}),
                   ...(options?.note ? { note: options.note } : {}),
                   ...(options?.contactId
                     ? { contactId: options.contactId }

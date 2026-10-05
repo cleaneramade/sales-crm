@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/_ui/table";
-import { formatMoney } from "@/lib/companies";
+import Money from "@/components/_common/money";
 import { STAGE_TONES } from "@/lib/forecast";
 import { cn } from "@/lib/utils";
 import { useQ1Report } from "@/stores/q1-forecast-store";
@@ -20,15 +20,6 @@ import {
   STAGE_GRID_CLASS,
   STAGE_ROW_CLASS,
 } from "./stage-columns";
-
-function Money({ value }: { value: number }) {
-  return (
-    <span className="flex items-center gap-1">
-      <span className="text-muted-foreground">$</span>
-      {formatMoney(value)}
-    </span>
-  );
-}
 
 export default function StagesTable() {
   const { stages } = useQ1Report();
@@ -90,7 +81,11 @@ export default function StagesTable() {
                   role="cell"
                   className={cn(STAGE_CELL_CLASS, STAGE_COLUMNS[4].className)}
                 >
-                  <Money value={row.weighted} />
+                  {row.weighted === null ? (
+                    <span className="text-muted-foreground">—</span>
+                  ) : (
+                    <Money value={row.weighted} />
+                  )}
                 </TableCell>
               </TableRow>
             ))}

@@ -8,6 +8,7 @@ import NewSequenceDialog from "@/components/sequences/new-sequence/new-sequence-
 import EnrollDialog from "@/components/sequences/enroll/enroll-dialog";
 import ContactEnrollDialog from "@/components/sequences/enroll/contact-enroll-dialog";
 import LogActivityDialog from "@/components/activities/log/log-activity-dialog";
+import PushDialog from "@/components/slipping-deals/push/push-dialog";
 import DealDetail from "@/components/deals/detail/deal-detail";
 import NewDealDialog from "@/components/deals/new-deal/new-deal-dialog";
 import Profile from "@/components/companies/profile/profile";
@@ -32,6 +33,7 @@ export default function CrmLayout({ children }: { children: ReactNode }) {
       <EnrollDialog />
       <ContactEnrollDialog />
       <LogActivityDialog />
+      <PushDialog />
       <Profile />
       <NewCompanyDialog />
       <CommandMenu />

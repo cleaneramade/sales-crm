@@ -42,6 +42,7 @@ export type DealActivity = {
   date: string;
   note?: string;
   contactId?: string;
+  from?: string;
 };
 
 export type Deal = {
@@ -358,7 +359,12 @@ export const DEALS: Deal[] = [
     nextStep: "Share the security whitepaper and set up a review.",
     stageChangedAt: "2026-09-01",
     activity: [
-      { id: "deal-06-h1", type: "closePushed", date: "2026-06-26" },
+      {
+        id: "deal-06-h1",
+        type: "closePushed",
+        date: "2026-06-26",
+        from: "2026-09-22",
+      },
       {
         id: "deal-06-h2",
         type: "decisionMaker",
@@ -504,8 +510,18 @@ export const DEALS: Deal[] = [
         date: "2026-07-06",
         contactId: "zoom-c1",
       },
-      { id: "deal-08-h4", type: "closePushed", date: "2026-07-09" },
-      { id: "deal-08-h5", type: "closePushed", date: "2026-07-15" },
+      {
+        id: "deal-08-h4",
+        type: "closePushed",
+        date: "2026-07-09",
+        from: "2026-08-01",
+      },
+      {
+        id: "deal-08-h5",
+        type: "closePushed",
+        date: "2026-07-15",
+        from: "2026-08-30",
+      },
       {
         id: "deal-08-h6",
         type: "unanswered",
@@ -626,7 +642,7 @@ export const DEALS: Deal[] = [
     owner: "Chloe Park",
     value: 41000,
     stage: "Evaluation",
-    closeDate: "2026-09-26",
+    closeDate: "2026-09-09",
     motion: "Co-Sell",
     nextStep: "Confirm the listing requirements with partner team.",
     stageChangedAt: "2026-08-25",
@@ -643,8 +659,18 @@ export const DEALS: Deal[] = [
         date: "2026-08-01",
         contactId: "hubspot-c1",
       },
-      { id: "deal-10-h3", type: "closePushed", date: "2026-08-21" },
-      { id: "deal-10-a1", type: "closePushed", date: "2026-09-02" },
+      {
+        id: "deal-10-h3",
+        type: "closePushed",
+        date: "2026-08-21",
+        from: "2026-08-09",
+      },
+      {
+        id: "deal-10-a1",
+        type: "closePushed",
+        date: "2026-09-02",
+        from: "2026-08-25",
+      },
       {
         id: "deal-10-a2",
         type: "reply",
@@ -753,7 +779,12 @@ export const DEALS: Deal[] = [
     nextStep: "Present pricing options to the regional leads.",
     stageChangedAt: "2026-08-31",
     activity: [
-      { id: "deal-12-h1", type: "closePushed", date: "2026-06-29" },
+      {
+        id: "deal-12-h1",
+        type: "closePushed",
+        date: "2026-06-29",
+        from: "2026-09-05",
+      },
       { id: "deal-12-h2", type: "proposalViewed", date: "2026-07-10" },
       {
         id: "deal-12-h3",
@@ -911,7 +942,7 @@ export const DEALS: Deal[] = [
     owner: "Lina Wong",
     value: 52000,
     stage: "Proposal",
-    closeDate: "2026-09-24",
+    closeDate: "2026-09-04",
     motion: "New Logo",
     nextStep: "Follow up on the pricing question from the CFO.",
     stageChangedAt: "2026-08-05",
@@ -935,7 +966,12 @@ export const DEALS: Deal[] = [
         contactId: "intercom-c1",
       },
       { id: "deal-15-a1", type: "proposalViewed", date: "2026-08-10" },
-      { id: "deal-15-a2", type: "closePushed", date: "2026-08-18" },
+      {
+        id: "deal-15-a2",
+        type: "closePushed",
+        date: "2026-08-18",
+        from: "2026-08-22",
+      },
       {
         id: "deal-15-a3",
         type: "unanswered",
@@ -956,7 +992,12 @@ export const DEALS: Deal[] = [
     nextStep: "Finalise the vendor security questionnaire.",
     stageChangedAt: "2026-08-30",
     activity: [
-      { id: "deal-16-h1", type: "closePushed", date: "2026-07-14" },
+      {
+        id: "deal-16-h1",
+        type: "closePushed",
+        date: "2026-07-14",
+        from: "2026-09-05",
+      },
       {
         id: "deal-16-h2",
         type: "decisionMaker",
@@ -1095,7 +1136,12 @@ export const DEALS: Deal[] = [
         date: "2026-08-22",
         contactId: "attio-c4",
       },
-      { id: "deal-18-h4", type: "closePushed", date: "2026-08-25" },
+      {
+        id: "deal-18-h4",
+        type: "closePushed",
+        date: "2026-08-25",
+        from: "2026-08-27",
+      },
       {
         id: "deal-18-a1",
         type: "reply",
@@ -1152,7 +1198,12 @@ export const DEALS: Deal[] = [
         date: "2026-08-23",
         contactId: "google-c5",
       },
-      { id: "deal-19-h7", type: "closePushed", date: "2026-08-24" },
+      {
+        id: "deal-19-h7",
+        type: "closePushed",
+        date: "2026-08-24",
+        from: "2026-09-11",
+      },
       {
         id: "deal-19-h8",
         type: "unanswered",
@@ -1165,7 +1216,12 @@ export const DEALS: Deal[] = [
         date: "2026-09-01",
         contactId: "google-c3",
       },
-      { id: "deal-19-a1", type: "closePushed", date: "2026-09-03" },
+      {
+        id: "deal-19-a1",
+        type: "closePushed",
+        date: "2026-09-03",
+        from: "2026-10-04",
+      },
       {
         id: "deal-19-a2",
         type: "meeting",
@@ -1281,7 +1337,12 @@ export const DEALS: Deal[] = [
     nextStep: "Confirm the go-live date with the localization team.",
     stageChangedAt: "2026-08-27",
     activity: [
-      { id: "deal-22-h1", type: "closePushed", date: "2026-07-02" },
+      {
+        id: "deal-22-h1",
+        type: "closePushed",
+        date: "2026-07-02",
+        from: "2026-07-30",
+      },
       {
         id: "deal-22-h2",
         type: "unanswered",
@@ -1478,7 +1539,12 @@ export const DEALS: Deal[] = [
         date: "2026-08-18",
         contactId: "hubspot-c1",
       },
-      { id: "deal-26-h2", type: "closePushed", date: "2026-08-24" },
+      {
+        id: "deal-26-h2",
+        type: "closePushed",
+        date: "2026-08-24",
+        from: "2026-08-11",
+      },
       {
         id: "deal-26-h3",
         type: "meeting",
@@ -1657,7 +1723,12 @@ export const DEALS: Deal[] = [
         date: "2026-06-28",
         contactId: "google-c2",
       },
-      { id: "deal-30-h3", type: "closePushed", date: "2026-07-03" },
+      {
+        id: "deal-30-h3",
+        type: "closePushed",
+        date: "2026-07-03",
+        from: "2026-07-13",
+      },
       {
         id: "deal-30-h4",
         type: "unanswered",
@@ -1702,7 +1773,12 @@ export const DEALS: Deal[] = [
         date: "2026-07-15",
         contactId: "lvmh-c2",
       },
-      { id: "deal-31-h4", type: "closePushed", date: "2026-07-18" },
+      {
+        id: "deal-31-h4",
+        type: "closePushed",
+        date: "2026-07-18",
+        from: "2026-08-01",
+      },
       {
         id: "deal-31-h5",
         type: "meeting",
@@ -1845,7 +1921,12 @@ export const DEALS: Deal[] = [
         date: "2026-06-30",
         contactId: "apple-c1",
       },
-      { id: "deal-33-h4", type: "closePushed", date: "2026-07-01" },
+      {
+        id: "deal-33-h4",
+        type: "closePushed",
+        date: "2026-07-01",
+        from: "2026-06-19",
+      },
       {
         id: "deal-33-h5",
         type: "reply",
@@ -2066,7 +2147,7 @@ export const DEALS: Deal[] = [
     owner: "Ricky Brown",
     value: 64000,
     stage: "Evaluation",
-    closeDate: "2026-09-30",
+    closeDate: "2026-09-11",
     motion: "Upsell",
     nextStep: "Share the trial results with the champion.",
     stageChangedAt: "2026-09-04",
@@ -2184,7 +2265,12 @@ export const DEALS: Deal[] = [
         date: "2026-08-28",
         contactId: "lvmh-c1",
       },
-      { id: "deal-38-a15", type: "closePushed", date: "2026-08-30" },
+      {
+        id: "deal-38-a15",
+        type: "closePushed",
+        date: "2026-08-30",
+        from: "2026-11-15",
+      },
       {
         id: "deal-38-a16",
         type: "reply",
@@ -2380,7 +2466,12 @@ export const DEALS: Deal[] = [
         date: "2026-09-08",
         contactId: "lvmh-c3",
       },
-      { id: "deal-41-a10", type: "closePushed", date: "2026-09-08" },
+      {
+        id: "deal-41-a10",
+        type: "closePushed",
+        date: "2026-09-08",
+        from: "2026-09-19",
+      },
       {
         id: "deal-41-a11",
         type: "decisionMaker",
@@ -2603,7 +2694,12 @@ export const DEALS: Deal[] = [
         date: "2026-07-19",
         contactId: "microsoft-c5",
       },
-      { id: "deal-47-a5", type: "closePushed", date: "2026-07-27" },
+      {
+        id: "deal-47-a5",
+        type: "closePushed",
+        date: "2026-07-27",
+        from: "2027-01-11",
+      },
       {
         id: "deal-47-a6",
         type: "reply",
@@ -2800,7 +2896,12 @@ export const DEALS: Deal[] = [
     nextStep: "Review the technical requirements with their IT lead.",
     stageChangedAt: "2026-09-11",
     activity: [
-      { id: "deal-52-a1", type: "closePushed", date: "2026-06-08" },
+      {
+        id: "deal-52-a1",
+        type: "closePushed",
+        date: "2026-06-08",
+        from: "2026-10-22",
+      },
       {
         id: "deal-52-a2",
         type: "decisionMaker",
@@ -2819,7 +2920,12 @@ export const DEALS: Deal[] = [
         date: "2026-06-27",
         contactId: "united-airlines-c6",
       },
-      { id: "deal-52-a5", type: "closePushed", date: "2026-07-29" },
+      {
+        id: "deal-52-a5",
+        type: "closePushed",
+        date: "2026-07-29",
+        from: "2026-11-17",
+      },
       {
         id: "deal-52-a6",
         type: "unanswered",
@@ -3659,7 +3765,12 @@ export const DEALS: Deal[] = [
         contactId: "netflix-c1",
       },
       { id: "deal-70-a3", type: "proposalViewed", date: "2026-08-12" },
-      { id: "deal-70-a4", type: "closePushed", date: "2026-08-14" },
+      {
+        id: "deal-70-a4",
+        type: "closePushed",
+        date: "2026-08-14",
+        from: "2026-11-10",
+      },
       { id: "deal-70-a5", type: "proposalViewed", date: "2026-08-14" },
       {
         id: "deal-70-a6",
@@ -3783,7 +3894,12 @@ export const DEALS: Deal[] = [
         date: "2026-07-24",
         contactId: "snowflake-c1",
       },
-      { id: "deal-75-a2", type: "closePushed", date: "2026-08-14" },
+      {
+        id: "deal-75-a2",
+        type: "closePushed",
+        date: "2026-08-14",
+        from: "2026-10-17",
+      },
       {
         id: "deal-75-a3",
         type: "unanswered",
@@ -3808,7 +3924,12 @@ export const DEALS: Deal[] = [
         date: "2026-09-01",
         contactId: "snowflake-c3",
       },
-      { id: "deal-75-a7", type: "closePushed", date: "2026-09-01" },
+      {
+        id: "deal-75-a7",
+        type: "closePushed",
+        date: "2026-09-01",
+        from: "2026-11-15",
+      },
       {
         id: "deal-75-a8",
         type: "meeting",
@@ -3915,8 +4036,18 @@ export const DEALS: Deal[] = [
         date: "2026-06-27",
         contactId: "snowflake-c1",
       },
-      { id: "deal-77-a3", type: "closePushed", date: "2026-06-29" },
-      { id: "deal-77-a4", type: "closePushed", date: "2026-07-03" },
+      {
+        id: "deal-77-a3",
+        type: "closePushed",
+        date: "2026-06-29",
+        from: "2026-11-29",
+      },
+      {
+        id: "deal-77-a4",
+        type: "closePushed",
+        date: "2026-07-03",
+        from: "2026-12-26",
+      },
       {
         id: "deal-77-a5",
         type: "unanswered",
@@ -4287,7 +4418,12 @@ export const DEALS: Deal[] = [
         date: "2026-06-24",
         contactId: "apple-c2",
       },
-      { id: "deal-84-a2", type: "closePushed", date: "2026-07-15" },
+      {
+        id: "deal-84-a2",
+        type: "closePushed",
+        date: "2026-07-15",
+        from: "2026-10-06",
+      },
       {
         id: "deal-84-a3",
         type: "reply",
@@ -4692,7 +4828,12 @@ export const DEALS: Deal[] = [
         date: "2026-07-17",
         contactId: "paypal-c2",
       },
-      { id: "deal-93-a9", type: "closePushed", date: "2026-07-24" },
+      {
+        id: "deal-93-a9",
+        type: "closePushed",
+        date: "2026-07-24",
+        from: "2026-10-26",
+      },
       {
         id: "deal-93-a10",
         type: "reply",
@@ -4749,7 +4890,12 @@ export const DEALS: Deal[] = [
         date: "2026-06-22",
         contactId: "paypal-c5",
       },
-      { id: "deal-94-a5", type: "closePushed", date: "2026-07-11" },
+      {
+        id: "deal-94-a5",
+        type: "closePushed",
+        date: "2026-07-11",
+        from: "2026-12-19",
+      },
       {
         id: "deal-94-a6",
         type: "unanswered",
@@ -4827,7 +4973,12 @@ export const DEALS: Deal[] = [
         date: "2026-06-28",
         contactId: "stripe-c1",
       },
-      { id: "deal-97-a2", type: "closePushed", date: "2026-07-29" },
+      {
+        id: "deal-97-a2",
+        type: "closePushed",
+        date: "2026-07-29",
+        from: "2026-10-24",
+      },
       { id: "deal-97-a3", type: "proposalViewed", date: "2026-08-06" },
       {
         id: "deal-97-a4",
@@ -4967,7 +5118,12 @@ export const DEALS: Deal[] = [
         date: "2026-08-25",
         contactId: "stripe-c1",
       },
-      { id: "deal-99-a10", type: "closePushed", date: "2026-08-28" },
+      {
+        id: "deal-99-a10",
+        type: "closePushed",
+        date: "2026-08-28",
+        from: "2027-01-04",
+      },
       {
         id: "deal-99-a11",
         type: "unanswered",
@@ -5066,14 +5222,24 @@ export const DEALS: Deal[] = [
         date: "2026-07-06",
         contactId: "spotify-c1",
       },
-      { id: "deal-103-a2", type: "closePushed", date: "2026-07-17" },
+      {
+        id: "deal-103-a2",
+        type: "closePushed",
+        date: "2026-07-17",
+        from: "2026-10-05",
+      },
       {
         id: "deal-103-a3",
         type: "meeting",
         date: "2026-07-25",
         contactId: "spotify-c3",
       },
-      { id: "deal-103-a4", type: "closePushed", date: "2026-07-27" },
+      {
+        id: "deal-103-a4",
+        type: "closePushed",
+        date: "2026-07-27",
+        from: "2026-11-09",
+      },
       {
         id: "deal-103-a5",
         type: "decisionMaker",
@@ -5562,7 +5728,12 @@ export const DEALS: Deal[] = [
         date: "2026-08-13",
         contactId: "zoom-c1",
       },
-      { id: "deal-114-a5", type: "closePushed", date: "2026-08-20" },
+      {
+        id: "deal-114-a5",
+        type: "closePushed",
+        date: "2026-08-20",
+        from: "2027-01-05",
+      },
     ],
   },
   {
@@ -5663,7 +5834,12 @@ export const DEALS: Deal[] = [
         date: "2026-06-23",
         contactId: "slack-c1",
       },
-      { id: "deal-119-a2", type: "closePushed", date: "2026-06-26" },
+      {
+        id: "deal-119-a2",
+        type: "closePushed",
+        date: "2026-06-26",
+        from: "2026-11-29",
+      },
       {
         id: "deal-119-a3",
         type: "unanswered",
@@ -5700,7 +5876,12 @@ export const DEALS: Deal[] = [
         date: "2026-08-07",
         contactId: "slack-c1",
       },
-      { id: "deal-119-a9", type: "closePushed", date: "2026-08-12" },
+      {
+        id: "deal-119-a9",
+        type: "closePushed",
+        date: "2026-08-12",
+        from: "2026-12-28",
+      },
       {
         id: "deal-119-a10",
         type: "meeting",
@@ -5725,7 +5906,12 @@ export const DEALS: Deal[] = [
         date: "2026-08-24",
         contactId: "slack-c1",
       },
-      { id: "deal-119-a14", type: "closePushed", date: "2026-08-24" },
+      {
+        id: "deal-119-a14",
+        type: "closePushed",
+        date: "2026-08-24",
+        from: "2027-01-27",
+      },
       {
         id: "deal-119-a15",
         type: "reply",
