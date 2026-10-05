@@ -94,22 +94,34 @@ export function contactSummaryMap(contacts: Contact[], deals: Deal[]) {
   for (const contact of contacts) {
     summaries.set(contact.id, { ...EMPTY_CONTACT_SUMMARY });
   }
+  const leftAt = new Map<string, string>();
   for (const deal of deals) {
     for (const event of deal.activity) {
       if (!event.contactId) continue;
       const summary = summaries.get(event.contactId);
       if (!summary) continue;
-      if (event.type === "championLeft") summary.left = true;
+      if (event.type === "championLeft") {
+        const previous = leftAt.get(event.contactId);
+        if (previous === undefined || event.date > previous) {
+          leftAt.set(event.contactId, event.date);
+        }
+        continue;
+      }
       if (daysSince(event.date) < ENGAGEMENT_WINDOW_DAYS) {
         summary.engagement += 1;
       }
-      if (summary.lastTouch === null || event.date > summary.lastTouch.date) {
+      if (summary.lastTouch === null || event.date >= summary.lastTouch.date) {
         summary.lastTouch = {
           date: event.date,
           label: INTERACTION_LABELS[event.type],
         };
       }
     }
+  }
+  for (const [contactId, date] of leftAt) {
+    const summary = summaries.get(contactId);
+    if (!summary) continue;
+    summary.left = summary.lastTouch === null || summary.lastTouch.date <= date;
   }
   for (const contact of contacts) {
     const summary = summaries.get(contact.id);
@@ -136,6 +148,22 @@ export function contactDeals(contact: Contact, deals: Deal[]) {
         Number(isOpenStage(b.stage)) - Number(isOpenStage(a.stage)) ||
         b.value - a.value,
     );
+}
+
+export function firstOpenDeal(contact: Contact, deals: Deal[]) {
+  return contactDeals(contact, deals).find((deal) => isOpenStage(deal.stage));
+}
+
+export function decisionMakerTarget(contact: Contact, deals: Deal[]) {
+  const deal = firstOpenDeal(contact, deals);
+  if (!deal) return undefined;
+  const alreadyLogged = deal.activity.some(
+    (event) =>
+      event.type === "decisionMaker" &&
+      event.contactId === contact.id &&
+      event.date >= deal.stageChangedAt,
+  );
+  return alreadyLogged ? undefined : deal;
 }
 
 export function contactEvents(contact: Contact, deals: Deal[]) {

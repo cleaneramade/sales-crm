@@ -31,10 +31,17 @@ import {
   contactSummaryFor,
 } from "@/lib/contacts";
 import { ACTIVITY_EFFECTS, isOpenStage } from "@/lib/deals";
+import {
+  contactEnrollments,
+  displayStatus,
+  enrollmentProgress,
+} from "@/lib/sequences";
+import { useHandoff } from "@/lib/use-handoff";
 import { useActivitiesStore } from "@/stores/activities-store";
 import { useCompaniesStore, useCompanyMap } from "@/stores/companies-store";
 import { useContactSummaries, useContactsStore } from "@/stores/contacts-store";
 import { useDealsStore } from "@/stores/deals-store";
+import { useSequencesStore } from "@/stores/sequences-store";
 import BookClosedIcon from "@/public/assets/images/companies/sidebar/book-closed.svg";
 import MailIcon from "@/public/assets/images/companies/detail/mail-04.svg";
 import PhoneIcon from "@/public/assets/images/companies/detail/phone.svg";
@@ -54,6 +61,11 @@ export default function ContactDetail() {
   const openDealDetail = useDealsStore((state) => state.openDetail);
   const openCompanyDetail = useCompaniesStore((state) => state.openDetail);
   const openLog = useActivitiesStore((state) => state.openLog);
+  const sequences = useSequencesStore((state) => state.sequences);
+  const setContactEnrollId = useSequencesStore(
+    (state) => state.setContactEnrollId,
+  );
+  const handoff = useHandoff();
 
   const contact = contacts.find((item) => item.id === detailId);
   const company = contact ? companyById.get(contact.companyId) : undefined;
@@ -63,22 +75,31 @@ export default function ContactDetail() {
   const recent = contact
     ? contactEvents(contact, deals).slice(0, RECENT_LIMIT)
     : [];
+  const enrolled = contact ? contactEnrollments(contact.id, sequences) : [];
+  const canEnroll =
+    contact !== undefined &&
+    summary !== null &&
+    !summary.left &&
+    sequences.some(
+      (sequence) =>
+        sequence.status === "Active" &&
+        !sequence.enrollments.some(
+          (enrollment) => enrollment.contactId === contact.id,
+        ),
+    );
 
   function openCompany() {
     if (!company) return;
-    closeDetail();
-    openCompanyDetail(company.id);
+    handoff.run(closeDetail, () => openCompanyDetail(company.id));
   }
 
   function openDeal(dealId: string) {
-    closeDetail();
-    openDealDetail(dealId);
+    handoff.run(closeDetail, () => openDealDetail(dealId));
   }
 
   function logActivity() {
     if (!contact || !firstOpenDeal) return;
-    closeDetail();
-    openLog(firstOpenDeal.id, contact.id);
+    handoff.run(closeDetail, () => openLog(firstOpenDeal.id, contact.id));
   }
 
   return (
@@ -86,7 +107,11 @@ export default function ContactDetail() {
       open={detailOpen && contact !== undefined}
       onOpenChange={(open) => !open && closeDetail()}
     >
-      <SheetContent side="right" className="sm:w-[560px] sm:max-w-[560px]">
+      <SheetContent
+        side="right"
+        className="sm:w-[560px] sm:max-w-[560px]"
+        onCloseAutoFocus={handoff.onCloseAutoFocus}
+      >
         <SheetHeader>
           <div className="flex items-center gap-2">
             <BookClosedIcon aria-hidden className="text-icon size-3.5" />
@@ -166,7 +191,11 @@ export default function ContactDetail() {
             </DetailSection>
 
             <DetailSection title="Role">
-              <Field label="Role on the account" htmlFor="contact-detail-role">
+              <Field
+                label="Role on the account"
+                htmlFor="contact-detail-role"
+                hint={`Setting Decision maker logs Decision-maker added on their first open deal, +${ACTIVITY_EFFECTS.decisionMaker.delta} to win chance.`}
+              >
                 <Select
                   value={contact.role}
                   onValueChange={(value) =>
@@ -220,6 +249,50 @@ export default function ContactDetail() {
               )}
             </DetailSection>
 
+            <DetailSection
+              title="Sequences"
+              action={
+                <Button
+                  variant="subtle"
+                  size="sm"
+                  onClick={() => setContactEnrollId(contact.id)}
+                  disabled={!canEnroll}
+                >
+                  Enroll in sequence
+                </Button>
+              }
+            >
+              {enrolled.length > 0 ? (
+                <ul className="divide-line-strong flex flex-col divide-y">
+                  {enrolled.map(({ sequence, enrollment }) => {
+                    const status = displayStatus(sequence, enrollment);
+                    return (
+                      <li
+                        key={enrollment.id}
+                        className="flex items-center justify-between gap-3 py-2.5 first:pt-0 last:pb-0"
+                      >
+                        <span className="flex min-w-0 flex-col gap-1.5">
+                          <span className="text-foreground truncate">
+                            {sequence.name}
+                          </span>
+                          <span className="caption-style text-subtle tabular-nums">
+                            Step {enrollmentProgress(sequence, enrollment)}
+                          </span>
+                        </span>
+                        <Tag tone={status.tone} size="sm">
+                          {status.label}
+                        </Tag>
+                      </li>
+                    );
+                  })}
+                </ul>
+              ) : (
+                <span className="caption-style text-subtle block">
+                  Not in any sequence yet.
+                </span>
+              )}
+            </DetailSection>
+
             <DetailSection title="Recent activity" className="shadow-none">
               {recent.length > 0 ? (
                 <ul className="divide-line-strong flex flex-col divide-y">
@@ -257,14 +330,21 @@ export default function ContactDetail() {
               Close
             </Button>
           </SheetClose>
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={logActivity}
-            disabled={!firstOpenDeal}
-          >
-            Log activity
-          </Button>
+          <div className="flex flex-col-reverse items-end gap-1.5 sm:flex-row sm:items-center sm:gap-3">
+            {!firstOpenDeal && (
+              <span className="caption-style text-subtle">
+                Link to an open deal first
+              </span>
+            )}
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={logActivity}
+              disabled={!firstOpenDeal}
+            >
+              Log activity
+            </Button>
+          </div>
         </SheetFooter>
       </SheetContent>
     </Sheet>

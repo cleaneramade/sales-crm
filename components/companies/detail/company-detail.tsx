@@ -28,7 +28,9 @@ import {
   ownerByName,
 } from "@/data/companies";
 import { summaryFor } from "@/lib/companies";
+import { useHandoff } from "@/lib/use-handoff";
 import { useCompaniesStore } from "@/stores/companies-store";
+import { useContactsStore } from "@/stores/contacts-store";
 import { useCompanySummaries } from "@/stores/deals-store";
 import BuildingIcon from "@/public/assets/images/companies/detail/building.svg";
 import XIcon from "@/public/assets/images/companies/detail/x.svg";
@@ -45,6 +47,8 @@ export default function CompanyDetail() {
   const closeDetail = useCompaniesStore((state) => state.closeDetail);
   const openProfile = useCompaniesStore((state) => state.openProfile);
   const setAppDialog = useCompaniesStore((state) => state.setAppDialog);
+  const openContact = useContactsStore((state) => state.openDetail);
+  const handoff = useHandoff();
   const [trendWindow, setTrendWindow] = useState(TREND_WINDOWS[1]);
   const [scoreWindow, setScoreWindow] = useState(TREND_WINDOWS[1]);
 
@@ -58,7 +62,11 @@ export default function CompanyDetail() {
       open={detailOpen && company !== undefined}
       onOpenChange={(open) => !open && closeDetail()}
     >
-      <SheetContent side="right" className="sm:w-[560px] sm:max-w-[560px]">
+      <SheetContent
+        side="right"
+        className="sm:w-[560px] sm:max-w-[560px]"
+        onCloseAutoFocus={handoff.onCloseAutoFocus}
+      >
         <SheetHeader>
           <div className="flex items-center gap-2">
             <BuildingIcon aria-hidden className="text-icon size-3.5" />
@@ -116,7 +124,9 @@ export default function CompanyDetail() {
                 <Button
                   variant="ghost"
                   size="none"
-                  onClick={() => openProfile(owner.name)}
+                  onClick={() =>
+                    handoff.run(closeDetail, () => openProfile(owner.name))
+                  }
                   aria-label={`Open ${owner.name} profile`}
                   className="lead-style text-foreground -mx-1.5 gap-1.5 px-1.5 py-1 font-medium"
                 >
@@ -135,7 +145,12 @@ export default function CompanyDetail() {
             </DetailSection>
 
             <DetailSection title="People">
-              <CompanyPeople companyId={company.id} />
+              <CompanyPeople
+                companyId={company.id}
+                onOpenContact={(contactId) =>
+                  handoff.run(closeDetail, () => openContact(contactId))
+                }
+              />
             </DetailSection>
 
             <DetailSection title="Pipeline health">

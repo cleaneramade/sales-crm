@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useMemo } from "react";
 import { Checkbox } from "@/components/_ui/checkbox";
 import { ScrollArea } from "@/components/_ui/scroll-area";
 import {
@@ -37,8 +38,16 @@ export default function ContactsTable() {
   const setSelected = useContactsStore((state) => state.setSelected);
   const openDetail = useContactsStore((state) => state.openDetail);
 
+  const selectedSet = useMemo(() => new Set(selectedIds), [selectedIds]);
+
+  useEffect(() => {
+    const visibleIds = new Set(visible.map((contact) => contact.id));
+    const kept = selectedIds.filter((id) => visibleIds.has(id));
+    if (kept.length !== selectedIds.length) setSelected(kept);
+  }, [visible, selectedIds, setSelected]);
+
   const selectedVisible = visible.filter((contact) =>
-    selectedIds.includes(contact.id),
+    selectedSet.has(contact.id),
   );
   const allSelected =
     visible.length > 0 && selectedVisible.length === visible.length;
@@ -92,7 +101,7 @@ export default function ContactsTable() {
                 contact={contact}
                 company={companyById.get(contact.companyId)}
                 summary={contactSummaryFor(summaries, contact.id)}
-                selected={selectedIds.includes(contact.id)}
+                selected={selectedSet.has(contact.id)}
                 active={detailOpen && detailId === contact.id}
                 onToggle={() => toggleSelected(contact.id)}
                 onOpen={() => openDetail(contact.id)}

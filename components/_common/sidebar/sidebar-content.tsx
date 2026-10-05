@@ -13,6 +13,7 @@ import { ROUTES } from "@/lib/routes";
 import { useCompaniesStore } from "@/stores/companies-store";
 import { useContactsStore } from "@/stores/contacts-store";
 import { useDealsStore } from "@/stores/deals-store";
+import { useActiveSequenceCount } from "@/stores/sequences-store";
 import Logo from "@/public/assets/images/_common/logo.svg";
 import BuildingIcon from "@/public/assets/images/companies/sidebar/building.svg";
 import ClipboardIcon from "@/public/assets/images/companies/sidebar/clipboard.svg";
@@ -46,6 +47,7 @@ export default function SidebarContent() {
   const attentionCount = useDealsStore(
     (state) => needsAttention(state.deals).length,
   );
+  const sequenceCount = useActiveSequenceCount();
   const setAppDialog = useCompaniesStore((state) => state.setAppDialog);
   const planId = useCompaniesStore((state) => state.planId);
   const plan = PLANS.find((item) => item.id === planId);
@@ -101,6 +103,7 @@ export default function SidebarContent() {
               icon={MailIcon}
               label="Email Sequences"
               href={ROUTES.sequences.path}
+              count={sequenceCount}
             />
           </SidebarSection>
 

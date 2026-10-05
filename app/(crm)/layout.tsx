@@ -3,6 +3,10 @@ import Sidebar from "@/components/_common/sidebar/sidebar";
 import CompanyDetail from "@/components/companies/detail/company-detail";
 import ContactDetail from "@/components/contacts/detail/contact-detail";
 import NewContactDialog from "@/components/contacts/new-contact/new-contact-dialog";
+import SequenceDetail from "@/components/sequences/detail/sequence-detail";
+import NewSequenceDialog from "@/components/sequences/new-sequence/new-sequence-dialog";
+import EnrollDialog from "@/components/sequences/enroll/enroll-dialog";
+import ContactEnrollDialog from "@/components/sequences/enroll/contact-enroll-dialog";
 import LogActivityDialog from "@/components/activities/log/log-activity-dialog";
 import DealDetail from "@/components/deals/detail/deal-detail";
 import NewDealDialog from "@/components/deals/new-deal/new-deal-dialog";
@@ -23,6 +27,10 @@ export default function CrmLayout({ children }: { children: ReactNode }) {
       <ContactDetail />
       <NewDealDialog />
       <NewContactDialog />
+      <SequenceDetail />
+      <NewSequenceDialog />
+      <EnrollDialog />
+      <ContactEnrollDialog />
       <LogActivityDialog />
       <Profile />
       <NewCompanyDialog />

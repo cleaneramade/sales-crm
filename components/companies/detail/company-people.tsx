@@ -5,26 +5,22 @@ import Button from "@/components/_ui/button";
 import Tag from "@/components/_ui/tag";
 import ContactInitials from "@/components/contacts/contact-initials";
 import { CONTACT_ROLE_TONES } from "@/lib/contacts";
-import { useCompaniesStore } from "@/stores/companies-store";
 import { useContactsStore } from "@/stores/contacts-store";
 
 type CompanyPeopleProps = {
   companyId: string;
+  onOpenContact: (contactId: string) => void;
 };
 
-export default function CompanyPeople({ companyId }: CompanyPeopleProps) {
+export default function CompanyPeople({
+  companyId,
+  onOpenContact,
+}: CompanyPeopleProps) {
   const contacts = useContactsStore((state) => state.contacts);
-  const openContact = useContactsStore((state) => state.openDetail);
-  const closeDetail = useCompaniesStore((state) => state.closeDetail);
   const people = useMemo(
     () => contacts.filter((contact) => contact.companyId === companyId),
     [contacts, companyId],
   );
-
-  function open(contactId: string) {
-    closeDetail();
-    openContact(contactId);
-  }
 
   if (people.length === 0) {
     return (
@@ -39,7 +35,7 @@ export default function CompanyPeople({ companyId }: CompanyPeopleProps) {
           <Button
             variant="item"
             size="none"
-            onClick={() => open(contact.id)}
+            onClick={() => onOpenContact(contact.id)}
             className="items-center justify-between gap-3 rounded-none py-2"
           >
             <span className="flex min-w-0 items-center gap-2.5">

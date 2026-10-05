@@ -22,6 +22,7 @@ import {
   formatMoney,
   summaryFor,
 } from "@/lib/companies";
+import { useHandoff } from "@/lib/use-handoff";
 import { useCompaniesStore } from "@/stores/companies-store";
 import { useCompanySummaries } from "@/stores/deals-store";
 import UsersIcon from "@/public/assets/images/companies/sidebar/users.svg";
@@ -39,6 +40,7 @@ export default function Profile() {
   const closeProfile = useCompaniesStore((state) => state.closeProfile);
   const openDetail = useCompaniesStore((state) => state.openDetail);
   const setOwner = useCompaniesStore((state) => state.setOwner);
+  const handoff = useHandoff();
 
   const person = profileName ? profileByName(profileName) : null;
   const isCurrentUser = person?.name === CURRENT_USER.name;
@@ -80,7 +82,11 @@ export default function Profile() {
       open={profileOpen && person !== null}
       onOpenChange={(open) => !open && closeProfile()}
     >
-      <SheetContent side="right" className="sm:w-[480px] sm:max-w-[480px]">
+      <SheetContent
+        side="right"
+        className="sm:w-[480px] sm:max-w-[480px]"
+        onCloseAutoFocus={handoff.onCloseAutoFocus}
+      >
         <SheetHeader>
           <div className="flex items-center gap-2">
             <UsersIcon aria-hidden className="text-icon size-3.5" />
@@ -167,7 +173,9 @@ export default function Profile() {
                       key={company.id}
                       company={company}
                       summary={summaryFor(summaries, company.id)}
-                      onOpen={() => openDetail(company.id)}
+                      onOpen={() =>
+                        handoff.run(closeProfile, () => openDetail(company.id))
+                      }
                     />
                   ))}
                 </ul>

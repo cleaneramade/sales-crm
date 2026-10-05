@@ -41,6 +41,7 @@ import {
   isStale,
   lastActivityDays,
 } from "@/lib/deals";
+import { useHandoff } from "@/lib/use-handoff";
 import { cn } from "@/lib/utils";
 import { useCompaniesStore } from "@/stores/companies-store";
 import { useDealsStore } from "@/stores/deals-store";
@@ -73,6 +74,7 @@ export default function DealDetail() {
   const openProfile = useCompaniesStore((state) => state.openProfile);
   const openCompanyDetail = useCompaniesStore((state) => state.openDetail);
   const setAppDialog = useCompaniesStore((state) => state.setAppDialog);
+  const handoff = useHandoff();
 
   const deal = deals.find((item) => item.id === detailId);
   const company = deal
@@ -91,14 +93,12 @@ export default function DealDetail() {
 
   function openOwner() {
     if (!owner) return;
-    closeDetail();
-    openProfile(owner.name);
+    handoff.run(closeDetail, () => openProfile(owner.name));
   }
 
   function openCompany() {
     if (!company) return;
-    closeDetail();
-    openCompanyDetail(company.id);
+    handoff.run(closeDetail, () => openCompanyDetail(company.id));
   }
 
   return (
@@ -106,7 +106,11 @@ export default function DealDetail() {
       open={detailOpen && deal !== undefined}
       onOpenChange={(open) => !open && closeDetail()}
     >
-      <SheetContent side="right" className="sm:w-[560px] sm:max-w-[560px]">
+      <SheetContent
+        side="right"
+        className="sm:w-[560px] sm:max-w-[560px]"
+        onCloseAutoFocus={handoff.onCloseAutoFocus}
+      >
         <SheetHeader>
           <div className="flex items-center gap-2">
             <ClipboardIcon aria-hidden className="text-icon size-3.5" />

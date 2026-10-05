@@ -154,12 +154,22 @@ export const HELP_SECTIONS: { title: string; topics: HelpTopic[] }[] = [
       {
         question: "What happens when I add a decision maker?",
         answer:
-          "Choose a deal when you add them with the Decision maker role. It logs Decision-maker added on that deal, which adds 10% to its win chance.",
+          "Choose a deal when you add them with the Decision maker role. It logs Decision-maker added on that deal, which adds 10% to its win chance. Changing an existing contact to Decision maker does the same on their first open deal.",
       },
       {
         question: "Does logging an activity change win chance?",
         answer:
           "Yes. It uses the same rules as the deal panel, so the new win chance shows on the Deals Board, Companies and Forecast.",
+      },
+      {
+        question: "Do sequences change win chance?",
+        answer:
+          "Only when you mark a reply or book a meeting. That logs the activity on the person's open deal, so a reply adds 5% and a meeting adds 10%. Enrolling, pausing and removing people never touch a deal.",
+      },
+      {
+        question: "What do open and reply rates mean?",
+        answer:
+          "Open rate is the share of sent emails that were opened. Reply rate is the share of enrolled people who replied or booked a meeting. Call and LinkedIn tasks are left out of the open rate.",
       },
     ],
   },

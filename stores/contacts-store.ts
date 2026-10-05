@@ -4,6 +4,7 @@ import { CONTACTS, type Contact, type ContactRole } from "@/data/contacts";
 import {
   DEFAULT_CONTACT_FILTERS,
   contactSummaryMap,
+  decisionMakerTarget,
   filterContacts,
   type ContactFilters,
 } from "@/lib/contacts";
@@ -31,7 +32,7 @@ type ContactsState = ContactFilters & {
   linkToDeal: (id: string, dealId: string) => void;
 };
 
-export const useContactsStore = create<ContactsState>((set) => ({
+export const useContactsStore = create<ContactsState>((set, get) => ({
   contacts: CONTACTS,
   ...DEFAULT_CONTACT_FILTERS,
   selectedIds: [],
@@ -58,12 +59,19 @@ export const useContactsStore = create<ContactsState>((set) => ({
       contacts: [contact, ...state.contacts],
       newContactOpen: false,
     })),
-  setRole: (id, role) =>
+  setRole: (id, role) => {
+    const contact = get().contacts.find((item) => item.id === id);
+    if (!contact || contact.role === role) return;
     set((state) => ({
-      contacts: state.contacts.map((contact) =>
-        contact.id === id ? { ...contact, role } : contact,
+      contacts: state.contacts.map((item) =>
+        item.id === id ? { ...item, role } : item,
       ),
-    })),
+    }));
+    if (role !== "Decision maker") return;
+    const { deals, logActivity } = useDealsStore.getState();
+    const target = decisionMakerTarget(contact, deals);
+    if (target) logActivity(target.id, "decisionMaker", { contactId: id });
+  },
   linkToDeal: (id, dealId) =>
     set((state) => ({
       contacts: state.contacts.map((contact) =>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import Button from "@/components/_ui/button";
 import {
   Dialog,
@@ -54,6 +54,11 @@ export default function NewContactDialog() {
   const [companyError, setCompanyError] = useState<string | null>(null);
   const nameRef = useRef<HTMLInputElement>(null);
   const companyRef = useRef<HTMLButtonElement>(null);
+  const submitted = useRef(false);
+
+  useEffect(() => {
+    if (open) submitted.current = false;
+  }, [open]);
 
   const current: FormState = form ?? {
     companyId: "",
@@ -79,6 +84,7 @@ export default function NewContactDialog() {
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!open || submitted.current) return;
     const name = current.name.trim();
     if (!current.companyId) setCompanyError("Choose a company.");
     if (!name) setNameError("Enter a name.");
@@ -91,8 +97,17 @@ export default function NewContactDialog() {
       return;
     }
 
+    submitted.current = true;
+    const existingIds = new Set(
+      useContactsStore.getState().contacts.map((item) => item.id),
+    );
+    let id = `${slugify(name)}-${Date.now()}`;
+    for (let n = 2; existingIds.has(id); n += 1) {
+      id = `${slugify(name)}-${Date.now()}-${n}`;
+    }
+
     const contact: Contact = {
-      id: `${slugify(name)}-${Date.now()}`,
+      id,
       name,
       title: current.title.trim(),
       companyId: current.companyId,

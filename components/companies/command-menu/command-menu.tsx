@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Command,
   CommandDialog,
@@ -32,6 +32,10 @@ export default function CommandMenu() {
   const openDetail = useCompaniesStore((state) => state.openDetail);
   const setNewCompanyOpen = useCompaniesStore(
     (state) => state.setNewCompanyOpen,
+  );
+  const people = useMemo(
+    () => [...contacts].sort((a, b) => a.name.localeCompare(b.name)),
+    [contacts],
   );
   const [query, setQuery] = useState("");
   const actionRan = useRef(false);
@@ -92,7 +96,7 @@ export default function CommandMenu() {
           </CommandGroup>
           <CommandSeparator />
           <CommandGroup heading="People">
-            {contacts.map((contact) => (
+            {people.map((contact) => (
               <CommandContactRow
                 key={contact.id}
                 contact={contact}
