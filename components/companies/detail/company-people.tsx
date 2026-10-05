@@ -38,7 +38,7 @@ export default function CompanyPeople({
             variant="item"
             size="none"
             onClick={() => onOpenContact(contact.id)}
-            className="items-center justify-between gap-3 rounded-none py-2"
+            className="min-w-0 flex-1 items-center justify-between gap-3 rounded-none py-2"
           >
             <span className="flex min-w-0 items-center gap-2.5">
               <ContactInitials name={contact.name} className="size-6" />
