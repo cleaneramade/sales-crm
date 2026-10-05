@@ -12,7 +12,7 @@ import {
 } from "@/components/_ui/dropdown-menu";
 import type { Deal } from "@/data/deals";
 import { NO_CALCULATION } from "@/lib/companies";
-import { DEAL_CALCULATIONS, calculateDeals } from "@/lib/deals";
+import { DEAL_CALCULATIONS, calculateDeals, openDeals } from "@/lib/deals";
 import PlusIcon from "@/public/assets/images/_common/plus.svg";
 
 type BoardFooterProps = {
@@ -33,8 +33,10 @@ export default function BoardFooter({ deals }: BoardFooterProps) {
   return (
     <div className="caption-style border-border bg-background grid shrink-0 grid-cols-2 gap-px border-t border-b p-px sm:grid-cols-4">
       <div className="outline-border flex items-center gap-2 p-3 outline-1">
-        <span className="text-foreground tabular-nums">{deals.length}</span>
-        <span className="text-muted-foreground">Deals in view</span>
+        <span className="text-foreground tabular-nums">
+          {openDeals(deals).length}
+        </span>
+        <span className="text-muted-foreground">Open deals in view</span>
       </div>
       {slots.map((slot, index) => {
         const calculation = DEAL_CALCULATIONS.find(
