@@ -9,6 +9,7 @@ import { CURRENT_QUARTER_ID } from "@/data/forecast";
 import { needsAttention } from "@/lib/activities";
 import { isOpenStage } from "@/lib/deals";
 import { openDealsInQuarter } from "@/lib/forecast";
+import { regionOpenCount } from "@/lib/pipelines";
 import { q1OpenDealCount } from "@/lib/q1-forecast";
 import { ROUTES } from "@/lib/routes";
 import { slippingCount } from "@/lib/slipping";
@@ -51,6 +52,15 @@ export default function SidebarContent() {
   const slippingTotal = useDealsStore((state) => slippingCount(state.deals));
   const attentionCount = useDealsStore(
     (state) => needsAttention(state.deals).length,
+  );
+  const northAmericaCount = useDealsStore((state) =>
+    regionOpenCount(state.deals, "North America"),
+  );
+  const emeaCount = useDealsStore((state) =>
+    regionOpenCount(state.deals, "EMEA"),
+  );
+  const apacCount = useDealsStore((state) =>
+    regionOpenCount(state.deals, "APAC"),
   );
   const sequenceCount = useActiveSequenceCount();
   const setAppDialog = useCompaniesStore((state) => state.setAppDialog);
@@ -159,16 +169,19 @@ export default function SidebarContent() {
               icon={DotYellow}
               label="North America"
               href={ROUTES.northAmerica.path}
+              count={northAmericaCount}
             />
             <SidebarNavItem
               icon={DotPink}
               label="EMEA Enterprise"
               href={ROUTES.emeaEnterprise.path}
+              count={emeaCount}
             />
             <SidebarNavItem
               icon={DotPurple}
               label="APAC Expansion"
               href={ROUTES.apacExpansion.path}
+              count={apacCount}
             />
           </SidebarSection>
         </nav>

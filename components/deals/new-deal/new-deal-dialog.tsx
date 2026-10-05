@@ -26,8 +26,10 @@ import { OWNERS, STAGES, type Stage } from "@/data/companies";
 import {
   DEAL_STAGES,
   OPEN_STAGES,
+  REGIONS,
   type Deal,
   type DealStage,
+  type Region,
 } from "@/data/deals";
 import { TODAY } from "@/lib/companies";
 import { slugify } from "@/lib/utils";
@@ -41,6 +43,7 @@ type FormState = {
   value: string;
   stage: DealStage;
   owner: string;
+  region: Region;
   closeDate: string;
   motion: Stage;
 };
@@ -49,6 +52,7 @@ export default function NewDealDialog() {
   const open = useDealsStore((state) => state.newDealOpen);
   const setOpen = useDealsStore((state) => state.setNewDealOpen);
   const addDeal = useDealsStore((state) => state.addDeal);
+  const newDealRegion = useDealsStore((state) => state.newDealRegion);
   const companies = useCompaniesStore((state) => state.companies);
   const [form, setForm] = useState<FormState | null>(null);
   const [nameError, setNameError] = useState<string | null>(null);
@@ -62,6 +66,7 @@ export default function NewDealDialog() {
     value: "",
     stage: OPEN_STAGES[0],
     owner: OWNERS[0].name,
+    region: newDealRegion,
     closeDate: TODAY,
     motion: STAGES[0],
   };
@@ -98,6 +103,7 @@ export default function NewDealDialog() {
       id: `${slugify(name)}-${Date.now()}`,
       name,
       companyId: current.companyId,
+      region: current.region,
       owner: current.owner,
       value: Math.max(0, Math.round(Number(current.value) || 0)),
       stage: current.stage,
@@ -224,26 +230,45 @@ export default function NewDealDialog() {
           </FormSection>
 
           <FormSection title="Ownership & timing">
-            <Field label="Deal owner" htmlFor="deal-owner">
-              <Select
-                value={current.owner}
-                onValueChange={(value) => update("owner", value)}
-              >
-                <SelectTrigger id="deal-owner">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {OWNERS.map((owner) => (
-                    <SelectItem key={owner.name} value={owner.name}>
-                      <span className="flex items-center gap-2">
-                        <Avatar src={owner.avatar} alt="" />
-                        {owner.name}
-                      </span>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </Field>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Deal owner" htmlFor="deal-owner">
+                <Select
+                  value={current.owner}
+                  onValueChange={(value) => update("owner", value)}
+                >
+                  <SelectTrigger id="deal-owner">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {OWNERS.map((owner) => (
+                      <SelectItem key={owner.name} value={owner.name}>
+                        <span className="flex items-center gap-2">
+                          <Avatar src={owner.avatar} alt="" />
+                          {owner.name}
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+              <Field label="Region" htmlFor="deal-region">
+                <Select
+                  value={current.region}
+                  onValueChange={(value) => update("region", value as Region)}
+                >
+                  <SelectTrigger id="deal-region">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {REGIONS.map((region) => (
+                      <SelectItem key={region} value={region}>
+                        {region}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+            </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Close date" htmlFor="deal-close-date">

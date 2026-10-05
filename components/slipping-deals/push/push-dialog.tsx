@@ -28,7 +28,7 @@ const QUICK_PICKS = [
   },
   {
     key: "month",
-    label: "+1 month",
+    label: "+30 days",
     date: (base: string) => addDays(base, 30),
   },
   { key: "quarter", label: "End of next quarter", date: endOfNextQuarter },
@@ -98,9 +98,11 @@ export default function PushDialog() {
                 required
                 error={error}
                 hint={
-                  pushCapped(deal)
-                    ? "Win chance won't drop. A pushed close date is already counted twice this stage."
-                    : `Win chance drops ${Math.abs(ACTIVITY_EFFECTS.closePushed.delta)}%.`
+                  deal.winOverride !== undefined
+                    ? "Win chance stays at the manual value."
+                    : pushCapped(deal)
+                      ? "Win chance won't drop. A pushed close date is already counted twice this stage."
+                      : `Win chance drops ${Math.abs(ACTIVITY_EFFECTS.closePushed.delta)}%.`
                 }
               >
                 <Input
@@ -129,6 +131,11 @@ export default function PushDialog() {
                       variant="secondary"
                       size="sm"
                       disabled={target < min}
+                      title={
+                        target < min
+                          ? "Before the earliest allowed date"
+                          : undefined
+                      }
                       onClick={() => setPicked({ id: deal.id, date: target })}
                     >
                       {pick.label}

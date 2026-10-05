@@ -44,34 +44,38 @@ export const MAX_COUNTED_PER_TYPE = 2;
 export const MIN_OPEN_WIN = 1;
 export const MAX_OPEN_WIN = 99;
 export const OVERRIDE_STEP = 5;
-export const CLOSE_PUSH_DAYS = 14;
 
 export type DealFilters = {
   sortBy: DealSortKey;
   owner: string;
   motion: string;
   closeWindow: CloseWindow;
+  region: string;
 };
 
 export const ALL_DEAL_OWNERS = "all";
 export const ANY_MOTION = "any";
+export const ANY_REGION = "any";
 
 export const DEFAULT_DEAL_FILTERS: DealFilters = {
   sortBy: "value",
   owner: ALL_DEAL_OWNERS,
   motion: ANY_MOTION,
   closeWindow: "any",
+  region: ANY_REGION,
 };
 
 export function dealActiveFilterCount({
   owner,
   motion,
   closeWindow,
+  region,
 }: DealFilters) {
   return [
     owner !== DEFAULT_DEAL_FILTERS.owner,
     motion !== DEFAULT_DEAL_FILTERS.motion,
     closeWindow !== DEFAULT_DEAL_FILTERS.closeWindow,
+    region !== DEFAULT_DEAL_FILTERS.region,
   ].filter(Boolean).length;
 }
 
@@ -272,12 +276,13 @@ function inWindow(closeDate: string, closeWindow: CloseWindow) {
 
 export function filterDeals(
   deals: Deal[],
-  { owner, motion, closeWindow }: DealFilters,
+  { owner, motion, closeWindow, region }: DealFilters,
 ) {
   return deals.filter(
     (deal) =>
       (owner === ALL_DEAL_OWNERS || deal.owner === owner) &&
       (motion === ANY_MOTION || deal.motion === motion) &&
+      (region === ANY_REGION || deal.region === region) &&
       inWindow(deal.closeDate, closeWindow),
   );
 }

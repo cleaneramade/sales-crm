@@ -187,7 +187,14 @@ export default function SlippingRow({
               Mark lost
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onSelect={() => openDetail(deal.id)}>
+            <DropdownMenuItem
+              onSelect={() =>
+                handoff.run(
+                  () => {},
+                  () => openDetail(deal.id),
+                )
+              }
+            >
               Open deal
             </DropdownMenuItem>
           </DropdownMenuContent>

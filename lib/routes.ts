@@ -1,3 +1,5 @@
+import { PIPELINES } from "@/data/pipelines";
+
 export type PageRoute = {
   path: string;
   title: string;
@@ -85,6 +87,11 @@ export const PIPELINE_TABS = [
   { href: ROUTES.forecast.path, label: "Forecast" },
 ];
 
+export const PIPELINE_REGION_TABS = PIPELINES.map((pipeline) => ({
+  href: ROUTES[pipeline.routeKey].path,
+  label: pipeline.title,
+}));
+
 export const TEAM_TABS = [
   { href: ROUTES.strategicAes.path, label: "Strategic AEs" },
   { href: ROUTES.midMarket.path, label: "Mid Market" },
@@ -95,10 +102,6 @@ export const REPORT_TABS = [
   { href: ROUTES.q1Forecast.path, label: "Q1 Forecast" },
   { href: ROUTES.slippingDeals.path, label: "Slipping Deals" },
 ];
-
-export function routeByPath(path: string) {
-  return Object.values(ROUTES).find((route) => route.path === path);
-}
 
 export function isActivePath(pathname: string, href: string) {
   return href === "/" ? pathname === "/" : pathname.startsWith(href);

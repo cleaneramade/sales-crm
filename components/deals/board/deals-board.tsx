@@ -4,25 +4,37 @@ import { useMemo, useState, type DragEvent } from "react";
 import { ScrollArea } from "@/components/_ui/scroll-area";
 import BoardFooter from "./board-footer";
 import DealColumn from "./deal-column";
-import { DEAL_STAGES, type DealStage } from "@/data/deals";
+import { DEAL_STAGES, type DealStage, type Region } from "@/data/deals";
 import { dealsInStage, visibleDeals } from "@/lib/deals";
 import { useCompaniesStore } from "@/stores/companies-store";
 import { useDealsStore } from "@/stores/deals-store";
 
-export default function DealsBoard() {
+type DealsBoardProps = {
+  region?: Region;
+};
+
+export default function DealsBoard({ region }: DealsBoardProps) {
   const deals = useDealsStore((state) => state.deals);
   const sortBy = useDealsStore((state) => state.sortBy);
   const owner = useDealsStore((state) => state.owner);
   const motion = useDealsStore((state) => state.motion);
   const closeWindow = useDealsStore((state) => state.closeWindow);
+  const regionFilter = useDealsStore((state) => state.region);
   const moveDeal = useDealsStore((state) => state.moveDeal);
   const companies = useCompaniesStore((state) => state.companies);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [overStage, setOverStage] = useState<DealStage | null>(null);
 
   const visible = useMemo(
-    () => visibleDeals(deals, { sortBy, owner, motion, closeWindow }),
-    [deals, sortBy, owner, motion, closeWindow],
+    () =>
+      visibleDeals(deals, {
+        sortBy,
+        owner,
+        motion,
+        closeWindow,
+        region: region ?? regionFilter,
+      }),
+    [deals, sortBy, owner, motion, closeWindow, region, regionFilter],
   );
 
   function handleDragStart(event: DragEvent<HTMLElement>, id: string) {

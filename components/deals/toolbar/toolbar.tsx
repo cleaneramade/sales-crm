@@ -8,8 +8,14 @@ import {
   DEAL_OWNER_OPTIONS,
   DEAL_SORT_MENU_OPTIONS,
   MOTION_OPTIONS,
+  REGION_OPTIONS,
 } from "./filter-options";
-import type { CloseWindow, DealSortKey } from "@/data/deals";
+import {
+  REGIONS,
+  type CloseWindow,
+  type DealSortKey,
+  type Region,
+} from "@/data/deals";
 import { TODAY } from "@/lib/companies";
 import { downloadCsv } from "@/lib/csv";
 import { dealsCsvRows, visibleDeals } from "@/lib/deals";
@@ -18,7 +24,11 @@ import { useDealsStore } from "@/stores/deals-store";
 import ShareIcon from "@/public/assets/images/companies/toolbar/share.svg";
 import PlusIcon from "@/public/assets/images/_common/plus.svg";
 
-export default function DealsToolbar() {
+type DealsToolbarProps = {
+  region?: Region;
+};
+
+export default function DealsToolbar({ region }: DealsToolbarProps) {
   const sortBy = useDealsStore((state) => state.sortBy);
   const owner = useDealsStore((state) => state.owner);
   const motion = useDealsStore((state) => state.motion);
@@ -27,7 +37,9 @@ export default function DealsToolbar() {
   const setOwner = useDealsStore((state) => state.setOwner);
   const setMotion = useDealsStore((state) => state.setMotion);
   const setCloseWindow = useDealsStore((state) => state.setCloseWindow);
-  const setNewDealOpen = useDealsStore((state) => state.setNewDealOpen);
+  const regionFilter = useDealsStore((state) => state.region);
+  const setRegionFilter = useDealsStore((state) => state.setRegionFilter);
+  const openNewDeal = useDealsStore((state) => state.openNewDeal);
 
   function exportCsv() {
     const { deals } = useDealsStore.getState();
@@ -37,6 +49,7 @@ export default function DealsToolbar() {
       owner,
       motion,
       closeWindow,
+      region: region ?? regionFilter,
     });
     downloadCsv(
       `deals-${TODAY}.csv`,
@@ -51,7 +64,7 @@ export default function DealsToolbar() {
 
   return (
     <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 px-4 py-4">
-      <MobileFilters className="sm:hidden" />
+      <MobileFilters className="sm:hidden" region={region} />
 
       <div className="hidden min-w-0 flex-wrap gap-2 sm:flex">
         <FilterMenu
@@ -72,6 +85,14 @@ export default function DealsToolbar() {
           options={MOTION_OPTIONS}
           onChange={setMotion}
         />
+        {!region && (
+          <FilterMenu
+            label="Region"
+            value={regionFilter}
+            options={REGION_OPTIONS}
+            onChange={setRegionFilter}
+          />
+        )}
         <FilterMenu
           label="Close Date"
           value={closeWindow}
@@ -88,7 +109,7 @@ export default function DealsToolbar() {
         <Button
           variant="primary"
           size="sm"
-          onClick={() => setNewDealOpen(true)}
+          onClick={() => openNewDeal(region ?? REGIONS[0])}
         >
           <PlusIcon aria-hidden className="size-3" />
           New Deal

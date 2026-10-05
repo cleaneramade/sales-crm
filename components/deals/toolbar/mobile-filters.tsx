@@ -27,11 +27,13 @@ import {
   DEAL_OWNER_OPTIONS,
   DEAL_SORT_MENU_OPTIONS,
   MOTION_OPTIONS,
+  REGION_OPTIONS,
 } from "./filter-options";
 import { ownerByName } from "@/data/companies";
-import type { CloseWindow, DealSortKey } from "@/data/deals";
+import type { CloseWindow, DealSortKey, Region } from "@/data/deals";
 import {
   ALL_DEAL_OWNERS,
+  ANY_REGION,
   DEFAULT_DEAL_FILTERS,
   dealActiveFilterCount,
   filterDeals,
@@ -43,30 +45,45 @@ import XIcon from "@/public/assets/images/companies/detail/x.svg";
 
 type MobileFiltersProps = {
   className?: string;
+  region?: Region;
 };
 
-export default function MobileFilters({ className }: MobileFiltersProps) {
+export default function MobileFilters({
+  className,
+  region,
+}: MobileFiltersProps) {
   const [open, setOpen] = useState(false);
   const deals = useDealsStore((state) => state.deals);
   const sortBy = useDealsStore((state) => state.sortBy);
   const owner = useDealsStore((state) => state.owner);
   const motion = useDealsStore((state) => state.motion);
   const closeWindow = useDealsStore((state) => state.closeWindow);
+  const regionFilter = useDealsStore((state) => state.region);
+  const setRegionFilter = useDealsStore((state) => state.setRegionFilter);
   const setSortBy = useDealsStore((state) => state.setSortBy);
   const setOwner = useDealsStore((state) => state.setOwner);
   const setMotion = useDealsStore((state) => state.setMotion);
   const setCloseWindow = useDealsStore((state) => state.setCloseWindow);
   const resetFilters = useDealsStore((state) => state.resetFilters);
 
+  const activeRegion = region ?? regionFilter;
   const activeCount = dealActiveFilterCount({
     sortBy,
     owner,
     motion,
     closeWindow,
+    region: region ? ANY_REGION : regionFilter,
   });
   const resultCount = useMemo(
-    () => filterDeals(deals, { sortBy, owner, motion, closeWindow }).length,
-    [deals, sortBy, owner, motion, closeWindow],
+    () =>
+      filterDeals(deals, {
+        sortBy,
+        owner,
+        motion,
+        closeWindow,
+        region: activeRegion,
+      }).length,
+    [deals, sortBy, owner, motion, closeWindow, activeRegion],
   );
 
   return (
@@ -163,6 +180,23 @@ export default function MobileFilters({ className }: MobileFiltersProps) {
                 </SelectContent>
               </Select>
             </Field>
+
+            {!region && (
+              <Field label="Region" htmlFor="mobile-deal-region">
+                <Select value={regionFilter} onValueChange={setRegionFilter}>
+                  <SelectTrigger id="mobile-deal-region">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {REGION_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+            )}
 
             <Field label="Close date" htmlFor="mobile-deal-close">
               <Select

@@ -1,6 +1,8 @@
 "use client";
 
+import { CURRENT_QUARTER_ID } from "@/data/forecast";
 import { formatMoney } from "@/lib/companies";
+import { quarterById } from "@/lib/forecast";
 import { cn } from "@/lib/utils";
 import { useSlippingReport } from "@/stores/slipping-store";
 
@@ -30,7 +32,7 @@ export default function Summary() {
       key: "pushed",
       label: "Pushed this quarter",
       value: String(summary.pushedThisQuarter),
-      note: "Q3 2026 pushes",
+      note: `${quarterById(CURRENT_QUARTER_ID).label} pushes`,
     },
     {
       key: "pastDue",

@@ -147,6 +147,11 @@ export const HELP_SECTIONS: { title: string; topics: HelpTopic[] }[] = [
           "Click an owner's name, then Filter table by owner in their profile.",
       },
       {
+        question: "What are the pipelines?",
+        answer:
+          "Each pipeline is the Deals Board for one region: North America, EMEA Enterprise and APAC Expansion. Change a deal's region in its panel and it moves to that pipeline.",
+      },
+      {
         question: "Can I export what I see?",
         answer:
           "Export downloads what matches your current filters as a spreadsheet file.",

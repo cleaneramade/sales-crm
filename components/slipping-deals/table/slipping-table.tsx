@@ -1,5 +1,6 @@
 "use client";
 
+import Button from "@/components/_ui/button";
 import { ScrollArea } from "@/components/_ui/scroll-area";
 import {
   Table,
@@ -20,10 +21,11 @@ import {
 import { cn } from "@/lib/utils";
 import { useCompaniesStore } from "@/stores/companies-store";
 import { useDealsStore } from "@/stores/deals-store";
-import { useSlippingReport } from "@/stores/slipping-store";
+import { useSlippingReport, useSlippingStore } from "@/stores/slipping-store";
 
 export default function SlippingTable() {
-  const { rows, summary } = useSlippingReport();
+  const { all, rows, summary } = useSlippingReport();
+  const resetFilters = useSlippingStore((state) => state.resetFilters);
   const detailId = useDealsStore((state) => state.detailId);
   const detailOpen = useDealsStore((state) => state.detailOpen);
   const companies = useCompaniesStore((state) => state.companies);
@@ -68,9 +70,20 @@ export default function SlippingTable() {
               <TableRow role="row" className={SLIPPING_ROW_CLASS}>
                 <td
                   role="cell"
-                  className="caption-style text-muted-foreground col-span-full flex h-[120px] items-center justify-center"
+                  className="caption-style text-muted-foreground col-span-full flex h-[120px] flex-col items-center justify-center gap-2"
                 >
-                  No slipping deals match the current filters.
+                  {all.length === 0
+                    ? "No deals are slipping."
+                    : "No slipping deals match the current filters."}
+                  {all.length > 0 && (
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={resetFilters}
+                    >
+                      Reset filters
+                    </Button>
+                  )}
                 </td>
               </TableRow>
             )}

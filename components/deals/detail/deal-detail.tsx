@@ -28,9 +28,11 @@ import { TAG_TONES, ownerByName } from "@/data/companies";
 import {
   DEAL_STAGES,
   LOST_STAGE,
+  REGIONS,
   WON_STAGE,
   type DealActivityType,
   type DealStage,
+  type Region,
 } from "@/data/deals";
 import { formatDate, formatMoney } from "@/lib/companies";
 import {
@@ -68,6 +70,7 @@ export default function DealDetail() {
   const deals = useDealsStore((state) => state.deals);
   const closeDetail = useDealsStore((state) => state.closeDetail);
   const moveDeal = useDealsStore((state) => state.moveDeal);
+  const setRegion = useDealsStore((state) => state.setRegion);
   const logActivity = useDealsStore((state) => state.logActivity);
   const openPush = useDealsStore((state) => state.openPush);
   const setWinOverride = useDealsStore((state) => state.setWinOverride);
@@ -198,6 +201,26 @@ export default function DealDetail() {
                     {DEAL_STAGES.map((stage) => (
                       <SelectItem key={stage} value={stage}>
                         {stage}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+            </DetailSection>
+
+            <DetailSection title="Region">
+              <Field label="Pipeline region" htmlFor="deal-detail-region">
+                <Select
+                  value={deal.region}
+                  onValueChange={(value) => setRegion(deal.id, value as Region)}
+                >
+                  <SelectTrigger id="deal-detail-region">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {REGIONS.map((region) => (
+                      <SelectItem key={region} value={region}>
+                        {region}
                       </SelectItem>
                     ))}
                   </SelectContent>

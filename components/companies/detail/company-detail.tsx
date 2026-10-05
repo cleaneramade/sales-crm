@@ -27,11 +27,12 @@ import {
   TREND_WINDOWS,
   ownerByName,
 } from "@/data/companies";
+import { REGIONS } from "@/data/deals";
 import { summaryFor } from "@/lib/companies";
 import { useHandoff } from "@/lib/use-handoff";
 import { useCompaniesStore } from "@/stores/companies-store";
 import { useContactsStore } from "@/stores/contacts-store";
-import { useCompanySummaries } from "@/stores/deals-store";
+import { useCompanySummaries, useDealsStore } from "@/stores/deals-store";
 import BuildingIcon from "@/public/assets/images/companies/detail/building.svg";
 import XIcon from "@/public/assets/images/companies/detail/x.svg";
 import MailIcon from "@/public/assets/images/companies/detail/mail-04.svg";
@@ -44,6 +45,7 @@ export default function CompanyDetail() {
   const detailOpen = useCompaniesStore((state) => state.detailOpen);
   const companies = useCompaniesStore((state) => state.companies);
   const summaries = useCompanySummaries();
+  const deals = useDealsStore((state) => state.deals);
   const closeDetail = useCompaniesStore((state) => state.closeDetail);
   const openProfile = useCompaniesStore((state) => state.openProfile);
   const setAppDialog = useCompaniesStore((state) => state.setAppDialog);
@@ -56,6 +58,9 @@ export default function CompanyDetail() {
   const scoreCards = SCORE_CARDS.filter((card) => card.ageDays <= scoreDays);
   const company = companies.find((item) => item.id === detailId);
   const owner = company ? ownerByName(company.owner) : null;
+  const regions = REGIONS.filter((region) =>
+    deals.some((deal) => deal.companyId === detailId && deal.region === region),
+  );
 
   return (
     <Sheet
@@ -113,6 +118,11 @@ export default function CompanyDetail() {
                   {company.tags.map((tag) => (
                     <Tag key={tag} tone={TAG_TONES[tag]} size="sm">
                       {tag}
+                    </Tag>
+                  ))}
+                  {regions.map((region) => (
+                    <Tag key={region} tone="neutral" size="sm">
+                      {region}
                     </Tag>
                   ))}
                 </div>

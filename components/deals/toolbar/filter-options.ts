@@ -1,6 +1,6 @@
 import { OWNERS, STAGES } from "@/data/companies";
-import { CLOSE_WINDOWS, DEAL_SORT_OPTIONS } from "@/data/deals";
-import { ALL_DEAL_OWNERS, ANY_MOTION } from "@/lib/deals";
+import { CLOSE_WINDOWS, DEAL_SORT_OPTIONS, REGIONS } from "@/data/deals";
+import { ALL_DEAL_OWNERS, ANY_MOTION, ANY_REGION } from "@/lib/deals";
 
 export const DEAL_OWNER_OPTIONS = [
   { value: ALL_DEAL_OWNERS, label: "All Owners" },
@@ -10,6 +10,11 @@ export const DEAL_OWNER_OPTIONS = [
 export const MOTION_OPTIONS = [
   { value: ANY_MOTION, label: "Any" },
   ...STAGES.map((motion) => ({ value: motion, label: motion })),
+];
+
+export const REGION_OPTIONS = [
+  { value: ANY_REGION, label: "Any" },
+  ...REGIONS.map((region) => ({ value: region, label: region })),
 ];
 
 export const CLOSE_WINDOW_OPTIONS = CLOSE_WINDOWS.map((window) => ({

@@ -25,7 +25,8 @@ import { DEAL_ACTIVITY_TYPES, type DealActivityType } from "@/data/deals";
 import { formatDelta } from "@/lib/activities";
 import { TODAY, formatDate } from "@/lib/companies";
 import { dealContacts } from "@/lib/contacts";
-import { ACTIVITY_EFFECTS, CLOSE_PUSH_DAYS, isOpenStage } from "@/lib/deals";
+import { ACTIVITY_EFFECTS, isOpenStage } from "@/lib/deals";
+import { useHandoff } from "@/lib/use-handoff";
 import { useActivitiesStore } from "@/stores/activities-store";
 import { useCompaniesStore } from "@/stores/companies-store";
 import { useContactsStore } from "@/stores/contacts-store";
@@ -58,6 +59,8 @@ export default function LogActivityDialog() {
   const contacts = useContactsStore((state) => state.contacts);
   const deals = useDealsStore((state) => state.deals);
   const logActivity = useDealsStore((state) => state.logActivity);
+  const openPush = useDealsStore((state) => state.openPush);
+  const handoff = useHandoff();
   const companies = useCompaniesStore((state) => state.companies);
   const [form, setForm] = useState<FormState | null>(null);
   const [errors, setErrors] = useState<Errors>({});
@@ -132,7 +135,9 @@ export default function LogActivityDialog() {
     const next: Errors = {};
     if (!current.companyId) next.company = "Choose a company.";
     else if (!current.dealId) next.deal = "Choose a deal.";
-    if (!current.date) next.date = "Pick a date.";
+    const pushing = current.type === "closePushed";
+    if (pushing) next.date = undefined;
+    else if (!current.date) next.date = "Pick a date.";
     else if (current.date > TODAY)
       next.date = "The date can't be in the future.";
     else if (selectedDeal && current.date < selectedDeal.stageChangedAt)
@@ -141,6 +146,15 @@ export default function LogActivityDialog() {
     if (next.company) return companyRef.current?.focus();
     if (next.deal) return dealRef.current?.focus();
     if (next.date) return dateRef.current?.focus();
+
+    if (pushing) {
+      const dealId = current.dealId;
+      handoff.run(
+        () => handleOpenChange(false),
+        () => openPush(dealId),
+      );
+      return;
+    }
 
     logActivity(current.dealId, current.type, {
       date: current.date,
@@ -153,7 +167,10 @@ export default function LogActivityDialog() {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-[560px]">
+      <DialogContent
+        className="max-w-[560px]"
+        onCloseAutoFocus={handoff.onCloseAutoFocus}
+      >
         <form onSubmit={handleSubmit} noValidate className="flex flex-col">
           <DialogHeader>
             <DialogTitle>Log activity</DialogTitle>
@@ -268,7 +285,7 @@ export default function LogActivityDialog() {
               htmlFor="activity-type"
               hint={
                 current.type === "closePushed"
-                  ? `Moves the close date out ${CLOSE_PUSH_DAYS} days.`
+                  ? "Opens Push close date to pick the new date."
                   : undefined
               }
             >
