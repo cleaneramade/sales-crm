@@ -33,7 +33,9 @@ export default function HelpDialog() {
         </DialogHeader>
 
         <section className="flex flex-col gap-3 px-6 py-5 shadow-[inset_0_-1px_0_var(--line-strong)]">
-          <h3 className="eyebrow-style text-soft">Keyboard shortcuts</h3>
+          <span className="eyebrow-style text-soft block">
+            Keyboard shortcuts
+          </span>
           <ul className="flex flex-col gap-2.5">
             {SHORTCUTS.map((shortcut) => (
               <li
@@ -52,7 +54,7 @@ export default function HelpDialog() {
         </section>
 
         <section className="flex flex-col gap-3 px-6 py-5">
-          <h3 className="eyebrow-style text-soft">Quick answers</h3>
+          <span className="eyebrow-style text-soft block">Quick answers</span>
           <ul className="flex flex-col gap-2">
             {HELP_TOPICS.map((topic) => (
               <li key={topic.question}>

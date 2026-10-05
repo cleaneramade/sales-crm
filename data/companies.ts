@@ -1,4 +1,9 @@
-export const SEGMENTS = ["Enterprise", "Mid-Market", "SMB", "Strategic"] as const;
+export const SEGMENTS = [
+  "Enterprise",
+  "Mid-Market",
+  "SMB",
+  "Strategic",
+] as const;
 
 export const STAGES = [
   "New Logo",
@@ -397,6 +402,7 @@ export type ScoreCard = {
   reviewer: string;
   reviewerAvatar: string;
   updated: string;
+  ageDays: number;
   verdict: string;
   stars: number;
 };
@@ -409,6 +415,7 @@ export const SCORE_CARDS: ScoreCard[] = [
     reviewer: "Emma Green",
     reviewerAvatar: "/assets/images/_common/avatars/detail-2.png",
     updated: "Updated 2h ago",
+    ageDays: 0,
     verdict: "High potential SN",
     stars: 4,
   },
@@ -418,7 +425,8 @@ export const SCORE_CARDS: ScoreCard[] = [
       "Evaluates technical compatibility, security requirements, and integration readiness.",
     reviewer: "Ricky Brown",
     reviewerAvatar: "/assets/images/_common/avatars/detail-3.png",
-    updated: "Updated 2h ago",
+    updated: "Updated 12d ago",
+    ageDays: 12,
     verdict: "High potential SN",
     stars: 4,
   },
@@ -428,7 +436,8 @@ export const SCORE_CARDS: ScoreCard[] = [
       "Evaluates technical compatibility, security requirements, and integration readiness.",
     reviewer: "Taylor Leroy",
     reviewerAvatar: "/assets/images/_common/avatars/detail-1.png",
-    updated: "Updated 2h ago",
+    updated: "Updated 41d ago",
+    ageDays: 41,
     verdict: "High potential SN",
     stars: 4,
   },

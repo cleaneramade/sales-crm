@@ -44,6 +44,8 @@ export default function CompanyDetail() {
   const [trendWindow, setTrendWindow] = useState(TREND_WINDOWS[1]);
   const [scoreWindow, setScoreWindow] = useState(TREND_WINDOWS[1]);
 
+  const scoreDays = Number(scoreWindow.match(/\d+/)?.[0] ?? 30);
+  const scoreCards = SCORE_CARDS.filter((card) => card.ageDays <= scoreDays);
   const company = companies.find((item) => item.id === detailId);
   const owner = company ? ownerByName(company.owner) : null;
 
@@ -159,11 +161,17 @@ export default function CompanyDetail() {
                 />
               }
             >
-              <div className="flex flex-col gap-2">
-                {SCORE_CARDS.map((card, index) => (
-                  <ScoreCard key={`${card.title}-${index}`} card={card} />
-                ))}
-              </div>
+              {scoreCards.length > 0 ? (
+                <div className="flex flex-col gap-2">
+                  {scoreCards.map((card, index) => (
+                    <ScoreCard key={`${card.title}-${index}`} card={card} />
+                  ))}
+                </div>
+              ) : (
+                <span className="caption-style text-subtle block">
+                  No score cards updated in this period.
+                </span>
+              )}
             </DetailSection>
           </ScrollArea>
         )}
