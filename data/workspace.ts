@@ -136,6 +136,11 @@ export const HELP_SECTIONS: { title: string; topics: HelpTopic[] }[] = [
         answer:
           "Export downloads what matches your current filters as a spreadsheet file.",
       },
+      {
+        question: "Where do a company's numbers come from?",
+        answer:
+          "Open deals, pipeline, win chance, last interaction and the activity trend all come from its deals on the Deals Board. Nothing is typed in.",
+      },
     ],
   },
 ];

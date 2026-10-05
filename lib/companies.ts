@@ -1,4 +1,5 @@
 import type { Company, SortKey } from "@/data/companies";
+import type { DealActivityType, DealStage } from "@/data/deals";
 
 export type CompanyFilters = {
   sortBy: SortKey;
@@ -8,6 +9,34 @@ export type CompanyFilters = {
 };
 
 export const TODAY = "2026-09-14";
+
+export const TREND_WEEKS = 12;
+
+export type CompanySummary = {
+  openDeals: number;
+  pipelineValue: number;
+  win: number | null;
+  lastActivity: { date: string; label: string } | null;
+  trend: number[];
+  events: { date: string; type: DealActivityType }[];
+  stageValue: Partial<Record<DealStage, number>>;
+};
+
+export type CompanySummaries = ReadonlyMap<string, CompanySummary>;
+
+export const EMPTY_SUMMARY: CompanySummary = {
+  openDeals: 0,
+  pipelineValue: 0,
+  win: null,
+  lastActivity: null,
+  trend: Array.from({ length: TREND_WEEKS }, () => 0),
+  events: [],
+  stageValue: {},
+};
+
+export function summaryFor(summaries: CompanySummaries, companyId: string) {
+  return summaries.get(companyId) ?? EMPTY_SUMMARY;
+}
 
 export const ALL_OWNERS = "all";
 export const ANY_STAGE = "any";
@@ -33,44 +62,47 @@ export function activeFilterCount({
 
 const TAG_CHAR_BUDGET = 20;
 
-export type CompanyWins = ReadonlyMap<string, number>;
-
 export function filterCompanies(
   companies: Company[],
   { sortBy, owner, stage, activityWindow }: CompanyFilters,
-  wins: CompanyWins,
+  summaries: CompanySummaries,
 ): Company[] {
   const filtered = companies.filter((company) => {
     if (owner !== ALL_OWNERS && company.owner !== owner) return false;
     if (stage !== ANY_STAGE && !company.tags.some((tag) => tag === stage)) {
       return false;
     }
-    return company.activityDays <= activityWindow;
+    const last = summaryFor(summaries, company.id).lastActivity;
+    return last === null || daysSince(last.date) <= activityWindow;
   });
 
   return filtered.sort((a, b) => {
+    const left = summaryFor(summaries, a.id);
+    const right = summaryFor(summaries, b.id);
     switch (sortBy) {
       case "name":
         return a.name.localeCompare(b.name);
       case "lastInteraction":
-        return b.lastInteraction.date.localeCompare(a.lastInteraction.date);
+        return (right.lastActivity?.date ?? "").localeCompare(
+          left.lastActivity?.date ?? "",
+        );
       case "openDeals":
-        return b.openDeals - a.openDeals;
-      case "winProbability": {
-        const winA = wins.get(a.id);
-        const winB = wins.get(b.id);
-        if (winA === undefined || winB === undefined) {
-          return Number(winA === undefined) - Number(winB === undefined);
+        return right.openDeals - left.openDeals;
+      case "winProbability":
+        if (left.win === null || right.win === null) {
+          return Number(left.win === null) - Number(right.win === null);
         }
-        return winB - winA;
-      }
+        return right.win - left.win;
       default:
-        return b.pipelineValue - a.pipelineValue;
+        return right.pipelineValue - left.pipelineValue;
     }
   });
 }
 
-export function companiesCsvRows(companies: Company[], wins: CompanyWins) {
+export function companiesCsvRows(
+  companies: Company[],
+  summaries: CompanySummaries,
+) {
   return [
     [
       "Company",
@@ -82,16 +114,19 @@ export function companiesCsvRows(companies: Company[], wins: CompanyWins) {
       "Last Interaction Date",
       "Last Interaction",
     ],
-    ...companies.map((company) => [
-      company.name,
-      company.tags.join("; "),
-      company.owner,
-      company.openDeals,
-      company.pipelineValue,
-      wins.get(company.id) ?? "",
-      company.lastInteraction.date,
-      company.lastInteraction.label,
-    ]),
+    ...companies.map((company) => {
+      const summary = summaryFor(summaries, company.id);
+      return [
+        company.name,
+        company.tags.join("; "),
+        company.owner,
+        summary.openDeals,
+        summary.pipelineValue,
+        summary.win ?? "",
+        summary.lastActivity?.date ?? "",
+        summary.lastActivity?.label ?? "",
+      ];
+    }),
   ];
 }
 
@@ -110,15 +145,6 @@ export function splitTags(tags: Company["tags"]) {
   return { visible, hidden: tags.length - visible.length };
 }
 
-export function companyHealth(win: number | null) {
-  const value = win ?? 0;
-  return {
-    discovery: Math.round(value * 0.372),
-    evaluation: Math.round(value * 0.651),
-    procurement: Math.round(value * 0.372),
-  };
-}
-
 export const NO_CALCULATION = "none";
 
 export const CALCULATIONS = [
@@ -129,8 +155,10 @@ export const CALCULATIONS = [
   { value: "avgWin", label: "Avg win probability" },
 ];
 
-export function averageWin(companies: Company[], wins: CompanyWins) {
-  const values = companies.flatMap((item) => wins.get(item.id) ?? []);
+export function averageWin(companies: Company[], summaries: CompanySummaries) {
+  const values = companies.flatMap(
+    (item) => summaryFor(summaries, item.id).win ?? [],
+  );
   return values.length
     ? Math.round(values.reduce((sum, value) => sum + value, 0) / values.length)
     : null;
@@ -139,11 +167,12 @@ export function averageWin(companies: Company[], wins: CompanyWins) {
 export function calculate(
   kind: string,
   companies: Company[],
-  wins: CompanyWins,
+  summaries: CompanySummaries,
 ) {
   const count = companies.length;
-  const pipeline = companies.reduce((sum, item) => sum + item.pipelineValue, 0);
-  const deals = companies.reduce((sum, item) => sum + item.openDeals, 0);
+  const rows = companies.map((item) => summaryFor(summaries, item.id));
+  const pipeline = rows.reduce((sum, item) => sum + item.pipelineValue, 0);
+  const deals = rows.reduce((sum, item) => sum + item.openDeals, 0);
 
   switch (kind) {
     case "sumPipeline":
@@ -151,11 +180,11 @@ export function calculate(
     case "avgPipeline":
       return `$${formatMoney(count ? Math.round(pipeline / count) : 0)}`;
     case "maxPipeline":
-      return `$${formatMoney(Math.max(0, ...companies.map((item) => item.pipelineValue)))}`;
+      return `$${formatMoney(Math.max(0, ...rows.map((item) => item.pipelineValue)))}`;
     case "sumDeals":
       return formatMoney(deals);
     case "avgWin": {
-      const avg = averageWin(companies, wins);
+      const avg = averageWin(companies, summaries);
       return avg === null ? "—" : `${avg}%`;
     }
     default:
@@ -163,22 +192,21 @@ export function calculate(
   }
 }
 
-const WINDOW_SCALE: Record<string, number> = {
-  "Last 7 Days": 0.25,
-  "Last 30 Days": 1,
-  "Last 90 Days": 2.75,
-};
-
-export function companyActivity(company: Company, range = "Last 30 Days") {
-  const deals = company.openDeals;
-  const scale = WINDOW_SCALE[range] ?? 1;
-  const scaled = (value: number) => Math.max(0, Math.round(value * scale));
+export function activityStats(summary: CompanySummary, range: string) {
+  const days = Number(range.match(/\d+/)?.[0] ?? 30);
+  const inRange = summary.events.filter(
+    (event) => daysSince(event.date) < days,
+  );
+  const count = (...types: DealActivityType[]) =>
+    inRange.filter((event) => types.includes(event.type)).length;
+  const emails = count("reply", "unanswered");
+  const meetings = count("meeting");
   return {
-    total: scaled(deals * 15),
-    touches: scaled(deals * 4),
-    emails: scaled(deals + 4),
-    meetings: scaled(Math.ceil(deals / 2)),
-    calls: scaled(deals + 1),
+    total: inRange.length,
+    touches: count("reply", "meeting", "proposalViewed", "decisionMaker"),
+    emails,
+    meetings,
+    calls: inRange.length - emails - meetings,
   };
 }
 

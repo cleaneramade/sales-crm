@@ -12,7 +12,7 @@ import {
   CLOSE_PUSH_DAYS,
   DEFAULT_DEAL_FILTERS,
   addDays,
-  companyWinMap,
+  companySummaryMap,
   type DealFilters,
 } from "@/lib/deals";
 
@@ -104,7 +104,7 @@ export const useDealsStore = create<DealsState>((set) => ({
     })),
 }));
 
-export function useCompanyWins() {
+export function useCompanySummaries() {
   const deals = useDealsStore((state) => state.deals);
-  return useMemo(() => companyWinMap(deals), [deals]);
+  return useMemo(() => companySummaryMap(deals), [deals]);
 }

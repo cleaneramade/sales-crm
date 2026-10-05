@@ -1,14 +1,13 @@
 import type { ComponentType, SVGProps } from "react";
 import Sparkline from "@/components/_common/sparkline";
-import type { Company } from "@/data/companies";
-import { companyActivity } from "@/lib/companies";
+import { activityStats, type CompanySummary } from "@/lib/companies";
 import CursorClickIcon from "@/public/assets/images/companies/detail/cursor-click.svg";
 import MailIcon from "@/public/assets/images/companies/detail/mail-03.svg";
 import CalendarIcon from "@/public/assets/images/companies/detail/calendar.svg";
 import PhoneCallIcon from "@/public/assets/images/companies/detail/phone-call.svg";
 
 type ActivityTrendProps = {
-  company: Company;
+  summary: CompanySummary;
   range: string;
 };
 
@@ -18,8 +17,8 @@ type Stat = {
   value: number;
 };
 
-export default function ActivityTrend({ company, range }: ActivityTrendProps) {
-  const activity = companyActivity(company, range);
+export default function ActivityTrend({ summary, range }: ActivityTrendProps) {
+  const activity = activityStats(summary, range);
   const stats: Stat[] = [
     { icon: CursorClickIcon, label: "Total touches", value: activity.touches },
     { icon: MailIcon, label: "Emails", value: activity.emails },
@@ -34,10 +33,10 @@ export default function ActivityTrend({ company, range }: ActivityTrendProps) {
           <span className="block text-[24px] leading-none">
             {activity.total}
           </span>
-          <Sparkline values={company.trend} className="h-[22px]" />
+          <Sparkline values={summary.trend} className="h-[22px]" />
         </div>
         <span className="caption-style text-soft block">
-          Spikes around QBR prep and renewal review
+          Events logged across all its deals
         </span>
       </div>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">

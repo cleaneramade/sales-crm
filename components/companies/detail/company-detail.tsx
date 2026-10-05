@@ -26,8 +26,9 @@ import {
   TREND_WINDOWS,
   ownerByName,
 } from "@/data/companies";
+import { summaryFor } from "@/lib/companies";
 import { useCompaniesStore } from "@/stores/companies-store";
-import { useCompanyWins } from "@/stores/deals-store";
+import { useCompanySummaries } from "@/stores/deals-store";
 import BuildingIcon from "@/public/assets/images/companies/detail/building.svg";
 import XIcon from "@/public/assets/images/companies/detail/x.svg";
 import MailIcon from "@/public/assets/images/companies/detail/mail-04.svg";
@@ -39,7 +40,7 @@ export default function CompanyDetail() {
   const detailId = useCompaniesStore((state) => state.detailId);
   const detailOpen = useCompaniesStore((state) => state.detailOpen);
   const companies = useCompaniesStore((state) => state.companies);
-  const wins = useCompanyWins();
+  const summaries = useCompanySummaries();
   const closeDetail = useCompaniesStore((state) => state.closeDetail);
   const openProfile = useCompaniesStore((state) => state.openProfile);
   const setAppDialog = useCompaniesStore((state) => state.setAppDialog);
@@ -133,7 +134,7 @@ export default function CompanyDetail() {
             </DetailSection>
 
             <DetailSection title="Pipeline health">
-              <PipelineHealth win={wins.get(company.id) ?? null} />
+              <PipelineHealth summary={summaryFor(summaries, company.id)} />
             </DetailSection>
 
             <DetailSection
@@ -147,7 +148,10 @@ export default function CompanyDetail() {
                 />
               }
             >
-              <ActivityTrend company={company} range={trendWindow} />
+              <ActivityTrend
+                summary={summaryFor(summaries, company.id)}
+                range={trendWindow}
+              />
             </DetailSection>
 
             <DetailSection

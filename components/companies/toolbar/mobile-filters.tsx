@@ -36,7 +36,7 @@ import {
 } from "@/lib/companies";
 import { cn } from "@/lib/utils";
 import { useCompaniesStore } from "@/stores/companies-store";
-import { useCompanyWins } from "@/stores/deals-store";
+import { useCompanySummaries } from "@/stores/deals-store";
 import FilterIcon from "@/public/assets/images/_common/filter.svg";
 import XIcon from "@/public/assets/images/companies/detail/x.svg";
 
@@ -47,7 +47,7 @@ type MobileFiltersProps = {
 export default function MobileFilters({ className }: MobileFiltersProps) {
   const [open, setOpen] = useState(false);
   const companies = useCompaniesStore((state) => state.companies);
-  const wins = useCompanyWins();
+  const summaries = useCompanySummaries();
   const sortBy = useCompaniesStore((state) => state.sortBy);
   const owner = useCompaniesStore((state) => state.owner);
   const stage = useCompaniesStore((state) => state.stage);
@@ -64,9 +64,12 @@ export default function MobileFilters({ className }: MobileFiltersProps) {
   const activeCount = activeFilterCount(filters);
   const resultCount = useMemo(
     () =>
-      filterCompanies(companies, { sortBy, owner, stage, activityWindow }, wins)
-        .length,
-    [companies, sortBy, owner, stage, activityWindow, wins],
+      filterCompanies(
+        companies,
+        { sortBy, owner, stage, activityWindow },
+        summaries,
+      ).length,
+    [companies, sortBy, owner, stage, activityWindow, summaries],
   );
 
   return (

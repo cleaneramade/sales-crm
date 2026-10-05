@@ -24,8 +24,6 @@ import {
 import FormSection from "./form-section";
 import LogoUpload from "./logo-upload";
 import {
-  DEFAULT_TREND,
-  INTERACTION_TYPES,
   OWNERS,
   SEGMENTS,
   STAGES,
@@ -33,7 +31,6 @@ import {
   type Segment,
   type Stage,
 } from "@/data/companies";
-import { TODAY, daysSince } from "@/lib/companies";
 import { slugify } from "@/lib/utils";
 import { useCompaniesStore } from "@/stores/companies-store";
 import PlusIcon from "@/public/assets/images/_common/plus.svg";
@@ -44,10 +41,6 @@ type FormState = {
   segment: Segment;
   stage: Stage;
   owner: string;
-  pipelineValue: string;
-  openDeals: string;
-  interactionDate: string;
-  interactionType: string;
 };
 
 const EMPTY_FORM: FormState = {
@@ -56,10 +49,6 @@ const EMPTY_FORM: FormState = {
   segment: SEGMENTS[0],
   stage: STAGES[0],
   owner: OWNERS[0].name,
-  pipelineValue: "",
-  openDeals: "1",
-  interactionDate: TODAY,
-  interactionType: INTERACTION_TYPES[0],
 };
 
 export default function NewCompanyDialog() {
@@ -89,14 +78,6 @@ export default function NewCompanyDialog() {
       logo: form.logo ?? undefined,
       tags: [form.segment, form.stage],
       owner: form.owner,
-      openDeals: Math.max(0, Math.round(Number(form.openDeals) || 0)),
-      pipelineValue: Math.max(0, Math.round(Number(form.pipelineValue) || 0)),
-      trend: DEFAULT_TREND,
-      lastInteraction: {
-        date: form.interactionDate || TODAY,
-        label: form.interactionType,
-      },
-      activityDays: daysSince(form.interactionDate || TODAY),
     };
 
     addCompany(company);
@@ -115,7 +96,8 @@ export default function NewCompanyDialog() {
           <DialogHeader>
             <DialogTitle>New Company</DialogTitle>
             <DialogDescription>
-              Add a company to the pipeline. It appears in the list right away.
+              Add a company to the list. Deals you add on the Deals Board fill
+              in its numbers.
             </DialogDescription>
           </DialogHeader>
 
@@ -187,7 +169,7 @@ export default function NewCompanyDialog() {
             </div>
           </FormSection>
 
-          <FormSection title="Ownership & deal">
+          <FormSection title="Ownership">
             <Field label="Account owner" htmlFor="company-owner">
               <Select
                 value={form.owner}
@@ -208,77 +190,6 @@ export default function NewCompanyDialog() {
                 </SelectContent>
               </Select>
             </Field>
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Pipeline value" htmlFor="company-pipeline">
-                <div className="relative">
-                  <span
-                    aria-hidden
-                    className="text-subtle pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-[14px] leading-none"
-                  >
-                    $
-                  </span>
-                  <Input
-                    id="company-pipeline"
-                    type="number"
-                    min={0}
-                    step={1000}
-                    inputMode="numeric"
-                    value={form.pipelineValue}
-                    onChange={(event) =>
-                      update("pipelineValue", event.target.value)
-                    }
-                    placeholder="250000"
-                    className="pl-6 tabular-nums"
-                  />
-                </div>
-              </Field>
-              <Field label="Open deals" htmlFor="company-deals">
-                <Input
-                  id="company-deals"
-                  type="number"
-                  min={0}
-                  inputMode="numeric"
-                  value={form.openDeals}
-                  onChange={(event) => update("openDeals", event.target.value)}
-                  className="tabular-nums"
-                />
-              </Field>
-            </div>
-          </FormSection>
-
-          <FormSection title="Last interaction">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Date" htmlFor="company-interaction-date">
-                <Input
-                  id="company-interaction-date"
-                  type="date"
-                  max={TODAY}
-                  value={form.interactionDate}
-                  onChange={(event) =>
-                    update("interactionDate", event.target.value)
-                  }
-                  className="tabular-nums"
-                />
-              </Field>
-              <Field label="Type" htmlFor="company-interaction-type">
-                <Select
-                  value={form.interactionType}
-                  onValueChange={(value) => update("interactionType", value)}
-                >
-                  <SelectTrigger id="company-interaction-type">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {INTERACTION_TYPES.map((type) => (
-                      <SelectItem key={type} value={type}>
-                        {type}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </Field>
-            </div>
           </FormSection>
 
           <DialogFooter>

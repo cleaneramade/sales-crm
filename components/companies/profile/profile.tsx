@@ -16,9 +16,14 @@ import {
 import DetailSection from "../detail/detail-section";
 import ProfileAccount from "./profile-account";
 import { CURRENT_USER, profileByName } from "@/data/companies";
-import { ALL_OWNERS, averageWin, formatMoney } from "@/lib/companies";
+import {
+  ALL_OWNERS,
+  averageWin,
+  formatMoney,
+  summaryFor,
+} from "@/lib/companies";
 import { useCompaniesStore } from "@/stores/companies-store";
-import { useCompanyWins } from "@/stores/deals-store";
+import { useCompanySummaries } from "@/stores/deals-store";
 import UsersIcon from "@/public/assets/images/companies/sidebar/users.svg";
 import XIcon from "@/public/assets/images/companies/detail/x.svg";
 import MailIcon from "@/public/assets/images/companies/detail/mail-04.svg";
@@ -30,7 +35,7 @@ export default function Profile() {
   const profileName = useCompaniesStore((state) => state.profileName);
   const profileOpen = useCompaniesStore((state) => state.profileOpen);
   const companies = useCompaniesStore((state) => state.companies);
-  const wins = useCompanyWins();
+  const summaries = useCompanySummaries();
   const closeProfile = useCompaniesStore((state) => state.closeProfile);
   const openDetail = useCompaniesStore((state) => state.openDetail);
   const setOwner = useCompaniesStore((state) => state.setOwner);
@@ -40,18 +45,22 @@ export default function Profile() {
   const accounts = person
     ? companies
         .filter((company) => isCurrentUser || company.owner === person.name)
-        .sort((a, b) => b.pipelineValue - a.pipelineValue)
+        .sort(
+          (a, b) =>
+            summaryFor(summaries, b.id).pipelineValue -
+            summaryFor(summaries, a.id).pipelineValue,
+        )
     : [];
 
   const openDeals = accounts.reduce(
-    (sum, company) => sum + company.openDeals,
+    (sum, company) => sum + summaryFor(summaries, company.id).openDeals,
     0,
   );
   const pipeline = accounts.reduce(
-    (sum, company) => sum + company.pipelineValue,
+    (sum, company) => sum + summaryFor(summaries, company.id).pipelineValue,
     0,
   );
-  const avgWin = averageWin(accounts, wins);
+  const avgWin = averageWin(accounts, summaries);
 
   const stats = [
     { label: "Accounts", value: String(accounts.length) },
@@ -157,7 +166,7 @@ export default function Profile() {
                     <ProfileAccount
                       key={company.id}
                       company={company}
-                      win={wins.get(company.id) ?? null}
+                      summary={summaryFor(summaries, company.id)}
                       onOpen={() => openDetail(company.id)}
                     />
                   ))}

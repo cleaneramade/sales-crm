@@ -15,18 +15,21 @@ import {
   CALCULATIONS,
   NO_CALCULATION,
   calculate,
-  type CompanyWins,
+  type CompanySummaries,
 } from "@/lib/companies";
 import PlusIcon from "@/public/assets/images/_common/plus.svg";
 
 type TableFooterProps = {
   companies: Company[];
-  wins: CompanyWins;
+  summaries: CompanySummaries;
 };
 
 const DEFAULT_SLOTS = ["sumPipeline", "avgWin", NO_CALCULATION];
 
-export default function TableFooter({ companies, wins }: TableFooterProps) {
+export default function TableFooter({
+  companies,
+  summaries,
+}: TableFooterProps) {
   const [slots, setSlots] = useState(DEFAULT_SLOTS);
 
   function setSlot(index: number, value: string) {
@@ -54,7 +57,7 @@ export default function TableFooter({ companies, wins }: TableFooterProps) {
                 {calculation ? (
                   <>
                     <span className="text-foreground tabular-nums">
-                      {calculate(slot, companies, wins)}
+                      {calculate(slot, companies, summaries)}
                     </span>
                     <span className="text-muted-foreground truncate">
                       {calculation.label}

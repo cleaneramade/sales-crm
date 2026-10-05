@@ -7,7 +7,13 @@ import {
   type DealSortKey,
   type DealStage,
 } from "@/data/deals";
-import { TODAY, daysSince, formatMoney } from "@/lib/companies";
+import {
+  TODAY,
+  TREND_WEEKS,
+  daysSince,
+  formatMoney,
+  type CompanySummary,
+} from "@/lib/companies";
 
 export const STAGE_BASE: Record<DealStage, number> = {
   Discovery: 10,
@@ -159,7 +165,7 @@ export function isManualWin(deal: Deal) {
   return isOpenStage(deal.stage) && deal.winOverride !== undefined;
 }
 
-export function companyWinMap(deals: Deal[]) {
+function companyWinMap(deals: Deal[]) {
   const totals = new Map<
     string,
     { weighted: number; value: number; sum: number; count: number }
@@ -191,6 +197,54 @@ export function companyWinMap(deals: Deal[]) {
     );
   }
   return wins;
+}
+
+export const INTERACTION_LABELS: Record<DealActivityType, string> = {
+  meeting: "Meeting",
+  reply: "Reply",
+  proposalViewed: "Proposal viewed",
+  decisionMaker: "New contact",
+  closePushed: "Close pushed",
+  unanswered: "No reply",
+  championLeft: "Champion left",
+};
+
+export function companySummaryMap(deals: Deal[]) {
+  const wins = companyWinMap(deals);
+  const summaries = new Map<string, CompanySummary>();
+  for (const deal of deals) {
+    const summary = summaries.get(deal.companyId) ?? {
+      openDeals: 0,
+      pipelineValue: 0,
+      win: wins.get(deal.companyId) ?? null,
+      lastActivity: null,
+      trend: Array.from({ length: TREND_WEEKS }, () => 0),
+      events: [],
+      stageValue: {},
+    };
+    if (isOpenStage(deal.stage)) {
+      summary.openDeals += 1;
+      summary.pipelineValue += deal.value;
+      summary.stageValue[deal.stage] =
+        (summary.stageValue[deal.stage] ?? 0) + deal.value;
+    }
+    for (const event of deal.activity) {
+      summary.events.push({ date: event.date, type: event.type });
+      if (
+        summary.lastActivity === null ||
+        event.date > summary.lastActivity.date
+      ) {
+        summary.lastActivity = {
+          date: event.date,
+          label: INTERACTION_LABELS[event.type],
+        };
+      }
+      const week = Math.floor(daysSince(event.date) / 7);
+      if (week < TREND_WEEKS) summary.trend[TREND_WEEKS - 1 - week] += 1;
+    }
+    summaries.set(deal.companyId, summary);
+  }
+  return summaries;
 }
 
 function inWindow(closeDate: string, closeWindow: CloseWindow) {

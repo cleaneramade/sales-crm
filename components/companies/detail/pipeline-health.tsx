@@ -1,21 +1,19 @@
 import SegmentBar from "@/components/_common/segment-bar";
-import { companyHealth } from "@/lib/companies";
+import type { CompanySummary } from "@/lib/companies";
 
 type PipelineHealthProps = {
-  win: number | null;
+  summary: CompanySummary;
 };
 
-export default function PipelineHealth({ win }: PipelineHealthProps) {
-  const health = companyHealth(win);
-  const stages = [
-    { label: "Discovery", value: health.discovery, tone: "danger" as const },
-    { label: "Evaluation", value: health.evaluation, tone: "warning" as const },
-    {
-      label: "Procurement",
-      value: health.procurement,
-      tone: "success" as const,
-    },
-  ];
+const STAGES = [
+  { label: "Discovery", stage: "Discovery", tone: "danger" },
+  { label: "Evaluation", stage: "Evaluation", tone: "warning" },
+  { label: "Proposal", stage: "Proposal", tone: "warning" },
+  { label: "Procurement", stage: "Procurement", tone: "success" },
+] as const;
+
+export default function PipelineHealth({ summary }: PipelineHealthProps) {
+  const { win, pipelineValue, stageValue } = summary;
 
   return (
     <div className="flex flex-col gap-3">
@@ -30,22 +28,30 @@ export default function PipelineHealth({ win }: PipelineHealthProps) {
         </span>
       </div>
       <div className="flex flex-col gap-3">
-        {stages.map((stage) => (
-          <div key={stage.label} className="flex flex-col gap-2">
-            <div className="caption-style flex items-center justify-between">
-              <span>{stage.label}</span>
-              <span>{win === null ? "—" : `${stage.value}%`}</span>
+        {STAGES.map((item) => {
+          const share =
+            pipelineValue > 0
+              ? Math.round(
+                  ((stageValue[item.stage] ?? 0) / pipelineValue) * 100,
+                )
+              : 0;
+          return (
+            <div key={item.label} className="flex flex-col gap-2">
+              <div className="caption-style flex items-center justify-between">
+                <span>{item.label}</span>
+                <span>{pipelineValue > 0 ? `${share}%` : "—"}</span>
+              </div>
+              <SegmentBar
+                percent={share}
+                segments={63}
+                tone={item.tone}
+                className="h-3 w-full border border-white/4 px-px"
+                segmentClassName="h-2"
+                trackClassName="bg-white/8"
+              />
             </div>
-            <SegmentBar
-              percent={stage.value}
-              segments={63}
-              tone={stage.tone}
-              className="h-3 w-full border border-white/4 px-px"
-              segmentClassName="h-2"
-              trackClassName="bg-white/8"
-            />
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

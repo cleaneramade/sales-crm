@@ -12,7 +12,7 @@ import {
 import type { SortKey } from "@/data/companies";
 import { TODAY, companiesCsvRows, filterCompanies } from "@/lib/companies";
 import { downloadCsv } from "@/lib/csv";
-import { companyWinMap } from "@/lib/deals";
+import { companySummaryMap } from "@/lib/deals";
 import { useCompaniesStore } from "@/stores/companies-store";
 import { useDealsStore } from "@/stores/deals-store";
 import ShareIcon from "@/public/assets/images/companies/toolbar/share.svg";
@@ -35,13 +35,13 @@ export default function CompaniesToolbar() {
 
   function exportCsv() {
     const { companies } = useCompaniesStore.getState();
-    const wins = companyWinMap(useDealsStore.getState().deals);
+    const summaries = companySummaryMap(useDealsStore.getState().deals);
     const visible = filterCompanies(
       companies,
       { sortBy, owner, stage, activityWindow },
-      wins,
+      summaries,
     );
-    downloadCsv(`companies-${TODAY}.csv`, companiesCsvRows(visible, wins));
+    downloadCsv(`companies-${TODAY}.csv`, companiesCsvRows(visible, summaries));
   }
 
   return (
