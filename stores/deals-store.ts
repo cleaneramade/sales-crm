@@ -35,7 +35,7 @@ type DealsState = DealFilters & {
   logActivity: (
     id: string,
     type: DealActivityType,
-    options?: { date?: string; note?: string },
+    options?: { date?: string; note?: string; contactId?: string },
   ) => void;
   setWinOverride: (id: string, win: number | null) => void;
 };
@@ -95,6 +95,9 @@ export const useDealsStore = create<DealsState>((set) => ({
                   type,
                   date: options?.date ?? TODAY,
                   ...(options?.note ? { note: options.note } : {}),
+                  ...(options?.contactId
+                    ? { contactId: options.contactId }
+                    : {}),
                 },
               ],
             }

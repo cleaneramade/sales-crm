@@ -23,16 +23,19 @@ import {
 import FormSection from "@/components/companies/new-company/form-section";
 import { DEAL_ACTIVITY_TYPES, type DealActivityType } from "@/data/deals";
 import { formatDelta } from "@/lib/activities";
-import { TODAY } from "@/lib/companies";
+import { TODAY, formatDate } from "@/lib/companies";
+import { dealContacts } from "@/lib/contacts";
 import { ACTIVITY_EFFECTS, CLOSE_PUSH_DAYS, isOpenStage } from "@/lib/deals";
 import { useActivitiesStore } from "@/stores/activities-store";
 import { useCompaniesStore } from "@/stores/companies-store";
+import { useContactsStore } from "@/stores/contacts-store";
 import { useDealsStore } from "@/stores/deals-store";
 import PlusIcon from "@/public/assets/images/_common/plus.svg";
 
 type FormState = {
   companyId: string;
   dealId: string;
+  contactId: string;
   type: DealActivityType;
   date: string;
   note: string;
@@ -45,11 +48,14 @@ type Errors = {
 };
 
 const NOTE_LIMIT = 140;
+const NO_CONTACT = "none";
 
 export default function LogActivityDialog() {
   const open = useActivitiesStore((state) => state.logOpen);
   const setOpen = useActivitiesStore((state) => state.setLogOpen);
   const logDealId = useActivitiesStore((state) => state.logDealId);
+  const logContactId = useActivitiesStore((state) => state.logContactId);
+  const contacts = useContactsStore((state) => state.contacts);
   const deals = useDealsStore((state) => state.deals);
   const logActivity = useDealsStore((state) => state.logActivity);
   const companies = useCompaniesStore((state) => state.companies);
@@ -71,9 +77,15 @@ export default function LogActivityDialog() {
   }, [companies, openDeals]);
 
   const preset = openDeals.find((deal) => deal.id === logDealId);
+  const presetHasContact = preset
+    ? dealContacts(preset.id, contacts).some(
+        (contact) => contact.id === logContactId,
+      )
+    : false;
   const current: FormState = form ?? {
     companyId: preset?.companyId ?? "",
     dealId: preset?.id ?? "",
+    contactId: presetHasContact ? (logContactId ?? "") : "",
     type: DEAL_ACTIVITY_TYPES[0],
     date: TODAY,
     note: "",
@@ -81,6 +93,10 @@ export default function LogActivityDialog() {
   const companyDeals = openDeals.filter(
     (deal) => deal.companyId === current.companyId,
   );
+  const selectedDeal = companyDeals.find((deal) => deal.id === current.dealId);
+  const dealPeople = selectedDeal
+    ? dealContacts(selectedDeal.id, contacts)
+    : [];
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm({ ...current, [key]: value });
@@ -92,12 +108,23 @@ export default function LogActivityDialog() {
       ...current,
       companyId,
       dealId: matches.length === 1 ? matches[0].id : "",
+      contactId: "",
     });
     setErrors((existing) => ({
       ...existing,
       company: undefined,
       deal: undefined,
     }));
+  }
+
+  function resetForm() {
+    setForm(null);
+    setErrors({});
+  }
+
+  function handleOpenChange(next: boolean) {
+    if (!next) resetForm();
+    setOpen(next);
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -108,6 +135,8 @@ export default function LogActivityDialog() {
     if (!current.date) next.date = "Pick a date.";
     else if (current.date > TODAY)
       next.date = "The date can't be in the future.";
+    else if (selectedDeal && current.date < selectedDeal.stageChangedAt)
+      next.date = `Pick ${formatDate(selectedDeal.stageChangedAt)} or later, when the deal reached ${selectedDeal.stage}.`;
     setErrors(next);
     if (next.company) return companyRef.current?.focus();
     if (next.deal) return dealRef.current?.focus();
@@ -116,19 +145,15 @@ export default function LogActivityDialog() {
     logActivity(current.dealId, current.type, {
       date: current.date,
       note: current.note.trim(),
+      contactId: current.contactId || undefined,
     });
+    resetForm();
     setOpen(false);
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent
-        className="max-w-[560px]"
-        onCloseAutoFocus={() => {
-          setForm(null);
-          setErrors({});
-        }}
-      >
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent className="max-w-[560px]">
         <form onSubmit={handleSubmit} noValidate className="flex flex-col">
           <DialogHeader>
             <DialogTitle>Log activity</DialogTitle>
@@ -176,7 +201,7 @@ export default function LogActivityDialog() {
               <Select
                 value={current.dealId}
                 onValueChange={(value) => {
-                  update("dealId", value);
+                  setForm({ ...current, dealId: value, contactId: "" });
                   setErrors((existing) => ({ ...existing, deal: undefined }));
                 }}
                 disabled={!current.companyId}
@@ -202,6 +227,34 @@ export default function LogActivityDialog() {
                   {companyDeals.map((deal) => (
                     <SelectItem key={deal.id} value={deal.id}>
                       {deal.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
+
+            <Field
+              label="Contact"
+              htmlFor="activity-contact"
+              hint="Optional. Credit the activity to a person on the deal."
+            >
+              <Select
+                value={current.contactId || NO_CONTACT}
+                onValueChange={(value) =>
+                  update("contactId", value === NO_CONTACT ? "" : value)
+                }
+                disabled={!current.dealId}
+              >
+                <SelectTrigger id="activity-contact">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={NO_CONTACT}>
+                    No specific contact
+                  </SelectItem>
+                  {dealPeople.map((contact) => (
+                    <SelectItem key={contact.id} value={contact.id}>
+                      {contact.name} · {contact.role}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -244,11 +297,17 @@ export default function LogActivityDialog() {
               htmlFor="activity-date"
               required
               error={errors.date}
+              hint={
+                selectedDeal
+                  ? `Counts toward win chance from ${formatDate(selectedDeal.stageChangedAt)}.`
+                  : undefined
+              }
             >
               <Input
                 ref={dateRef}
                 id="activity-date"
                 type="date"
+                min={selectedDeal?.stageChangedAt}
                 max={TODAY}
                 value={current.date}
                 onChange={(event) => {

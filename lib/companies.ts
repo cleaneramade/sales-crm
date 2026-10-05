@@ -182,7 +182,7 @@ export function calculate(
     case "maxPipeline":
       return `$${formatMoney(Math.max(0, ...rows.map((item) => item.pipelineValue)))}`;
     case "sumDeals":
-      return formatMoney(deals);
+      return formatCount(deals);
     case "avgWin": {
       const avg = averageWin(companies, summaries);
       return avg === null ? "—" : `${avg}%`;
@@ -230,6 +230,10 @@ export function formatDate(iso: string) {
 }
 
 export function formatMoney(value: number) {
+  return value.toLocaleString("en-US");
+}
+
+export function formatCount(value: number) {
   return value.toLocaleString("en-US");
 }
 

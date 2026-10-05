@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { create } from "zustand";
 import {
   DEFAULT_ACTIVITY_FILTERS,
+  TIMELINE_PAGE_SIZE,
   filterActivities,
   flattenActivities,
   type ActivityFilters,
@@ -9,27 +10,39 @@ import {
 import { useDealsStore } from "@/stores/deals-store";
 
 type ActivitiesState = ActivityFilters & {
+  shown: number;
   logOpen: boolean;
   logDealId: string | null;
+  logContactId: string | null;
   setType: (type: string) => void;
   setOwner: (owner: string) => void;
   setCompany: (company: string) => void;
   setWindow: (window: string) => void;
   resetFilters: () => void;
-  openLog: (dealId?: string) => void;
+  showMore: () => void;
+  openLog: (dealId?: string, contactId?: string) => void;
   setLogOpen: (open: boolean) => void;
 };
 
 export const useActivitiesStore = create<ActivitiesState>((set) => ({
   ...DEFAULT_ACTIVITY_FILTERS,
+  shown: TIMELINE_PAGE_SIZE,
   logOpen: false,
   logDealId: null,
-  setType: (type) => set({ type }),
-  setOwner: (owner) => set({ owner }),
-  setCompany: (company) => set({ company }),
-  setWindow: (window) => set({ window }),
-  resetFilters: () => set({ ...DEFAULT_ACTIVITY_FILTERS }),
-  openLog: (dealId) => set({ logOpen: true, logDealId: dealId ?? null }),
+  logContactId: null,
+  setType: (type) => set({ type, shown: TIMELINE_PAGE_SIZE }),
+  setOwner: (owner) => set({ owner, shown: TIMELINE_PAGE_SIZE }),
+  setCompany: (company) => set({ company, shown: TIMELINE_PAGE_SIZE }),
+  setWindow: (window) => set({ window, shown: TIMELINE_PAGE_SIZE }),
+  resetFilters: () =>
+    set({ ...DEFAULT_ACTIVITY_FILTERS, shown: TIMELINE_PAGE_SIZE }),
+  showMore: () => set((state) => ({ shown: state.shown + TIMELINE_PAGE_SIZE })),
+  openLog: (dealId, contactId) =>
+    set({
+      logOpen: true,
+      logDealId: dealId ?? null,
+      logContactId: contactId ?? null,
+    }),
   setLogOpen: (logOpen) => set({ logOpen }),
 }));
 

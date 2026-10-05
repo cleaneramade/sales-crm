@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { create } from "zustand";
 import { COMPANIES, type Company, type SortKey } from "@/data/companies";
 import { NOTIFICATIONS } from "@/data/notifications";
@@ -95,3 +96,11 @@ export const useCompaniesStore = create<CompaniesState>((set) => ({
       newCompanyOpen: false,
     })),
 }));
+
+export function useCompanyMap() {
+  const companies = useCompaniesStore((state) => state.companies);
+  return useMemo(
+    () => new Map(companies.map((company) => [company.id, company])),
+    [companies],
+  );
+}

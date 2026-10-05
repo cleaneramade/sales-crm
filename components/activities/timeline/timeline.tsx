@@ -9,7 +9,8 @@ import {
   useActivitiesStore,
   useVisibleActivities,
 } from "@/stores/activities-store";
-import { useCompaniesStore } from "@/stores/companies-store";
+import { useCompanyMap } from "@/stores/companies-store";
+import { useDealsStore } from "@/stores/deals-store";
 import ListIcon from "@/public/assets/images/companies/sidebar/list.svg";
 
 type TimelineProps = {
@@ -18,13 +19,13 @@ type TimelineProps = {
 
 export default function Timeline({ className }: TimelineProps) {
   const events = useVisibleActivities();
-  const companies = useCompaniesStore((state) => state.companies);
+  const companyById = useCompanyMap();
+  const openDetail = useDealsStore((state) => state.openDetail);
   const resetFilters = useActivitiesStore((state) => state.resetFilters);
-  const groups = useMemo(() => groupByDay(events), [events]);
-  const companyById = useMemo(
-    () => new Map(companies.map((company) => [company.id, company])),
-    [companies],
-  );
+  const shown = useActivitiesStore((state) => state.shown);
+  const showMore = useActivitiesStore((state) => state.showMore);
+  const visible = useMemo(() => events.slice(0, shown), [events, shown]);
+  const groups = useMemo(() => groupByDay(visible), [visible]);
 
   if (events.length === 0) {
     return (
@@ -65,11 +66,19 @@ export default function Timeline({ className }: TimelineProps) {
                 key={event.id}
                 event={event}
                 company={companyById.get(event.companyId)}
+                onOpen={openDetail}
               />
             ))}
           </ul>
         </section>
       ))}
+      {visible.length < events.length && (
+        <div className="flex justify-center">
+          <Button variant="secondary" size="sm" onClick={showMore}>
+            Show more
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

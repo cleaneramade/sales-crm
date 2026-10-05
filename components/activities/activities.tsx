@@ -5,7 +5,6 @@ import ActivitiesToolbar from "./toolbar/toolbar";
 import NeedsAttention from "./attention/needs-attention";
 import Timeline from "./timeline/timeline";
 import ActivitiesFooter from "./timeline/activities-footer";
-import LogActivityDialog from "./log/log-activity-dialog";
 
 export default function Activities() {
   return (
@@ -19,7 +18,6 @@ export default function Activities() {
         </div>
       </ScrollArea>
       <ActivitiesFooter />
-      <LogActivityDialog />
     </section>
   );
 }

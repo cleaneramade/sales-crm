@@ -10,7 +10,7 @@ import { ATTENTION_REASONS, needsAttention } from "@/lib/activities";
 import { formatDate } from "@/lib/companies";
 import { cn } from "@/lib/utils";
 import { useActivitiesStore } from "@/stores/activities-store";
-import { useCompaniesStore } from "@/stores/companies-store";
+import { useCompanyMap } from "@/stores/companies-store";
 import { useDealsStore } from "@/stores/deals-store";
 import ChevronDownIcon from "@/public/assets/images/_common/chevron-down.svg";
 import PlusIcon from "@/public/assets/images/_common/plus.svg";
@@ -23,13 +23,9 @@ export default function NeedsAttention({ className }: NeedsAttentionProps) {
   const [open, setOpen] = useState(false);
   const deals = useDealsStore((state) => state.deals);
   const openDetail = useDealsStore((state) => state.openDetail);
-  const companies = useCompaniesStore((state) => state.companies);
+  const companyById = useCompanyMap();
   const openLog = useActivitiesStore((state) => state.openLog);
   const items = useMemo(() => needsAttention(deals), [deals]);
-  const companyById = useMemo(
-    () => new Map(companies.map((company) => [company.id, company])),
-    [companies],
-  );
 
   return (
     <aside

@@ -17,6 +17,7 @@ import {
 } from "@/components/_ui/sheet";
 import FilterMenu from "@/components/_common/filter-menu";
 import DetailSection from "./detail-section";
+import CompanyPeople from "./company-people";
 import PipelineHealth from "./pipeline-health";
 import ActivityTrend from "./activity-trend";
 import ScoreCard from "./score-card";
@@ -131,6 +132,10 @@ export default function CompanyDetail() {
                   {owner.phone}
                 </span>
               </div>
+            </DetailSection>
+
+            <DetailSection title="People">
+              <CompanyPeople companyId={company.id} />
             </DetailSection>
 
             <DetailSection title="Pipeline health">

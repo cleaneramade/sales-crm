@@ -11,6 +11,7 @@ import { isOpenStage } from "@/lib/deals";
 import { openDealsInQuarter } from "@/lib/forecast";
 import { ROUTES } from "@/lib/routes";
 import { useCompaniesStore } from "@/stores/companies-store";
+import { useContactsStore } from "@/stores/contacts-store";
 import { useDealsStore } from "@/stores/deals-store";
 import Logo from "@/public/assets/images/_common/logo.svg";
 import BuildingIcon from "@/public/assets/images/companies/sidebar/building.svg";
@@ -35,6 +36,7 @@ const BASE_COMPANY_COUNT = 223;
 
 export default function SidebarContent() {
   const companyCount = useCompaniesStore((state) => state.companies.length);
+  const contactCount = useContactsStore((state) => state.contacts.length);
   const dealCount = useDealsStore(
     (state) => state.deals.filter((deal) => isOpenStage(deal.stage)).length,
   );
@@ -93,7 +95,7 @@ export default function SidebarContent() {
               icon={BookClosedIcon}
               label="Contacts"
               href={ROUTES.contacts.path}
-              count={38}
+              count={contactCount}
             />
             <SidebarNavItem
               icon={MailIcon}

@@ -11,6 +11,7 @@ import {
   TODAY,
   TREND_WEEKS,
   daysSince,
+  formatCount,
   formatMoney,
   type CompanySummary,
 } from "@/lib/companies";
@@ -371,7 +372,7 @@ export function calculateDeals(kind: string, deals: Deal[]) {
     case "largest":
       return `$${formatMoney(Math.max(0, ...open.map((deal) => deal.value)))}`;
     case "count":
-      return formatMoney(count);
+      return formatCount(count);
     default:
       return "";
   }

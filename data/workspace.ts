@@ -147,6 +147,16 @@ export const HELP_SECTIONS: { title: string; topics: HelpTopic[] }[] = [
           "Open deals that are stale, deals past their close date, and deals closing within a week with nothing logged in the last 7 days.",
       },
       {
+        question: "Where do contacts come from?",
+        answer:
+          "Each contact belongs to a company and is linked to some of its deals. Add one with New Contact, or search with Ctrl K. Last touch and engagement come from the activity logged with them on the Deals Board.",
+      },
+      {
+        question: "What happens when I add a decision maker?",
+        answer:
+          "Choose a deal when you add them with the Decision maker role. It logs Decision-maker added on that deal, which adds 10% to its win chance.",
+      },
+      {
         question: "Does logging an activity change win chance?",
         answer:
           "Yes. It uses the same rules as the deal panel, so the new win chance shows on the Deals Board, Companies and Forecast.",

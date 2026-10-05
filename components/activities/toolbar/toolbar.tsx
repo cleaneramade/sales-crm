@@ -16,7 +16,7 @@ import {
   useActivitiesStore,
   useVisibleActivities,
 } from "@/stores/activities-store";
-import { useCompaniesStore } from "@/stores/companies-store";
+import { useCompanyMap } from "@/stores/companies-store";
 import PlusIcon from "@/public/assets/images/_common/plus.svg";
 import ShareIcon from "@/public/assets/images/companies/toolbar/share.svg";
 
@@ -32,15 +32,14 @@ export default function ActivitiesToolbar() {
   const openLog = useActivitiesStore((state) => state.openLog);
   const companyOptions = useCompanyOptions();
   const events = useVisibleActivities();
+  const companyById = useCompanyMap();
 
   function exportCsv() {
-    const { companies } = useCompaniesStore.getState();
     downloadCsv(
       `activities-${TODAY}.csv`,
       activitiesCsvRows(
         events,
-        (companyId) =>
-          companies.find((item) => item.id === companyId)?.name ?? companyId,
+        (companyId) => companyById.get(companyId)?.name ?? companyId,
       ),
     );
   }

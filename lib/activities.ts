@@ -1,6 +1,6 @@
 import type { TagTone } from "@/data/companies";
 import type { Deal, DealActivityType } from "@/data/deals";
-import { TODAY, daysSince, formatDate, formatMoney } from "@/lib/companies";
+import { TODAY, daysSince, formatCount, formatDate } from "@/lib/companies";
 import {
   ACTIVITY_EFFECTS,
   dealWinBreakdown,
@@ -19,17 +19,30 @@ export type ActivityEvent = {
   owner: string;
   delta: number;
   counted: boolean;
+  capped: boolean;
 };
 
 export const ACTIVITY_TONES: Record<DealActivityType, TagTone> = {
   meeting: "green",
-  reply: "blue",
-  proposalViewed: "blue",
+  reply: "green",
+  proposalViewed: "green",
   decisionMaker: "green",
   closePushed: "amber",
   unanswered: "amber",
   championLeft: "red",
 };
+
+export const ACTIVITY_CHANNELS: Record<DealActivityType, string> = {
+  reply: "Email",
+  unanswered: "Email",
+  meeting: "Meeting",
+  proposalViewed: "Proposal",
+  decisionMaker: "People",
+  championLeft: "People",
+  closePushed: "Timeline",
+};
+
+export const TIMELINE_PAGE_SIZE = 100;
 
 export const ACTIVITY_WINDOW_OPTIONS = [
   { value: "1", label: "Today" },
@@ -84,7 +97,7 @@ export function flattenActivities(deals: Deal[]) {
       dealWinBreakdown(deal).adjustments.map((item) => [item.key, item.delta]),
     );
     for (const event of deal.activity) {
-      const counted = adjustments.has(event.id);
+      const delta = adjustments.get(event.id) ?? 0;
       rows.push({
         seq: seq++,
         event: {
@@ -96,8 +109,9 @@ export function flattenActivities(deals: Deal[]) {
           dealName: deal.name,
           companyId: deal.companyId,
           owner: deal.owner,
-          delta: counted ? (adjustments.get(event.id) ?? 0) : 0,
-          counted,
+          delta,
+          counted: adjustments.has(event.id) && delta !== 0,
+          capped: adjustments.has(event.id) && delta === 0,
         },
       });
     }
@@ -190,21 +204,21 @@ export const ACTIVITY_CALCULATIONS = [
 export function calculateActivities(kind: string, events: ActivityEvent[]) {
   switch (kind) {
     case "positive":
-      return formatMoney(
+      return formatCount(
         events.filter((event) => ACTIVITY_EFFECTS[event.type].delta > 0).length,
       );
     case "negative":
-      return formatMoney(
+      return formatCount(
         events.filter((event) => ACTIVITY_EFFECTS[event.type].delta < 0).length,
       );
     case "touched":
-      return formatMoney(new Set(events.map((event) => event.dealId)).size);
+      return formatCount(new Set(events.map((event) => event.dealId)).size);
     case "counted":
-      return formatMoney(events.filter((event) => event.delta !== 0).length);
+      return formatCount(events.filter((event) => event.delta !== 0).length);
     case "net":
       return formatDelta(events.reduce((sum, event) => sum + event.delta, 0));
     case "meetings":
-      return formatMoney(
+      return formatCount(
         events.filter((event) => event.type === "meeting").length,
       );
     default:

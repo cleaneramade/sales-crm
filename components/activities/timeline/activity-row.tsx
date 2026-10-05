@@ -6,20 +6,24 @@ import Tag from "@/components/_ui/tag";
 import CompanyMark from "../company-mark";
 import { ownerByName, type Company } from "@/data/companies";
 import {
+  ACTIVITY_CHANNELS,
   ACTIVITY_TONES,
   formatDelta,
   type ActivityEvent,
 } from "@/lib/activities";
-import { ACTIVITY_EFFECTS, INTERACTION_LABELS } from "@/lib/deals";
-import { useDealsStore } from "@/stores/deals-store";
+import { ACTIVITY_EFFECTS } from "@/lib/deals";
 
 type ActivityRowProps = {
   event: ActivityEvent;
   company: Company | undefined;
+  onOpen: (dealId: string) => void;
 };
 
-export default function ActivityRow({ event, company }: ActivityRowProps) {
-  const openDetail = useDealsStore((state) => state.openDetail);
+export default function ActivityRow({
+  event,
+  company,
+  onOpen,
+}: ActivityRowProps) {
   const owner = ownerByName(event.owner);
   const effectTone =
     event.delta > 0 ? "green" : event.delta < 0 ? "amber" : "neutral";
@@ -29,14 +33,14 @@ export default function ActivityRow({ event, company }: ActivityRowProps) {
       <Button
         variant="item"
         size="none"
-        onClick={() => openDetail(event.dealId)}
+        onClick={() => onOpen(event.dealId)}
         className="items-center gap-3 rounded-none px-4 py-3"
       >
         <CompanyMark company={company} />
         <span className="flex min-w-0 flex-1 flex-col gap-1.5">
           <span className="flex flex-wrap items-center gap-2">
             <Tag tone={ACTIVITY_TONES[event.type]} size="sm">
-              {INTERACTION_LABELS[event.type]}
+              {ACTIVITY_CHANNELS[event.type]}
             </Tag>
             <span className="text-foreground">
               {ACTIVITY_EFFECTS[event.type].label}
@@ -60,7 +64,9 @@ export default function ActivityRow({ event, company }: ActivityRowProps) {
             {formatDelta(event.delta)}
           </Tag>
           {!event.counted && (
-            <span className="caption-style text-subtle">History</span>
+            <span className="caption-style text-subtle">
+              {event.capped ? "Capped" : "History"}
+            </span>
           )}
         </span>
       </Button>

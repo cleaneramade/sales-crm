@@ -13,9 +13,11 @@ import {
   CommandSeparator,
   Kbd,
 } from "@/components/_ui/command";
+import CommandContactRow from "./command-contact-row";
 import { CommandCompanyRow, CommandTableHeader } from "./command-table";
 import { summaryFor } from "@/lib/companies";
-import { useCompaniesStore } from "@/stores/companies-store";
+import { useCompaniesStore, useCompanyMap } from "@/stores/companies-store";
+import { useContactsStore } from "@/stores/contacts-store";
 import { useCompanySummaries } from "@/stores/deals-store";
 import PlusIcon from "@/public/assets/images/_common/plus.svg";
 
@@ -24,6 +26,9 @@ export default function CommandMenu() {
   const setOpen = useCompaniesStore((state) => state.setSearchOpen);
   const companies = useCompaniesStore((state) => state.companies);
   const summaries = useCompanySummaries();
+  const companyById = useCompanyMap();
+  const contacts = useContactsStore((state) => state.contacts);
+  const openContact = useContactsStore((state) => state.openDetail);
   const openDetail = useCompaniesStore((state) => state.openDetail);
   const setNewCompanyOpen = useCompaniesStore(
     (state) => state.setNewCompanyOpen,
@@ -57,7 +62,7 @@ export default function CommandMenu() {
       open={open}
       onOpenChange={setOpen}
       title="Search"
-      description="Search companies by name, owner, segment or stage"
+      description="Search companies by name, owner, segment or stage, and people by name, title or company"
       className="max-w-[960px]"
       onCloseAutoFocus={(event) => {
         if (actionRan.current) event.preventDefault();
@@ -69,7 +74,7 @@ export default function CommandMenu() {
         <CommandInput
           value={query}
           onValueChange={setQuery}
-          placeholder="Search companies, owners, stages…"
+          placeholder="Search companies, people, stages…"
           trailing={<Kbd>Esc</Kbd>}
         />
         <CommandTableHeader />
@@ -82,6 +87,17 @@ export default function CommandMenu() {
                 company={company}
                 summary={summaryFor(summaries, company.id)}
                 onSelect={() => run(() => openDetail(company.id))}
+              />
+            ))}
+          </CommandGroup>
+          <CommandSeparator />
+          <CommandGroup heading="People">
+            {contacts.map((contact) => (
+              <CommandContactRow
+                key={contact.id}
+                contact={contact}
+                companyName={companyById.get(contact.companyId)?.name ?? ""}
+                onSelect={() => run(() => openContact(contact.id))}
               />
             ))}
           </CommandGroup>
