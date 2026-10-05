@@ -7,8 +7,8 @@ import {
   contactLinkedIn,
   contactPhoneHref,
 } from "@/lib/contacts";
-import MailIcon from "@/public/assets/images/companies/detail/mail-03.svg";
-import PhoneIcon from "@/public/assets/images/companies/detail/phone.svg";
+import MailIcon from "@/public/assets/images/contacts/mail.svg";
+import PhoneIcon from "@/public/assets/images/contacts/phone.svg";
 import LinkedInIcon from "@/public/assets/images/contacts/linkedin.svg";
 
 type ContactActionsProps = {
@@ -30,7 +30,7 @@ export default function ContactActions({ contact, left }: ContactActionsProps) {
             className={classes}
             title={reachTitle(contact.email, left)}
           >
-            <MailIcon aria-hidden className="size-3.5" />
+            <MailIcon aria-hidden className="size-4" />
             Email
           </a>
         ) : (
@@ -40,7 +40,7 @@ export default function ContactActions({ contact, left }: ContactActionsProps) {
             disabled
             title="No email on file"
           >
-            <MailIcon aria-hidden className="size-3.5" />
+            <MailIcon aria-hidden className="size-4" />
             Email
           </Button>
         )}
@@ -50,7 +50,7 @@ export default function ContactActions({ contact, left }: ContactActionsProps) {
             className={classes}
             title={reachTitle(contact.phone, left)}
           >
-            <PhoneIcon aria-hidden className="size-3.5" />
+            <PhoneIcon aria-hidden className="size-4" />
             Call
           </a>
         ) : (
@@ -60,7 +60,7 @@ export default function ContactActions({ contact, left }: ContactActionsProps) {
             disabled
             title="No phone on file"
           >
-            <PhoneIcon aria-hidden className="size-3.5" />
+            <PhoneIcon aria-hidden className="size-4" />
             Call
           </Button>
         )}
@@ -72,7 +72,7 @@ export default function ContactActions({ contact, left }: ContactActionsProps) {
             className={classes}
             title={reachTitle("LinkedIn profile", left)}
           >
-            <LinkedInIcon aria-hidden className="size-3.5" />
+            <LinkedInIcon aria-hidden className="size-4" />
             LinkedIn
           </a>
         ) : (
@@ -82,7 +82,7 @@ export default function ContactActions({ contact, left }: ContactActionsProps) {
             disabled
             title="No LinkedIn profile"
           >
-            <LinkedInIcon aria-hidden className="size-3.5" />
+            <LinkedInIcon aria-hidden className="size-4" />
             LinkedIn
           </Button>
         )}

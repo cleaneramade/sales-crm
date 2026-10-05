@@ -53,7 +53,7 @@ export default function CopyButton({
       aria-label={label}
       title={value ? (copied ? "Copied" : label) : "Nothing to copy"}
     >
-      <Icon aria-hidden className="size-3.5" />
+      <Icon aria-hidden className="size-4" />
       <span role="status" aria-live="polite" className="sr-only">
         {copied ? "Copied" : ""}
       </span>

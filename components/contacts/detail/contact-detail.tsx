@@ -46,8 +46,8 @@ import { useContactSummaries, useContactsStore } from "@/stores/contacts-store";
 import { useDealsStore } from "@/stores/deals-store";
 import { useSequencesStore } from "@/stores/sequences-store";
 import BookClosedIcon from "@/public/assets/images/companies/sidebar/book-closed.svg";
-import MailIcon from "@/public/assets/images/companies/detail/mail-04.svg";
-import PhoneIcon from "@/public/assets/images/companies/detail/phone.svg";
+import MailIcon from "@/public/assets/images/contacts/mail.svg";
+import PhoneIcon from "@/public/assets/images/contacts/phone.svg";
 import XIcon from "@/public/assets/images/companies/detail/x.svg";
 
 const RECENT_LIMIT = 8;
@@ -182,7 +182,7 @@ export default function ContactDetail() {
                       href={`mailto:${contact.email}`}
                       className="hover:text-foreground flex items-center gap-1"
                     >
-                      <MailIcon aria-hidden className="text-soft size-3" />
+                      <MailIcon aria-hidden className="text-soft size-3.5" />
                       {contact.email}
                     </a>
                     <CopyButton value={contact.email} label="Copy email" />
@@ -194,7 +194,7 @@ export default function ContactDetail() {
                       href={contactPhoneHref(contact.phone)}
                       className="hover:text-foreground flex items-center gap-1"
                     >
-                      <PhoneIcon aria-hidden className="text-soft size-3" />
+                      <PhoneIcon aria-hidden className="text-soft size-3.5" />
                       {contact.phone}
                     </a>
                     <CopyButton value={contact.phone} label="Copy phone" />

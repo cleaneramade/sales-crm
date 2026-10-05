@@ -6,8 +6,8 @@ import {
   contactPhoneHref,
 } from "@/lib/contacts";
 import { cn } from "@/lib/utils";
-import MailIcon from "@/public/assets/images/companies/detail/mail-03.svg";
-import PhoneIcon from "@/public/assets/images/companies/detail/phone.svg";
+import MailIcon from "@/public/assets/images/contacts/mail.svg";
+import PhoneIcon from "@/public/assets/images/contacts/phone.svg";
 import LinkedInIcon from "@/public/assets/images/contacts/linkedin.svg";
 
 type ContactReachProps = {
@@ -43,7 +43,7 @@ export default function ContactReach({
           aria-label={`Email ${contact.name}`}
           title={reachTitle(contact.email, left)}
         >
-          <MailIcon aria-hidden className="size-3.5" />
+          <MailIcon aria-hidden className="size-4" />
         </a>
       ) : (
         <Button
@@ -53,7 +53,7 @@ export default function ContactReach({
           aria-label={`Email ${contact.name}`}
           title="No email on file"
         >
-          <MailIcon aria-hidden className="size-3.5" />
+          <MailIcon aria-hidden className="size-4" />
         </Button>
       )}
       {phoneHref ? (
@@ -63,7 +63,7 @@ export default function ContactReach({
           aria-label={`Call ${contact.name}`}
           title={reachTitle(contact.phone, left)}
         >
-          <PhoneIcon aria-hidden className="size-3.5" />
+          <PhoneIcon aria-hidden className="size-4" />
         </a>
       ) : (
         <Button
@@ -73,7 +73,7 @@ export default function ContactReach({
           aria-label={`Call ${contact.name}`}
           title="No phone on file"
         >
-          <PhoneIcon aria-hidden className="size-3.5" />
+          <PhoneIcon aria-hidden className="size-4" />
         </Button>
       )}
       {linkedin &&
@@ -86,7 +86,7 @@ export default function ContactReach({
             aria-label={`Open ${contact.name} on LinkedIn`}
             title={reachTitle("LinkedIn profile", left)}
           >
-            <LinkedInIcon aria-hidden className="size-3.5" />
+            <LinkedInIcon aria-hidden className="size-4" />
           </a>
         ) : (
           <Button
@@ -96,7 +96,7 @@ export default function ContactReach({
             aria-label={`Open ${contact.name} on LinkedIn`}
             title="No LinkedIn profile"
           >
-            <LinkedInIcon aria-hidden className="size-3.5" />
+            <LinkedInIcon aria-hidden className="size-4" />
           </Button>
         ))}
     </span>
