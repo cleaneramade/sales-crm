@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 import Sidebar from "@/components/_common/sidebar/sidebar";
 import CompanyDetail from "@/components/companies/detail/company-detail";
+import DealDetail from "@/components/deals/detail/deal-detail";
+import NewDealDialog from "@/components/deals/new-deal/new-deal-dialog";
 import Profile from "@/components/companies/profile/profile";
 import NewCompanyDialog from "@/components/companies/new-company/new-company-dialog";
 import CommandMenu from "@/components/companies/command-menu/command-menu";
@@ -14,6 +16,8 @@ export default function CrmLayout({ children }: { children: ReactNode }) {
       <Sidebar />
       {children}
       <CompanyDetail />
+      <DealDetail />
+      <NewDealDialog />
       <Profile />
       <NewCompanyDialog />
       <CommandMenu />

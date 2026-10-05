@@ -32,7 +32,11 @@ type DealsState = DealFilters & {
   moveDeal: (id: string, stage: DealStage) => void;
   addDeal: (deal: Deal) => void;
   setCategory: (id: string, category: ForecastCategory) => void;
-  logActivity: (id: string, type: DealActivityType) => void;
+  logActivity: (
+    id: string,
+    type: DealActivityType,
+    options?: { date?: string; note?: string },
+  ) => void;
   setWinOverride: (id: string, win: number | null) => void;
 };
 
@@ -74,7 +78,7 @@ export const useDealsStore = create<DealsState>((set) => ({
         deal.id === id ? { ...deal, category } : deal,
       ),
     })),
-  logActivity: (id, type) =>
+  logActivity: (id, type, options) =>
     set((state) => ({
       deals: state.deals.map((deal) =>
         deal.id === id
@@ -89,7 +93,8 @@ export const useDealsStore = create<DealsState>((set) => ({
                 {
                   id: `${deal.id}-a${deal.activity.length + 1}-${Date.now()}`,
                   type,
-                  date: TODAY,
+                  date: options?.date ?? TODAY,
+                  ...(options?.note ? { note: options.note } : {}),
                 },
               ],
             }

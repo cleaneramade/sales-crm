@@ -1,6 +1,5 @@
 import Header from "@/components/_common/header";
 import { ScrollArea } from "@/components/_ui/scroll-area";
-import DealDetail from "@/components/deals/detail/deal-detail";
 import ForecastStatus from "./forecast-status";
 import ForecastToolbar from "./toolbar/toolbar";
 import Summary from "./summary/summary";
@@ -23,7 +22,6 @@ export default function Forecast() {
         <RepsTable />
         <ForecastDealsTable />
       </ScrollArea>
-      <DealDetail />
       <SubmitDialog />
     </section>
   );

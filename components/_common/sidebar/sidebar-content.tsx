@@ -6,6 +6,7 @@ import SidebarNavItem from "./sidebar-nav-item";
 import SidebarSection from "./sidebar-section";
 import { PLANS, TRIAL_DAYS_LEFT } from "@/data/workspace";
 import { CURRENT_QUARTER_ID } from "@/data/forecast";
+import { needsAttention } from "@/lib/activities";
 import { isOpenStage } from "@/lib/deals";
 import { openDealsInQuarter } from "@/lib/forecast";
 import { ROUTES } from "@/lib/routes";
@@ -39,6 +40,9 @@ export default function SidebarContent() {
   );
   const forecastCount = useDealsStore(
     (state) => openDealsInQuarter(state.deals, CURRENT_QUARTER_ID).length,
+  );
+  const attentionCount = useDealsStore(
+    (state) => needsAttention(state.deals).length,
   );
   const setAppDialog = useCompaniesStore((state) => state.setAppDialog);
   const planId = useCompaniesStore((state) => state.planId);
@@ -83,6 +87,7 @@ export default function SidebarContent() {
               icon={ListIcon}
               label="Activities"
               href={ROUTES.activities.path}
+              count={attentionCount}
             />
             <SidebarNavItem
               icon={BookClosedIcon}

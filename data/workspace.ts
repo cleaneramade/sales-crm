@@ -141,6 +141,16 @@ export const HELP_SECTIONS: { title: string; topics: HelpTopic[] }[] = [
         answer:
           "Open deals, pipeline, win chance, last interaction and the activity trend all come from its deals on the Deals Board. Nothing is typed in.",
       },
+      {
+        question: "What does Needs attention show?",
+        answer:
+          "Open deals that are stale, deals past their close date, and deals closing within a week with nothing logged in the last 7 days.",
+      },
+      {
+        question: "Does logging an activity change win chance?",
+        answer:
+          "Yes. It uses the same rules as the deal panel, so the new win chance shows on the Deals Board, Companies and Forecast.",
+      },
     ],
   },
 ];
